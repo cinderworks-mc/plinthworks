@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:redstone"
+    },
+    {
+      "item": "plinthworks:etching_speed_3"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "plinthworks:etching_speed_4"
+  }
+}

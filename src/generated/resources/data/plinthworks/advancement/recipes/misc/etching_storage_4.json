@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_etching_base": {
+      "conditions": {
+        "items": [
+          {
+            "items": "plinthworks:etching_base"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "plinthworks:etching_storage_4"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_etching_base"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "plinthworks:etching_storage_4"
+    ]
+  }
+}

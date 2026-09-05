@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "plinthworks:seal_base"
+    },
+    {
+      "item": "minecraft:bookshelf"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "plinthworks:seal_mod"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:chest"
+    },
+    {
+      "item": "plinthworks:etching_capacity_3"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "plinthworks:etching_capacity_4"
+  }
+}
