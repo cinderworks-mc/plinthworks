@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:ender_pearl"
+    },
+    {
+      "item": "plinthworks:etching_range_3"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "plinthworks:etching_range_4"
+  }
+}

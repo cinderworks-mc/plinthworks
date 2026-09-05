@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:copy_components",
+              "include": [
+                "plinthworks:plinth_contents"
+              ],
+              "source": "block_entity"
+            }
+          ],
+          "name": "plinthworks:plinth"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "plinthworks:blocks/plinth"
+}

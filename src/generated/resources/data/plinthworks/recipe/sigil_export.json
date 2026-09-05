@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "plinthworks:sigil_base"
+    },
+    {
+      "item": "minecraft:dropper"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "plinthworks:sigil_export"
+  }
+}
