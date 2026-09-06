@@ -5,3 +5,4 @@ runs/
 *.classpath
 .idea/
 *.iml
+src/generated/resources/.cache/
