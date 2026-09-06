@@ -22,19 +22,148 @@
         }
       },
       "from": [
-        2,
+        3,
         0,
-        2
+        3
       ],
       "to": [
-        14,
+        13,
+        3,
+        13
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#body"
+        },
+        "east": {
+          "texture": "#body"
+        },
+        "north": {
+          "texture": "#body"
+        },
+        "south": {
+          "texture": "#body"
+        },
+        "up": {
+          "texture": "#body"
+        },
+        "west": {
+          "texture": "#body"
+        }
+      },
+      "from": [
+        4,
+        3,
+        4
+      ],
+      "to": [
         12,
-        14
+        4,
+        12
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#body"
+        },
+        "east": {
+          "texture": "#body"
+        },
+        "north": {
+          "texture": "#body"
+        },
+        "south": {
+          "texture": "#body"
+        },
+        "up": {
+          "texture": "#body"
+        },
+        "west": {
+          "texture": "#body"
+        }
+      },
+      "from": [
+        5,
+        4,
+        5
+      ],
+      "to": [
+        11,
+        10,
+        11
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#body"
+        },
+        "east": {
+          "texture": "#body"
+        },
+        "north": {
+          "texture": "#body"
+        },
+        "south": {
+          "texture": "#body"
+        },
+        "up": {
+          "texture": "#body"
+        },
+        "west": {
+          "texture": "#body"
+        }
+      },
+      "from": [
+        3,
+        10,
+        3
+      ],
+      "to": [
+        13,
+        14,
+        13
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#fitting"
+        },
+        "east": {
+          "texture": "#fitting"
+        },
+        "north": {
+          "texture": "#fitting"
+        },
+        "south": {
+          "texture": "#fitting"
+        },
+        "up": {
+          "texture": "#fitting"
+        },
+        "west": {
+          "texture": "#fitting"
+        }
+      },
+      "from": [
+        5,
+        11,
+        2.5
+      ],
+      "to": [
+        11,
+        13,
+        3
       ]
     }
   ],
   "textures": {
     "body": "minecraft:block/smooth_stone",
+    "fitting": "plinthworks:block/plinth_fitting",
     "particle": "minecraft:block/smooth_stone"
   }
 }

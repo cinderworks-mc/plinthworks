@@ -19,4 +19,11 @@ class SealMatchTest
 				new SealMatch.SealResult(true, true),
 				new SealMatch.SealResult(false, false))));
 	}
+
+	// real-key filtering can't run here - SealConfig/MatchKey static init drags in
+	// net.minecraft off the test classpath - so just lock the empty edge
+	@Test
+	void keyedDropsEmptyBank() {
+		assertTrue(SealMatch.keyed(List.of()).isEmpty());
+	}
 }

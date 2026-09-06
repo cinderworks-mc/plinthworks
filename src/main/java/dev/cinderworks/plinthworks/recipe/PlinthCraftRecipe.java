@@ -63,6 +63,11 @@ public class PlinthCraftRecipe implements CraftingRecipe
 	}
 
 	@Override
+	public boolean isSpecial() {
+		return true;
+	}
+
+	@Override
 	public ItemStack getResultItem(HolderLookup.Provider registries) {
 		return new ItemStack(ModItems.PLINTH.get());
 	}

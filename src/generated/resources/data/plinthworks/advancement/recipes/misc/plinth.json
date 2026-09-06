@@ -1,0 +1,25 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_plinth_core": {
+      "conditions": {
+        "items": [
+          {
+            "items": "plinthworks:plinth_core"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_plinth_core"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "plinthworks:plinth"
+    ]
+  }
+}

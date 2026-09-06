@@ -23,16 +23,18 @@ public class PlinthTick
 		}
 	}
 
+	// import only sources from the plinth's own adjacent inventories; the network is fed by export.
 	public static void pull(PlinthBlockEntity be, UpgradeSet upgrades) {
 		int moved = 0;
-		for (IItemHandler handler : targetHandlers(be, upgrades)) {
+		for (IItemHandler handler : InventoryScan.nearbyHandlers(be, upgrades.range())) {
 			for (int slot = 0; slot < handler.getSlots() && moved < upgrades.throughput(); slot++) {
 				ItemStack found = handler.extractItem(slot, upgrades.throughput() - moved, true);
 				if (found.isEmpty() || upgrades.filtered() && !be.matchesFilter(found)) {
 					continue;
 				}
 				ItemStack remainder = be.display().insertItem(0, found, true);
-				int accepted = found.getCount() - remainder.getCount();
+				int accepted = TransferMath.moveCount(found.getCount(),
+						found.getCount() - remainder.getCount(), upgrades.throughput() - moved);
 				if (accepted == 0) {
 					continue;
 				}
@@ -46,32 +48,72 @@ public class PlinthTick
 		}
 	}
 
+	// export also drains linked plinths, so an import/export pair shifts items across a channel
 	public static void push(PlinthBlockEntity be, UpgradeSet upgrades) {
-		ItemStack shown = be.getDisplayedItem();
-		if (shown.isEmpty() || upgrades.filtered() && !be.matchesFilter(shown)) {
+		List<IItemHandler> dests = InventoryScan.nearbyHandlers(be, upgrades.range());
+		if (dests.isEmpty()) {
 			return;
 		}
-
-		int left = Math.min(shown.getCount(), upgrades.throughput());
-		for (IItemHandler handler : targetHandlers(be, upgrades)) {
-			for (int slot = 0; slot < handler.getSlots() && left > 0; slot++) {
-				ItemStack offered = shown.copyWithCount(left);
-				ItemStack remainder = handler.insertItem(slot, offered, true);
-				int accepted = offered.getCount() - remainder.getCount();
-				if (accepted == 0) {
+		List<IItemHandler> sources = new ArrayList<>();
+		sources.add(be.display());
+		sources.addAll(networkPlinths(be));
+		int left = upgrades.throughput();
+		for (IItemHandler source : sources) {
+			for (int slot = 0; slot < source.getSlots() && left > 0; slot++) {
+				ItemStack shown = source.extractItem(slot, left, true);
+				if (shown.isEmpty() || upgrades.filtered() && !be.matchesFilter(shown)) {
 					continue;
 				}
-				ItemStack extracted = be.display().extractItem(0, accepted, false);
-				ItemStack failed = handler.insertItem(slot, extracted, false);
-				if (!failed.isEmpty()) {
-					be.display().insertItem(0, failed, false);
-				}
-				left -= accepted - failed.getCount();
+				left -= deposit(source, slot, shown, dests, left);
 			}
-			if (left == 0) {
+			if (left <= 0) {
 				return;
 			}
 		}
+	}
+
+	private static int deposit(IItemHandler source, int slot, ItemStack shown, List<IItemHandler> dests, int budget) {
+		int moved = 0;
+		for (IItemHandler dest : dests) {
+			for (int d = 0; d < dest.getSlots() && moved < budget; d++) {
+				ItemStack offered = shown.copyWithCount(budget - moved);
+				ItemStack remainder = dest.insertItem(d, offered, true);
+				int accepted = TransferMath.moveCount(offered.getCount(),
+						offered.getCount() - remainder.getCount(), budget - moved);
+				if (accepted == 0) {
+					continue;
+				}
+				ItemStack extracted = source.extractItem(slot, accepted, false);
+				if (extracted.isEmpty()) {
+					continue;
+				}
+				ItemStack failed = dest.insertItem(d, extracted, false);
+				if (!failed.isEmpty()) {
+					source.insertItem(slot, failed, false);
+				}
+				moved += extracted.getCount() - failed.getCount();
+			}
+		}
+		return moved;
+	}
+
+	private static List<IItemHandler> networkPlinths(PlinthBlockEntity be) {
+		Level level = be.getLevel();
+		ArrayList<IItemHandler> handlers = new ArrayList<>();
+		if (be.channel().isEmpty() || !(level instanceof ServerLevel serverLevel)) {
+			return handlers;
+		}
+		for (net.minecraft.core.BlockPos pos : PlinthNetwork.get(serverLevel)
+				.orderedMembers(be.channel(), be.getBlockPos(), serverLevel)) {
+			if (!level.hasChunkAt(pos)) {
+				continue;
+			}
+			IItemHandler plinth = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, null);
+			if (plinth != null) {
+				handlers.add(plinth);
+			}
+		}
+		return handlers;
 	}
 
 	public static boolean craft(PlinthBlockEntity be, UpgradeSet upgrades) {
@@ -92,9 +134,11 @@ public class PlinthTick
 			if (sources.isEmpty()) {
 				continue;
 			}
-			int room = target.getMaxStackSize() * upgrades.bufferSlots() - target.getCount();
-			if (!ItemStack.isSameItemSameComponents(result, target) || result.getCount() > room) {
-				return false;
+			if (!ItemStack.isSameItemSameComponents(result, target)) {
+				continue;
+			}
+			if (!be.display().insertItem(0, result.copy(), true).isEmpty()) {
+				continue;
 			}
 			for (Source source : sources) {
 				source.handler.extractItem(source.slot, 1, false);
@@ -107,7 +151,23 @@ public class PlinthTick
 	}
 
 	public static void voidBuffer(PlinthBlockEntity be, UpgradeSet upgrades) {
-		be.display().extractItem(0, upgrades.throughput(), false);
+		int budget = upgrades.throughput();
+		ItemStack shown = be.getDisplayedItem();
+		if (!shown.isEmpty() && (!upgrades.filtered() || be.matchesFilter(shown))) {
+			budget -= be.display().extractItem(0, budget, false).getCount();
+		}
+		for (IItemHandler handler : InventoryScan.nearbyHandlers(be, upgrades.range())) {
+			for (int slot = 0; slot < handler.getSlots() && budget > 0; slot++) {
+				ItemStack found = handler.extractItem(slot, budget, true);
+				if (found.isEmpty() || upgrades.filtered() && !be.matchesFilter(found)) {
+					continue;
+				}
+				budget -= handler.extractItem(slot, budget, false).getCount();
+			}
+			if (budget <= 0) {
+				return;
+			}
+		}
 	}
 
 	private static List<IItemHandler> targetHandlers(PlinthBlockEntity be, UpgradeSet upgrades) {
@@ -116,6 +176,9 @@ public class PlinthTick
 		if (!be.channel().isEmpty() && level instanceof ServerLevel serverLevel) {
 			for (net.minecraft.core.BlockPos pos : PlinthNetwork.get(serverLevel)
 					.orderedMembers(be.channel(), be.getBlockPos(), serverLevel)) {
+				if (!level.hasChunkAt(pos)) {
+					continue;
+				}
 				IItemHandler plinth = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, null);
 				if (plinth != null) {
 					handlers.add(plinth);

@@ -13,15 +13,13 @@ import java.util.List;
 
 public class InventoryScan
 {
+	// re-queried every op rather than cached - a stale handler ref can void inserts
+	// into a container that was broken or replaced mid-window
 	public static List<IItemHandler> nearbyHandlers(PlinthBlockEntity be, int range) {
 		Level level = be.getLevel();
-		if (be.hasFreshHandlerCache(level.getGameTime())) {
-			return be.getCachedHandlers();
-		}
-
-		List<IItemHandler> handlers = new ArrayList<>();
 		BlockPos center = be.getBlockPos();
 		int cap = ModConfig.MAX_HANDLERS.get();
+		List<IItemHandler> handlers = new ArrayList<>(Math.min(cap, range == 1 ? 6 : ScanBounds.cubePositions(range)));
 		if (range == 1) {
 			for (Direction dir : Direction.values()) {
 				add(level, center.relative(dir), dir.getOpposite(), handlers, cap);
@@ -43,8 +41,8 @@ public class InventoryScan
 			}
 		}
 
-		be.setHandlerCache(handlers, level.getGameTime() + ModConfig.RESCAN_INTERVAL.get());
-		return handlers;
+		int keep = ScanBounds.cappedHandlers(handlers.size(), cap);
+		return keep == handlers.size() ? handlers : handlers.subList(0, keep);
 	}
 
 	public static List<IItemHandler> adjacentHandlers(Level level, BlockPos center) {

@@ -25,6 +25,7 @@ public class PlinthMenu extends AbstractContainerMenu
 	private final int plinthSlots;
 	private final java.util.List<BlockPos> networkMembers;
 	private final StringBuilder channelInput = new StringBuilder();
+	private int editSeal;
 
 	public PlinthMenu(int id, Inventory playerInv, RegistryFriendlyByteBuf data) {
 		this(id, playerInv, data.readBlockPos(), readMembers(data));
@@ -50,14 +51,14 @@ public class PlinthMenu extends AbstractContainerMenu
 		this.stats = stats;
 		this.networkMembers = java.util.List.copyOf(networkMembers);
 		this.plinthSlots = 2 + be.etchings().getSlots() + be.seals().getSlots();
-		addSlot(new SigilSlot(be.sigil(), 0, 17, 29));
+		addSlot(new SigilSlot(be.sigil(), 0, 10, 25));
 		for (int i = 0; i < be.etchings().getSlots(); i++) {
-			addSlot(new EtchingSlot(be.etchings(), i, 53 + i * 18, 29));
+			addSlot(new EtchingSlot(be.etchings(), i, 53 + i * 18, 25));
 		}
 		for (int i = 0; i < be.seals().getSlots(); i++) {
-			addSlot(new SealSlot(be.seals(), i, 71 + i * 18, 57));
+			addSlot(new SealSlot(be.seals(), i, 53 + i * 18, 55));
 		}
-		addSlot(new SlotItemHandler(be.display(), 0, 17, 57));
+		addSlot(new SlotItemHandler(be.display(), 0, 10, 55));
 		addPlayerSlots(playerInv);
 		addDataSlots(stats);
 	}
@@ -65,11 +66,11 @@ public class PlinthMenu extends AbstractContainerMenu
 	private void addPlayerSlots(Inventory inventory) {
 		for (int row = 0; row < 3; row++) {
 			for (int col = 0; col < 9; col++) {
-				addSlot(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, 137 + row * 18));
+				addSlot(new Slot(inventory, col + row * 9 + 9, 10 + col * 18, 107 + row * 18));
 			}
 		}
 		for (int col = 0; col < 9; col++) {
-			addSlot(new Slot(inventory, col, 8 + col * 18, 195));
+			addSlot(new Slot(inventory, col, 10 + col * 18, 169));
 		}
 	}
 
@@ -133,7 +134,17 @@ public class PlinthMenu extends AbstractContainerMenu
 			broadcastChanges();
 			return true;
 		}
-		ItemStack sealStack = firstSeal();
+		if (id == 60) {
+			be.cycleRedstoneMode();
+			broadcastChanges();
+			return true;
+		}
+		// the seal-config screen sends this first so every following op targets the seal it opened, not slot 0
+		if (id >= 40 && id < 40 + be.seals().getSlots()) {
+			editSeal = id - 40;
+			return true;
+		}
+		ItemStack sealStack = be.seals().getStackInSlot(editSeal);
 		if (!(sealStack.getItem() instanceof SealItem seal)) {
 			return false;
 		}
@@ -141,13 +152,13 @@ public class PlinthMenu extends AbstractContainerMenu
 		SealConfig config = sealStack.getOrDefault(ModDataComponents.SEAL_CONFIG.get(), SealConfig.EMPTY);
 		if (id == 0) {
 			sealStack.set(ModDataComponents.SEAL_CONFIG.get(), config.toggleMode());
-			be.seals().setStackInSlot(firstSealIndex(), sealStack);
+			be.seals().setStackInSlot(editSeal, sealStack);
 			broadcastChanges();
 			return true;
 		}
 		if (id == 1) {
 			sealStack.set(ModDataComponents.SEAL_CONFIG.get(), new SealConfig(config.whitelist(), java.util.List.of()));
-			be.seals().setStackInSlot(firstSealIndex(), sealStack);
+			be.seals().setStackInSlot(editSeal, sealStack);
 			broadcastChanges();
 			return true;
 		}
@@ -156,7 +167,7 @@ public class PlinthMenu extends AbstractContainerMenu
 			return false;
 		}
 		sealStack.set(ModDataComponents.SEAL_CONFIG.get(), config.with(key));
-		be.seals().setStackInSlot(firstSealIndex(), sealStack);
+		be.seals().setStackInSlot(editSeal, sealStack);
 		broadcastChanges();
 		return true;
 	}
@@ -197,23 +208,8 @@ public class PlinthMenu extends AbstractContainerMenu
 		return networkMembers;
 	}
 
-	public ItemStack firstSeal() {
-		for (int i = 0; i < be.seals().getSlots(); i++) {
-			ItemStack stack = be.seals().getStackInSlot(i);
-			if (!stack.isEmpty()) {
-				return stack;
-			}
-		}
-		return ItemStack.EMPTY;
-	}
-
-	private int firstSealIndex() {
-		for (int i = 0; i < be.seals().getSlots(); i++) {
-			if (!be.seals().getStackInSlot(i).isEmpty()) {
-				return i;
-			}
-		}
-		return 0;
+	public ItemStack seal(int index) {
+		return be.seals().getStackInSlot(index);
 	}
 
 	private MatchKey keyFor(SealType type, int id) {
