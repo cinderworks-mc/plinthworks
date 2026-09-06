@@ -1,0 +1,36 @@
+package dev.cinderworks.plinthworks.data;
+
+import dev.cinderworks.plinthworks.Plinthworks;
+import dev.cinderworks.plinthworks.item.*;
+import dev.cinderworks.plinthworks.registry.ModItems;
+import net.minecraft.data.PackOutput;
+import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+
+public class ModItemModelProvider extends ItemModelProvider
+{
+	public ModItemModelProvider(PackOutput output, ExistingFileHelper files) {
+		super(output, Plinthworks.MODID, files);
+	}
+
+	@Override
+	protected void registerModels() {
+		withExistingParent("plinth", modLoc("block/plinth"));
+		singleTexture("plinth_core", mcLoc("item/generated"), "layer0", modLoc("item/plinth_core"));
+		singleTexture("sigil_base", mcLoc("item/generated"), "layer0", modLoc("item/sigil_base"));
+		singleTexture("etching_base", mcLoc("item/generated"), "layer0", modLoc("item/etching_base"));
+		singleTexture("seal_base", mcLoc("item/generated"), "layer0", modLoc("item/seal_base"));
+		for (SigilType type : SigilType.values()) {
+			basicItem(ModItems.SIGILS.get(type).get());
+		}
+		for (EtchingType type : EtchingType.values()) {
+			for (EtchingTier tier : EtchingTier.values()) {
+				basicItem(ModItems.ETCHINGS.get(type).get(tier).get());
+			}
+		}
+		for (SealType type : SealType.values()) {
+			basicItem(ModItems.SEALS.get(type).get());
+		}
+		basicItem(ModItems.LINK_TOOL.get());
+	}
+}
