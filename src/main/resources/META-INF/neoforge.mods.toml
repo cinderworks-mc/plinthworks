@@ -1,6 +1,7 @@
 modLoader="javafml"
 loaderVersion="[4,)"
 license="MIT"
+logoFile="icon.png"
 issueTrackerURL="https://github.com/cinderworks-mc/plinthworks/issues"
 
 [[mods]]
