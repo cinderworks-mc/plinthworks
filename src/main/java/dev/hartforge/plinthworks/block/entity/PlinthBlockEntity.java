@@ -89,15 +89,17 @@ public class PlinthBlockEntity extends BlockEntity
 	private BlockState baseState = Blocks.STONE.defaultBlockState();
 	private UpgradeSet cachedUpgrades;
 	private int cooldown;
-	private List<IItemHandler> cachedHandlers = List.of();
-	private long handlerCacheUntil;
 	private String channel = "";
+	private RedstoneMode redstoneMode = RedstoneMode.ALWAYS;
 
 	public PlinthBlockEntity(BlockPos pos, BlockState state) {
 		super(ModBlockEntities.PLINTH.get(), pos, state);
 	}
 
 	public static void serverTick(Level level, BlockPos pos, BlockState state, PlinthBlockEntity be) {
+		if (!be.redstoneAllows()) {
+			return;
+		}
 		UpgradeSet upgrades = be.upgrades();
 		if (upgrades.verb() == null) {
 			return;
@@ -203,24 +205,6 @@ public class PlinthBlockEntity extends BlockEntity
 		changedAndSync();
 	}
 
-	public List<IItemHandler> getCachedHandlers() {
-		return cachedHandlers;
-	}
-
-	public boolean hasFreshHandlerCache(long gameTime) {
-		return gameTime < handlerCacheUntil;
-	}
-
-	public void setHandlerCache(List<IItemHandler> handlers, long until) {
-		cachedHandlers = List.copyOf(handlers);
-		handlerCacheUntil = until;
-	}
-
-	public void invalidateHandlerCache() {
-		handlerCacheUntil = 0;
-		cachedHandlers = List.of();
-	}
-
 	public String channel() {
 		return channel;
 	}
@@ -229,12 +213,31 @@ public class PlinthBlockEntity extends BlockEntity
 		if (this.channel.equals(channel)) {
 			return;
 		}
-		if (level instanceof net.minecraft.server.level.ServerLevel serverLevel && !this.channel.isEmpty()) {
-			dev.hartforge.plinthworks.logic.network.PlinthNetwork.get(serverLevel)
-					.remove(this.channel, worldPosition);
+		if (level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+			dev.hartforge.plinthworks.logic.network.PlinthNetwork net =
+					dev.hartforge.plinthworks.logic.network.PlinthNetwork.get(serverLevel);
+			if (!this.channel.isEmpty()) {
+				net.remove(this.channel, worldPosition);
+			}
+			if (!channel.isEmpty()) {
+				net.add(channel, worldPosition);
+			}
 		}
 		this.channel = channel;
 		changedAndSync();
+	}
+
+	public RedstoneMode redstoneMode() {
+		return redstoneMode;
+	}
+
+	public void cycleRedstoneMode() {
+		redstoneMode = redstoneMode.next();
+		changedAndSync();
+	}
+
+	public boolean redstoneAllows() {
+		return level == null || redstoneMode.allows(level.hasNeighborSignal(worldPosition));
 	}
 
 	public int channelMembers() {
@@ -275,6 +278,7 @@ public class PlinthBlockEntity extends BlockEntity
 		baseState = NbtUtils.readBlockState(registries.lookupOrThrow(Registries.BLOCK), compound.getCompound("BaseState"));
 		cooldown = compound.getInt("Cooldown");
 		channel = compound.getString("Channel");
+		redstoneMode = RedstoneMode.values()[compound.getInt("RedstoneMode") % RedstoneMode.values().length];
 		cachedUpgrades = null;
 	}
 
@@ -288,6 +292,7 @@ public class PlinthBlockEntity extends BlockEntity
 		compound.put("BaseState", NbtUtils.writeBlockState(baseState));
 		compound.putInt("Cooldown", cooldown);
 		compound.putString("Channel", channel);
+		compound.putInt("RedstoneMode", redstoneMode.ordinal());
 	}
 
 	@Override

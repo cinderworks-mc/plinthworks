@@ -43,7 +43,7 @@ public class PlinthBlock extends BaseEntityBlock
 
 	@Override
 	protected RenderShape getRenderShape(BlockState state) {
-		return RenderShape.MODEL;
+		return RenderShape.INVISIBLE;
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class PlinthBlock extends BaseEntityBlock
 			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		}
 		if (stack.getItem() instanceof LinkToolItem) {
-			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
 		}
 		if (stack.getItem() instanceof SigilItem || stack.getItem() instanceof EtchingItem
 				|| stack.getItem() instanceof SealItem) {
@@ -78,7 +78,7 @@ public class PlinthBlock extends BaseEntityBlock
 			}
 			return ItemInteractionResult.sidedSuccess(level.isClientSide);
 		}
-		if (plinth.getDisplayedItem().isEmpty()) {
+		if (!stack.isEmpty() && plinth.getDisplayedItem().isEmpty()) {
 			if (!level.isClientSide) {
 				plinth.putDisplayedItem(player, stack);
 			}
@@ -122,20 +122,21 @@ public class PlinthBlock extends BaseEntityBlock
 	}
 
 	@Override
+	public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
+		ItemStack stack = super.getCloneItemStack(state, target, level, pos, player);
+		if (level.getBlockEntity(pos) instanceof PlinthBlockEntity plinth) {
+			stack.set(ModDataComponents.PLINTH_CONTENTS.get(),
+					new PlinthContents(BuiltInRegistries.BLOCK.getKey(plinth.getBaseState().getBlock())));
+		}
+		return stack;
+	}
+
+	@Override
 	protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
 		if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof PlinthBlockEntity plinth) {
 			plinth.dropStoredItems();
 			plinth.setChannel("");
 		}
 		super.onRemove(state, level, pos, newState, movedByPiston);
-	}
-
-	@Override
-	protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos neighborPos,
-			boolean movedByPiston) {
-		super.neighborChanged(state, level, pos, block, neighborPos, movedByPiston);
-		if (level.getBlockEntity(pos) instanceof PlinthBlockEntity plinth) {
-			plinth.invalidateHandlerCache();
-		}
 	}
 }

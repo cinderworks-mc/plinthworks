@@ -11,14 +11,20 @@ import java.util.*;
 public class PlinthNetwork extends SavedData
 {
 	private static final String FILE_NAME = "plinthworks_channels";
+	private static final long PRUNE_INTERVAL = 200;
 	private final ChannelGraph graph = new ChannelGraph();
+	private long lastPrune = Long.MIN_VALUE;
 
 	public PlinthNetwork() {}
 
 	public static PlinthNetwork get(ServerLevel level) {
 		PlinthNetwork data = level.getDataStorage().computeIfAbsent(
 				new Factory<>(PlinthNetwork::new, PlinthNetwork::load), FILE_NAME);
-		data.prune(level);
+		long now = level.getGameTime();
+		if (now - data.lastPrune >= PRUNE_INTERVAL) {
+			data.lastPrune = now;
+			data.prune(level);
+		}
 		return data;
 	}
 

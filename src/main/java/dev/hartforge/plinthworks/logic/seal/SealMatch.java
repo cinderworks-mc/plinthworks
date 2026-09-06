@@ -17,9 +17,14 @@ public class SealMatch
 	}
 
 	public static boolean bankAllows(List<SealEntry> seals, ItemStack candidate) {
-		return bankAllowsResults(seals.stream()
+		return bankAllowsResults(keyed(seals).stream()
 				.map(seal -> new SealResult(seal.config().whitelist(),
 						matches(seal.type(), seal.config(), candidate))).toList());
+	}
+
+	// keyless seals filter nothing, so drop them before evaluating the bank
+	public static List<SealEntry> keyed(List<SealEntry> seals) {
+		return seals.stream().filter(seal -> !seal.config().keys().isEmpty()).toList();
 	}
 
 	public static boolean bankAllowsResults(List<SealResult> results) {

@@ -15,25 +15,32 @@ public class SealConfigScreen extends Screen
 {
 	private final PlinthScreen parent;
 	private final PlinthMenu menu;
+	private final int sealIndex;
 
-	public SealConfigScreen(PlinthScreen parent, PlinthMenu menu) {
+	public SealConfigScreen(PlinthScreen parent, PlinthMenu menu, int sealIndex) {
 		super(Component.translatable("gui.plinthworks.seal_config"));
 		this.parent = parent;
 		this.menu = menu;
+		this.sealIndex = sealIndex;
 	}
 
 	@Override
 	protected void init() {
+		// select this seal on the menu so every op below writes to it, not slot 0
+		send(40 + sealIndex);
 		int x = width / 2 - 90;
 		int y = height / 2 - 65;
+		ItemStack sealStack = menu.seal(sealIndex);
+		if (!(sealStack.getItem() instanceof SealItem seal)) {
+			return;
+		}
 		addRenderableWidget(Button.builder(Component.translatable("gui.plinthworks.toggle_mode"), b -> send(0))
 				.bounds(x, y + 24, 86, 20).build());
 		addRenderableWidget(Button.builder(Component.translatable("gui.plinthworks.clear_keys"), b -> send(1))
 				.bounds(x + 94, y + 24, 86, 20).build());
 
-		ItemStack sealStack = menu.firstSeal();
 		ItemStack shown = menu.blockEntity().getDisplayedItem();
-		if (!(sealStack.getItem() instanceof SealItem seal) || shown.isEmpty()) {
+		if (shown.isEmpty()) {
 			return;
 		}
 		if (seal.type() == SealType.TAG) {
@@ -76,7 +83,11 @@ public class SealConfigScreen extends Screen
 		int x = width / 2 - 90;
 		int y = height / 2 - 65;
 		graphics.drawString(font, title, x, y, 0xffffff, false);
-		ItemStack seal = menu.firstSeal();
+		ItemStack seal = menu.seal(sealIndex);
+		if (!(seal.getItem() instanceof SealItem)) {
+			graphics.drawString(font, Component.translatable("gui.plinthworks.no_seal"), x, y + 12, 0xbcb4aa, false);
+			return;
+		}
 		SealConfig config = seal.getOrDefault(ModDataComponents.SEAL_CONFIG.get(), SealConfig.EMPTY);
 		graphics.drawString(font, Component.translatable(config.whitelist()
 				? "gui.plinthworks.whitelist" : "gui.plinthworks.blacklist", config.keys().size()),

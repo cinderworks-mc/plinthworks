@@ -25,7 +25,7 @@ public class ModConfig
 	public static final ModConfigSpec.IntValue MAX_AREA_VOLUME;
 	public static final ModConfigSpec.BooleanValue FUEL_COSTS;
 	public static final ModConfigSpec.IntValue MAX_HANDLERS;
-	public static final ModConfigSpec.IntValue RESCAN_INTERVAL;
+	public static final ModConfigSpec.IntValue LINK_RANGE;
 	public static final ModConfigSpec.BooleanValue CRAFTING_ENABLED;
 	public static final ModConfigSpec SPEC;
 
@@ -53,7 +53,10 @@ public class ModConfig
 		RANGE_STEP = BUILDER.defineInRange("step", D.rangeStep(), 1, 16);
 		RANGE_MAX = BUILDER.defineInRange("max", D.rangeMax(), 1, 128);
 		MAX_HANDLERS = BUILDER.defineInRange("maxHandlers", 64, 1, 512);
-		RESCAN_INTERVAL = BUILDER.defineInRange("rescanInterval", 40, 1, 1200);
+		BUILDER.pop();
+
+		BUILDER.push("link");
+		LINK_RANGE = BUILDER.defineInRange("range", 24, 1, 256);
 		BUILDER.pop();
 
 		BUILDER.push("etchings");

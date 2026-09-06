@@ -4,8 +4,10 @@ import dev.hartforge.plinthworks.Plinthworks;
 import dev.hartforge.plinthworks.item.*;
 import dev.hartforge.plinthworks.recipe.PlinthCraftRecipe;
 import dev.hartforge.plinthworks.registry.ModItems;
+import net.minecraft.advancements.*;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
 import net.minecraft.world.item.*;
@@ -47,7 +49,12 @@ public class ModRecipeProvider extends RecipeProvider
 		etchingLadder(output, EtchingType.STORAGE, Items.BARREL);
 		etchingLadder(output, EtchingType.RANGE, Items.ENDER_PEARL);
 
-		output.accept(Plinthworks.id("plinth"), new PlinthCraftRecipe(), null);
+		ResourceLocation plinthId = Plinthworks.id("plinth");
+		Advancement.Builder advancement = output.advancement()
+				.addCriterion("has_plinth_core", has(ModItems.PLINTH_CORE.get()))
+				.rewards(AdvancementRewards.Builder.recipe(plinthId))
+				.requirements(AdvancementRequirements.Strategy.OR);
+		output.accept(plinthId, new PlinthCraftRecipe(), advancement.build(plinthId.withPrefix("recipes/misc/")));
 	}
 
 	private static void blank(RecipeOutput output, Item result, Item first, Item second) {

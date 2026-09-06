@@ -1,6 +1,8 @@
 package dev.hartforge.plinthworks.logic;
 
+import dev.hartforge.plinthworks.component.SealConfig;
 import dev.hartforge.plinthworks.item.*;
+import dev.hartforge.plinthworks.registry.ModDataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
@@ -29,7 +31,7 @@ public record UpgradeSet(
 			}
 		}
 
-		return fromLevels(verb, hasAny(seals), levels, EtchingRates.fromConfig());
+		return fromLevels(verb, hasFilterKeys(seals), levels, EtchingRates.fromConfig());
 	}
 
 	public static UpgradeSet fromLevels(SigilType verb, boolean filtered,
@@ -52,9 +54,12 @@ public record UpgradeSet(
 				Math.min(rates.rangeMax(), rates.baseRange() + range * rates.rangeStep()));
 	}
 
-	private static boolean hasAny(ItemStackHandler handler) {
+	// an unconfigured seal (no keys) is pass-through, so it doesn't count as filtering
+	private static boolean hasFilterKeys(ItemStackHandler handler) {
 		for (int i = 0; i < handler.getSlots(); i++) {
-			if (!handler.getStackInSlot(i).isEmpty()) {
+			ItemStack stack = handler.getStackInSlot(i);
+			if (stack.getItem() instanceof SealItem
+					&& !stack.getOrDefault(ModDataComponents.SEAL_CONFIG.get(), SealConfig.EMPTY).keys().isEmpty()) {
 				return true;
 			}
 		}

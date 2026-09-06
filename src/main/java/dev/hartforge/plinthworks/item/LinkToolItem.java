@@ -2,6 +2,7 @@ package dev.hartforge.plinthworks.item;
 
 import dev.hartforge.plinthworks.block.entity.PlinthBlockEntity;
 import dev.hartforge.plinthworks.component.LinkBinding;
+import dev.hartforge.plinthworks.config.ModConfig;
 import dev.hartforge.plinthworks.logic.network.PlinthNetwork;
 import dev.hartforge.plinthworks.registry.ModDataComponents;
 import net.minecraft.core.*;
@@ -55,7 +56,7 @@ public class LinkToolItem extends Item
 
 		GlobalPos anchor = binding.anchor().get();
 		if (!anchor.dimension().equals(level.dimension())
-				|| Math.sqrt(anchor.pos().distSqr(pos)) > plinth.upgrades().range()) {
+				|| Math.sqrt(anchor.pos().distSqr(pos)) > ModConfig.LINK_RANGE.get()) {
 			player.displayClientMessage(Component.translatable("message.plinthworks.link_range"), true);
 			return InteractionResult.FAIL;
 		}

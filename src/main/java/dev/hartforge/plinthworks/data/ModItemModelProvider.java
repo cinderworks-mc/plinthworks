@@ -16,10 +16,10 @@ public class ModItemModelProvider extends ItemModelProvider
 	@Override
 	protected void registerModels() {
 		withExistingParent("plinth", modLoc("block/plinth"));
-		singleTexture("plinth_core", mcLoc("item/generated"), "layer0", mcLoc("item/iron_ingot"));
-		singleTexture("sigil_base", mcLoc("item/generated"), "layer0", mcLoc("item/copper_ingot"));
-		singleTexture("etching_base", mcLoc("item/generated"), "layer0", mcLoc("item/iron_nugget"));
-		singleTexture("seal_base", mcLoc("item/generated"), "layer0", mcLoc("item/paper"));
+		singleTexture("plinth_core", mcLoc("item/generated"), "layer0", modLoc("item/plinth_core"));
+		singleTexture("sigil_base", mcLoc("item/generated"), "layer0", modLoc("item/sigil_base"));
+		singleTexture("etching_base", mcLoc("item/generated"), "layer0", modLoc("item/etching_base"));
+		singleTexture("seal_base", mcLoc("item/generated"), "layer0", modLoc("item/seal_base"));
 		for (SigilType type : SigilType.values()) {
 			basicItem(ModItems.SIGILS.get(type).get());
 		}

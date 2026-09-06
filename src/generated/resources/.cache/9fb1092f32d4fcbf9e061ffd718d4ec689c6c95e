@@ -1,4 +1,4 @@
-// 1.21.1	2026-09-05T19:22:03.554738	Recipes
+// 1.21.1	2026-09-06T14:45:32.98635	Recipes
 d25da73c7f1ddb00517a55ebfd9187508e1e94f5 data/plinthworks/advancement/recipes/misc/etching_base.json
 92b4b1e14734c784ae0e994512df6bf09a334f8a data/plinthworks/advancement/recipes/misc/etching_capacity_1.json
 cac1c814dd8d32788e30b2cd52aa6c7ccd195a37 data/plinthworks/advancement/recipes/misc/etching_capacity_2.json
@@ -16,6 +16,7 @@ a8b2b1e834227ff031d2257c32468c01332e843d data/plinthworks/advancement/recipes/mi
 8f33fcfd94393ea7f608d5ced5df7fcf49d121cd data/plinthworks/advancement/recipes/misc/etching_storage_2.json
 0269f3b20e9c6e77e42354a84c0b8f9ebd32ea9b data/plinthworks/advancement/recipes/misc/etching_storage_3.json
 8987944fd2263d97709203daaaa0c07db1470f36 data/plinthworks/advancement/recipes/misc/etching_storage_4.json
+e2cf10673b226a58b5c6e1e92ea7386e8cf2e32d data/plinthworks/advancement/recipes/misc/plinth.json
 823b0953da8727f727768bda14674e2c19dfa04c data/plinthworks/advancement/recipes/misc/plinth_core.json
 7011bb722237c28fbc5823c44c6fe09221b566e4 data/plinthworks/advancement/recipes/misc/seal_base.json
 b89e0fa23a68c9e62ea851486f65a10d6c2ea494 data/plinthworks/advancement/recipes/misc/seal_component.json
