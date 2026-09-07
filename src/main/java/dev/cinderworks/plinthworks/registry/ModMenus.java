@@ -2,6 +2,7 @@ package dev.cinderworks.plinthworks.registry;
 
 import dev.cinderworks.plinthworks.Plinthworks;
 import dev.cinderworks.plinthworks.menu.PlinthMenu;
+import dev.cinderworks.plinthworks.menu.SealMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
@@ -16,4 +17,6 @@ public class ModMenus
 
 	public static final Supplier<MenuType<PlinthMenu>> PLINTH = MENUS.register("plinth",
 			() -> IMenuTypeExtension.create(PlinthMenu::new));
+	public static final Supplier<MenuType<SealMenu>> SEAL = MENUS.register("seal",
+			() -> IMenuTypeExtension.create(SealMenu::new));
 }

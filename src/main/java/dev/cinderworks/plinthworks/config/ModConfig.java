@@ -3,6 +3,8 @@ package dev.cinderworks.plinthworks.config;
 import dev.cinderworks.plinthworks.logic.EtchingRates;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
+import java.util.List;
+
 public class ModConfig
 {
 	private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
@@ -27,6 +29,24 @@ public class ModConfig
 	public static final ModConfigSpec.IntValue MAX_HANDLERS;
 	public static final ModConfigSpec.IntValue LINK_RANGE;
 	public static final ModConfigSpec.BooleanValue CRAFTING_ENABLED;
+	public static final ModConfigSpec.BooleanValue BREAK_BLOCK_ENTITIES;
+	public static final ModConfigSpec.BooleanValue REQUIRE_FILTER;
+	public static final ModConfigSpec.ConfigValue<List<? extends String>> BLOCK_BLOCKLIST;
+	public static final ModConfigSpec.BooleanValue FIRE_BLOCK_EVENTS;
+	public static final ModConfigSpec.IntValue ENERGY_BASE_STORAGE;
+	public static final ModConfigSpec.IntValue ENERGY_STORAGE_STEP;
+	public static final ModConfigSpec.IntValue ENERGY_STORAGE_MAX;
+	public static final ModConfigSpec.IntValue ENERGY_BASE_TRANSFER;
+	public static final ModConfigSpec.IntValue ENERGY_TRANSFER_STEP;
+	public static final ModConfigSpec.IntValue ENERGY_TRANSFER_MAX;
+	public static final ModConfigSpec.IntValue FLUID_BASE_STORAGE;
+	public static final ModConfigSpec.IntValue FLUID_STORAGE_STEP;
+	public static final ModConfigSpec.IntValue FLUID_STORAGE_MAX;
+	public static final ModConfigSpec.IntValue FLUID_BASE_TRANSFER;
+	public static final ModConfigSpec.IntValue FLUID_TRANSFER_STEP;
+	public static final ModConfigSpec.IntValue FLUID_TRANSFER_MAX;
+	public static final ModConfigSpec.ConfigValue<List<? extends String>> XP_FLUIDS;
+	public static final ModConfigSpec.IntValue XP_MB_PER_POINT;
 	public static final ModConfigSpec SPEC;
 
 	static {
@@ -69,6 +89,41 @@ public class ModConfig
 
 		BUILDER.push("crafting");
 		CRAFTING_ENABLED = BUILDER.define("enabled", true);
+		BUILDER.pop();
+
+		BUILDER.push("world");
+		BUILDER.push("verbs");
+		BREAK_BLOCK_ENTITIES = BUILDER.define("breakBlockEntities", false);
+		REQUIRE_FILTER = BUILDER.define("requireFilter", false);
+		BLOCK_BLOCKLIST = BUILDER.defineList("blockBlocklist", List.of(), () -> "modid:block",
+				value -> value instanceof String entry && !entry.isBlank());
+		FIRE_BLOCK_EVENTS = BUILDER.define("fireBlockEvents", true);
+		BUILDER.pop();
+		BUILDER.pop();
+
+		BUILDER.push("energy");
+		ENERGY_BASE_STORAGE = BUILDER.defineInRange("baseStorage", 40000, 1, Integer.MAX_VALUE);
+		ENERGY_STORAGE_STEP = BUILDER.defineInRange("storageStep", 40000, 1, Integer.MAX_VALUE);
+		ENERGY_STORAGE_MAX = BUILDER.defineInRange("storageMax", 320000, 1, Integer.MAX_VALUE);
+		ENERGY_BASE_TRANSFER = BUILDER.defineInRange("baseTransfer", 1000, 1, Integer.MAX_VALUE);
+		ENERGY_TRANSFER_STEP = BUILDER.defineInRange("transferStep", 4000, 1, Integer.MAX_VALUE);
+		ENERGY_TRANSFER_MAX = BUILDER.defineInRange("transferMax", 32000, 1, Integer.MAX_VALUE);
+		BUILDER.pop();
+
+		BUILDER.push("fluid");
+		FLUID_BASE_STORAGE = BUILDER.defineInRange("baseStorage", 8000, 1, Integer.MAX_VALUE);
+		FLUID_STORAGE_STEP = BUILDER.defineInRange("storageStep", 8000, 1, Integer.MAX_VALUE);
+		FLUID_STORAGE_MAX = BUILDER.defineInRange("storageMax", 64000, 1, Integer.MAX_VALUE);
+		FLUID_BASE_TRANSFER = BUILDER.defineInRange("baseTransfer", 250, 1, Integer.MAX_VALUE);
+		FLUID_TRANSFER_STEP = BUILDER.defineInRange("transferStep", 1000, 1, Integer.MAX_VALUE);
+		FLUID_TRANSFER_MAX = BUILDER.defineInRange("transferMax", 8000, 1, Integer.MAX_VALUE);
+		BUILDER.pop();
+
+		BUILDER.push("xp");
+		XP_FLUIDS = BUILDER.defineList("fluids", List.of("create_enchantment_industry:experience",
+				"#c:experience", "#forge:experience"), () -> "modid:fluid",
+				value -> value instanceof String entry && !entry.isBlank());
+		XP_MB_PER_POINT = BUILDER.defineInRange("mbPerPoint", 20, 1, Integer.MAX_VALUE);
 		BUILDER.pop();
 
 		BUILDER.push("area");

@@ -21,6 +21,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.energy.*;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.items.*;
 
 import java.util.List;
@@ -86,14 +88,19 @@ public class PlinthBlockEntity extends BlockEntity
 			upgradesChanged();
 		}
 	};
+	private final PlinthEnergyStorage energy = new PlinthEnergyStorage();
+	private final PlinthFluidTank fluid = new PlinthFluidTank();
 	private BlockState baseState = Blocks.STONE.defaultBlockState();
 	private UpgradeSet cachedUpgrades;
 	private int cooldown;
 	private String channel = "";
 	private RedstoneMode redstoneMode = RedstoneMode.ALWAYS;
+	private ResourceMode resourceMode = ResourceMode.ITEM;
 
 	public PlinthBlockEntity(BlockPos pos, BlockState state) {
 		super(ModBlockEntities.PLINTH.get(), pos, state);
+		energy.setCapacity(energyCapacity());
+		fluid.setTargetCapacity(fluidCapacity());
 	}
 
 	public static void serverTick(Level level, BlockPos pos, BlockState state, PlinthBlockEntity be) {
@@ -196,6 +203,28 @@ public class PlinthBlockEntity extends BlockEntity
 		return display;
 	}
 
+	public IEnergyStorage energy() {
+		energy.setCapacity(energyCapacity());
+		return energy;
+	}
+
+	public int energyCapacity() {
+		long capacity = ModConfig.ENERGY_BASE_STORAGE.get()
+				+ (long) upgrades().storageLevel() * ModConfig.ENERGY_STORAGE_STEP.get();
+		return (int) Math.min(ModConfig.ENERGY_STORAGE_MAX.get(), capacity);
+	}
+
+	public FluidTank fluid() {
+		fluid.setTargetCapacity(fluidCapacity());
+		return fluid;
+	}
+
+	public int fluidCapacity() {
+		long capacity = ModConfig.FLUID_BASE_STORAGE.get()
+				+ (long) upgrades().storageLevel() * ModConfig.FLUID_STORAGE_STEP.get();
+		return (int) Math.min(ModConfig.FLUID_STORAGE_MAX.get(), capacity);
+	}
+
 	public BlockState getBaseState() {
 		return baseState;
 	}
@@ -236,6 +265,15 @@ public class PlinthBlockEntity extends BlockEntity
 		changedAndSync();
 	}
 
+	public ResourceMode resourceMode() {
+		return resourceMode;
+	}
+
+	public void cycleResourceMode() {
+		resourceMode = resourceMode.next();
+		changedAndSync();
+	}
+
 	public boolean redstoneAllows() {
 		return level == null || redstoneMode.allows(level.hasNeighborSignal(worldPosition));
 	}
@@ -258,6 +296,8 @@ public class PlinthBlockEntity extends BlockEntity
 
 	private void upgradesChanged() {
 		cachedUpgrades = null;
+		energy.setCapacity(energyCapacity());
+		fluid.setTargetCapacity(fluidCapacity());
 		changedAndSync();
 	}
 
@@ -279,7 +319,18 @@ public class PlinthBlockEntity extends BlockEntity
 		cooldown = compound.getInt("Cooldown");
 		channel = compound.getString("Channel");
 		redstoneMode = RedstoneMode.values()[compound.getInt("RedstoneMode") % RedstoneMode.values().length];
+		resourceMode = ResourceMode.fromOrdinal(compound.getInt("ResourceMode"));
 		cachedUpgrades = null;
+		energy.setCapacity(energyCapacity());
+		fluid.setTargetCapacity(fluidCapacity());
+		if (compound.contains("Energy")) {
+			energy.deserializeNBT(registries, compound.get("Energy"));
+			energy.setCapacity(energyCapacity());
+		}
+		if (compound.contains("Fluid")) {
+			fluid.readFromNBT(registries, compound.getCompound("Fluid"));
+			fluid.setTargetCapacity(fluidCapacity());
+		}
 	}
 
 	@Override
@@ -293,6 +344,9 @@ public class PlinthBlockEntity extends BlockEntity
 		compound.putInt("Cooldown", cooldown);
 		compound.putString("Channel", channel);
 		compound.putInt("RedstoneMode", redstoneMode.ordinal());
+		compound.putInt("ResourceMode", resourceMode.ordinal());
+		compound.put("Energy", energy.serializeNBT(registries));
+		compound.put("Fluid", fluid.writeToNBT(registries, new CompoundTag()));
 	}
 
 	@Override
@@ -352,6 +406,59 @@ public class PlinthBlockEntity extends BlockEntity
 	private static void putStacks(ItemStackHandler handler, List<ItemStack> stacks) {
 		for (int i = 0; i < handler.getSlots() && i < stacks.size(); i++) {
 			handler.setStackInSlot(i, stacks.get(i));
+		}
+	}
+
+	private class PlinthEnergyStorage extends EnergyStorage
+	{
+		private int targetCapacity;
+
+		private PlinthEnergyStorage() {
+			super(Integer.MAX_VALUE);
+		}
+
+		private void setCapacity(int capacity) {
+			targetCapacity = capacity;
+			this.capacity = Math.max(capacity, energy);
+		}
+
+		@Override
+		public int receiveEnergy(int amount, boolean simulate) {
+			int moved = super.receiveEnergy(amount, simulate);
+			if (!simulate && moved > 0) {
+				changedAndSync();
+			}
+			return moved;
+		}
+
+		@Override
+		public int extractEnergy(int amount, boolean simulate) {
+			int moved = super.extractEnergy(amount, simulate);
+			if (!simulate && moved > 0) {
+				capacity = Math.max(targetCapacity, energy);
+				changedAndSync();
+			}
+			return moved;
+		}
+	}
+
+	private class PlinthFluidTank extends FluidTank
+	{
+		private int targetCapacity;
+
+		private PlinthFluidTank() {
+			super(Integer.MAX_VALUE);
+		}
+
+		private void setTargetCapacity(int capacity) {
+			targetCapacity = capacity;
+			this.capacity = Math.max(capacity, fluid.getAmount());
+		}
+
+		@Override
+		protected void onContentsChanged() {
+			capacity = Math.max(targetCapacity, fluid.getAmount());
+			changedAndSync();
 		}
 	}
 }

@@ -14,7 +14,9 @@ public record UpgradeSet(
 		int intervalTicks,
 		int throughput,
 		int bufferSlots,
-		int range)
+		int range,
+		int capacityLevel,
+		int storageLevel)
 {
 	public static UpgradeSet from(ItemStackHandler sigil, ItemStackHandler etchings,
 			ItemStackHandler seals) {
@@ -51,7 +53,9 @@ public record UpgradeSet(
 				Math.max(rates.floorInterval(), rates.baseInterval() - speed * rates.speedStep()),
 				Math.min(rates.capacityMax(), rates.baseCapacity() + capacity * rates.capacityStep()),
 				Math.min(rates.storageMax(), rates.baseStorage() + storage * rates.storageStep()),
-				Math.min(rates.rangeMax(), rates.baseRange() + range * rates.rangeStep()));
+				Math.min(rates.rangeMax(), rates.baseRange() + range * rates.rangeStep()),
+				capacity,
+				storage);
 	}
 
 	// an unconfigured seal (no keys) is pass-through, so it doesn't count as filtering

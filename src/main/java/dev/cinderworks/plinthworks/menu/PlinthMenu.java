@@ -4,7 +4,9 @@ import dev.cinderworks.plinthworks.block.entity.PlinthBlockEntity;
 import dev.cinderworks.plinthworks.Plinthworks;
 import dev.cinderworks.plinthworks.component.*;
 import dev.cinderworks.plinthworks.item.*;
+import dev.cinderworks.plinthworks.logic.ResourceMode;
 import dev.cinderworks.plinthworks.logic.UpgradeSet;
+import dev.cinderworks.plinthworks.logic.resource.ResourceTypes;
 import dev.cinderworks.plinthworks.logic.seal.SealMatch;
 import dev.cinderworks.plinthworks.registry.*;
 import net.minecraft.core.BlockPos;
@@ -37,7 +39,7 @@ public class PlinthMenu extends AbstractContainerMenu
 
 	private PlinthMenu(int id, Inventory playerInv, BlockPos pos, java.util.List<BlockPos> members) {
 		this(id, playerInv, (PlinthBlockEntity) playerInv.player.level().getBlockEntity(pos),
-				new SimpleContainerData(7), members);
+				new SimpleContainerData(19), members);
 	}
 
 	public PlinthMenu(int id, Inventory playerInv, PlinthBlockEntity be) {
@@ -51,14 +53,19 @@ public class PlinthMenu extends AbstractContainerMenu
 		this.stats = stats;
 		this.networkMembers = java.util.List.copyOf(networkMembers);
 		this.plinthSlots = 2 + be.etchings().getSlots() + be.seals().getSlots();
-		addSlot(new SigilSlot(be.sigil(), 0, 10, 25));
+		addSlot(new SigilSlot(be.sigil(), 0, 10, 29));
 		for (int i = 0; i < be.etchings().getSlots(); i++) {
-			addSlot(new EtchingSlot(be.etchings(), i, 53 + i * 18, 25));
+			addSlot(new EtchingSlot(be.etchings(), i, 58 + i * 18, 29));
 		}
 		for (int i = 0; i < be.seals().getSlots(); i++) {
-			addSlot(new SealSlot(be.seals(), i, 53 + i * 18, 55));
+			addSlot(new SealSlot(be.seals(), i, 58 + i * 18, 65));
 		}
-		addSlot(new SlotItemHandler(be.display(), 0, 10, 55));
+		addSlot(new SlotItemHandler(be.display(), 0, 10, 65) {
+			@Override
+			public boolean isActive() {
+				return PlinthMenu.this.resourceMode() == ResourceMode.ITEM;
+			}
+		});
 		addPlayerSlots(playerInv);
 		addDataSlots(stats);
 	}
@@ -66,11 +73,11 @@ public class PlinthMenu extends AbstractContainerMenu
 	private void addPlayerSlots(Inventory inventory) {
 		for (int row = 0; row < 3; row++) {
 			for (int col = 0; col < 9; col++) {
-				addSlot(new Slot(inventory, col + row * 9 + 9, 10 + col * 18, 107 + row * 18));
+				addSlot(new Slot(inventory, col + row * 9 + 9, 10 + col * 18, 134 + row * 18));
 			}
 		}
 		for (int col = 0; col < 9; col++) {
-			addSlot(new Slot(inventory, col, 10 + col * 18, 169));
+			addSlot(new Slot(inventory, col, 10 + col * 18, 192));
 		}
 	}
 
@@ -139,6 +146,20 @@ public class PlinthMenu extends AbstractContainerMenu
 			broadcastChanges();
 			return true;
 		}
+		if (id == 80) {
+			be.cycleResourceMode();
+			broadcastChanges();
+			return true;
+		}
+		// ghost-slot seal editor (ITEM / ITEM_EXACT / MOD) opens as its own menu
+		if (id >= 70 && id < 70 + be.seals().getSlots()) {
+			int slot = id - 70;
+			if (player instanceof net.minecraft.server.level.ServerPlayer sp
+					&& be.seals().getStackInSlot(slot).getItem() instanceof SealItem) {
+				dev.cinderworks.plinthworks.block.PlinthBlock.openSealMenu(sp, be, be.getBlockPos(), slot);
+			}
+			return true;
+		}
 		// the seal-config screen sends this first so every following op targets the seal it opened, not slot 0
 		if (id >= 40 && id < 40 + be.seals().getSlots()) {
 			editSeal = id - 40;
@@ -204,6 +225,42 @@ public class PlinthMenu extends AbstractContainerMenu
 		return stats.get(6);
 	}
 
+	public ResourceMode resourceMode() {
+		return ResourceMode.fromOrdinal(stats.get(7));
+	}
+
+	public int energyStored() {
+		return stats.get(8);
+	}
+
+	public int energyCapacity() {
+		return stats.get(9);
+	}
+
+	public int energyThroughput() {
+		return stats.get(10);
+	}
+
+	public int fluidStored() {
+		return wide(11);
+	}
+
+	public int fluidCapacity() {
+		return wide(13);
+	}
+
+	public int fluidThroughput() {
+		return wide(15);
+	}
+
+	public int xpMbPerPoint() {
+		return wide(17);
+	}
+
+	private int wide(int index) {
+		return (stats.get(index) & 0xffff) | (stats.get(index + 1) & 0xffff) << 16;
+	}
+
 	public java.util.List<BlockPos> networkMembers() {
 		return networkMembers;
 	}
@@ -263,6 +320,18 @@ public class PlinthMenu extends AbstractContainerMenu
 						yield dev.cinderworks.plinthworks.logic.network.PlinthNetwork.get(level)
 								.channel(be.channel()).mode().ordinal();
 					}
+					case 7 -> be.resourceMode().ordinal();
+					case 8 -> be.energy().getEnergyStored();
+					case 9 -> be.energy().getMaxEnergyStored();
+					case 10 -> ResourceTypes.ENERGY.throughput(u);
+					case 11 -> be.fluid().getFluidAmount() & 0xffff;
+					case 12 -> be.fluid().getFluidAmount() >>> 16;
+					case 13 -> be.fluid().getCapacity() & 0xffff;
+					case 14 -> be.fluid().getCapacity() >>> 16;
+					case 15 -> ResourceTypes.FLUID.throughput(u) & 0xffff;
+					case 16 -> ResourceTypes.FLUID.throughput(u) >>> 16;
+					case 17 -> dev.cinderworks.plinthworks.config.ModConfig.XP_MB_PER_POINT.get() & 0xffff;
+					case 18 -> dev.cinderworks.plinthworks.config.ModConfig.XP_MB_PER_POINT.get() >>> 16;
 					default -> 0;
 				};
 			}
@@ -272,7 +341,7 @@ public class PlinthMenu extends AbstractContainerMenu
 
 			@Override
 			public int getCount() {
-				return 7;
+				return 19;
 			}
 		};
 	}

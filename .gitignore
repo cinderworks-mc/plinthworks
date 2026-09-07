@@ -6,3 +6,5 @@ runs/
 .idea/
 *.iml
 src/generated/resources/.cache/
+config/
+logs/

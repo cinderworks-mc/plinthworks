@@ -34,6 +34,11 @@ public class ModRecipeProvider extends RecipeProvider
 		sigil(output, SigilType.EXPORT, Items.DROPPER);
 		sigil(output, SigilType.CRAFTING, Items.CRAFTING_TABLE);
 		sigil(output, SigilType.VOID, Items.OBSIDIAN);
+		sigil(output, SigilType.BREAKER, Items.IRON_PICKAXE);
+		sigil(output, SigilType.PLACER, Items.PISTON);
+		sigil(output, SigilType.PLANTER, Items.WHEAT_SEEDS);
+		sigil(output, SigilType.HARVESTER, Items.IRON_HOE);
+		sigil(output, SigilType.MAGNET, Items.COMPASS);
 		seal(output, SealType.ITEM, Items.PAPER);
 		seal(output, SealType.ITEM_EXACT, Items.COMPARATOR);
 		seal(output, SealType.MOD, Items.BOOKSHELF);
