@@ -16,11 +16,15 @@ class EtchingMathTest
 		UpgradeSet capacity = UpgradeSet.fromLevels(SigilType.EXPORT, false, levels);
 		assertEquals(17, capacity.throughput());
 		assertEquals(1, capacity.bufferSlots());
+		assertEquals(2, capacity.capacityLevel());
+		assertEquals(0, capacity.storageLevel());
 
 		levels.clear();
 		levels.put(EtchingType.STORAGE, 2);
 		UpgradeSet storage = UpgradeSet.fromLevels(SigilType.EXPORT, false, levels);
 		assertEquals(1, storage.throughput());
 		assertEquals(3, storage.bufferSlots());
+		assertEquals(0, storage.capacityLevel());
+		assertEquals(2, storage.storageLevel());
 	}
 }

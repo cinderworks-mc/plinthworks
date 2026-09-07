@@ -6,11 +6,16 @@ import java.util.Map;
 
 public class SigilBehaviors
 {
-	private static final Map<SigilType, SigilBehavior> BEHAVIORS = Map.of(
-			SigilType.IMPORT, new ImportSigil(),
-			SigilType.EXPORT, new ExportSigil(),
-			SigilType.CRAFTING, new CraftSigil(),
-			SigilType.VOID, new VoidSigil());
+	private static final Map<SigilType, SigilBehavior> BEHAVIORS = Map.ofEntries(
+			Map.entry(SigilType.IMPORT, new ImportSigil()),
+			Map.entry(SigilType.EXPORT, new ExportSigil()),
+			Map.entry(SigilType.CRAFTING, new CraftSigil()),
+			Map.entry(SigilType.VOID, new VoidSigil()),
+			Map.entry(SigilType.BREAKER, new BreakerSigil()),
+			Map.entry(SigilType.PLACER, new PlacerSigil()),
+			Map.entry(SigilType.PLANTER, new PlanterSigil()),
+			Map.entry(SigilType.HARVESTER, new HarvesterSigil()),
+			Map.entry(SigilType.MAGNET, new MagnetSigil()));
 
 	public static SigilBehavior get(SigilType type) {
 		return BEHAVIORS.get(type);

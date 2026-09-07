@@ -21,5 +21,9 @@ public class ModBlockEntities
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, PLINTH.get(),
 				(be, side) -> be.getAutomationHandler());
+		event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, PLINTH.get(),
+				(be, side) -> be.energy());
+		event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, PLINTH.get(),
+				(be, side) -> be.fluid());
 	}
 }

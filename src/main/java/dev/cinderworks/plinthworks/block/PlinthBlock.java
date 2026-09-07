@@ -5,6 +5,7 @@ import dev.cinderworks.plinthworks.block.entity.PlinthBlockEntity;
 import dev.cinderworks.plinthworks.component.PlinthContents;
 import dev.cinderworks.plinthworks.menu.PlinthMenu;
 import dev.cinderworks.plinthworks.item.*;
+import dev.cinderworks.plinthworks.logic.ResourceMode;
 import dev.cinderworks.plinthworks.registry.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -72,13 +73,14 @@ public class PlinthBlock extends BaseEntityBlock
 			}
 			return ItemInteractionResult.sidedSuccess(level.isClientSide);
 		}
-		if (player.isShiftKeyDown() && !plinth.getDisplayedItem().isEmpty()) {
+		if (plinth.resourceMode() == ResourceMode.ITEM && player.isShiftKeyDown()
+				&& !plinth.getDisplayedItem().isEmpty()) {
 			if (!level.isClientSide) {
 				plinth.takeDisplayedItem(player);
 			}
 			return ItemInteractionResult.sidedSuccess(level.isClientSide);
 		}
-		if (!stack.isEmpty() && plinth.getDisplayedItem().isEmpty()) {
+		if (plinth.resourceMode() == ResourceMode.ITEM && !stack.isEmpty() && plinth.getDisplayedItem().isEmpty()) {
 			if (!level.isClientSide) {
 				plinth.putDisplayedItem(player, stack);
 			}
@@ -98,7 +100,7 @@ public class PlinthBlock extends BaseEntityBlock
 		return InteractionResult.sidedSuccess(level.isClientSide);
 	}
 
-	private static void openMenu(ServerPlayer player, PlinthBlockEntity plinth, BlockPos pos) {
+	public static void openMenu(ServerPlayer player, PlinthBlockEntity plinth, BlockPos pos) {
 		player.openMenu(new SimpleMenuProvider(
 				(id, inventory, p) -> new PlinthMenu(id, inventory, plinth),
 				Component.translatable("container.plinthworks.plinth")), buf -> {
@@ -106,6 +108,15 @@ public class PlinthBlock extends BaseEntityBlock
 			java.util.List<BlockPos> members = plinth.networkMembers();
 			buf.writeVarInt(members.size());
 			members.forEach(buf::writeBlockPos);
+		});
+	}
+
+	public static void openSealMenu(ServerPlayer player, PlinthBlockEntity plinth, BlockPos pos, int sealIndex) {
+		player.openMenu(new SimpleMenuProvider(
+				(id, inventory, p) -> new dev.cinderworks.plinthworks.menu.SealMenu(id, inventory, plinth, sealIndex),
+				Component.translatable("gui.plinthworks.seal_config")), buf -> {
+			buf.writeBlockPos(pos);
+			buf.writeVarInt(sealIndex);
 		});
 	}
 

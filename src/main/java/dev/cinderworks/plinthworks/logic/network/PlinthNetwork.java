@@ -1,6 +1,7 @@
 package dev.cinderworks.plinthworks.logic.network;
 
 import dev.cinderworks.plinthworks.registry.ModBlocks;
+import dev.cinderworks.plinthworks.logic.ResourceMode;
 import net.minecraft.core.*;
 import net.minecraft.nbt.*;
 import net.minecraft.server.level.ServerLevel;
@@ -44,8 +45,8 @@ public class PlinthNetwork extends SavedData
 		return new NetworkChannel(name, unpack(graph.members(name)), graph.mode(name));
 	}
 
-	public List<BlockPos> orderedMembers(String name, BlockPos source, ServerLevel level) {
-		List<Long> ordered = graph.ordered(name, source.asLong(), pos -> load(level, BlockPos.of(pos)));
+	public List<BlockPos> orderedMembers(String name, BlockPos source, ServerLevel level, ResourceMode mode) {
+		List<Long> ordered = graph.ordered(name, source.asLong(), pos -> load(level, BlockPos.of(pos), mode));
 		if (graph.mode(name) == TransferMode.ROUND_ROBIN) {
 			setDirty();
 		}
@@ -58,9 +59,13 @@ public class PlinthNetwork extends SavedData
 		return mode;
 	}
 
-	private static long load(ServerLevel level, BlockPos pos) {
+	private static long load(ServerLevel level, BlockPos pos, ResourceMode mode) {
 		if (level.getBlockEntity(pos) instanceof dev.cinderworks.plinthworks.block.entity.PlinthBlockEntity be) {
-			return be.getDisplayedItem().getCount();
+			return switch (mode) {
+				case ITEM -> be.getDisplayedItem().getCount();
+				case ENERGY -> be.energy().getEnergyStored();
+				case FLUID, XP -> be.fluid().getFluidAmount();
+			};
 		}
 		return Integer.MAX_VALUE;
 	}

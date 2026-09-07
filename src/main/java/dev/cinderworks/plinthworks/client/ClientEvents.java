@@ -3,6 +3,7 @@ package dev.cinderworks.plinthworks.client;
 import dev.cinderworks.plinthworks.Plinthworks;
 import dev.cinderworks.plinthworks.client.renderer.PlinthRenderer;
 import dev.cinderworks.plinthworks.client.screen.PlinthScreen;
+import dev.cinderworks.plinthworks.client.screen.SealScreen;
 import dev.cinderworks.plinthworks.registry.*;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -21,5 +22,6 @@ public class ClientEvents
 	@SubscribeEvent
 	public static void registerScreens(RegisterMenuScreensEvent event) {
 		event.register(ModMenus.PLINTH.get(), PlinthScreen::new);
+		event.register(ModMenus.SEAL.get(), SealScreen::new);
 	}
 }

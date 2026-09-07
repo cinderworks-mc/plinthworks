@@ -7,7 +7,12 @@ public enum SigilType
 	IMPORT,
 	EXPORT,
 	CRAFTING,
-	VOID;
+	VOID,
+	BREAKER,
+	PLACER,
+	PLANTER,
+	HARVESTER,
+	MAGNET;
 
 	public String path() {
 		return "sigil_" + name().toLowerCase(Locale.ROOT);
