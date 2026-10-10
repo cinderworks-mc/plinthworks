@@ -110,6 +110,7 @@ public class PlinthBlockEntity extends BlockEntity
 	private BlockState baseState = Blocks.STONE.defaultBlockState();
 	private UpgradeSet cachedUpgrades;
 	private int cooldown;
+	private long nextSkipNotice;
 	private String channel = "";
 	private RedstoneMode redstoneMode = RedstoneMode.ALWAYS;
 	private ResourceMode resourceMode = ResourceMode.ITEM;
@@ -155,6 +156,14 @@ public class PlinthBlockEntity extends BlockEntity
 		if (wanted != state) {
 			level.setBlock(worldPosition, wanted, Block.UPDATE_CLIENTS);
 		}
+	}
+
+	public long nextSkipNotice() {
+		return nextSkipNotice;
+	}
+
+	public void setNextSkipNotice(long gameTime) {
+		nextSkipNotice = gameTime;
 	}
 
 	public boolean putDisplayedItem(Player player, ItemStack held) {

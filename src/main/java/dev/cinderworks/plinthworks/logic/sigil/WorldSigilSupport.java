@@ -59,13 +59,19 @@ class WorldSigilSupport
 			BlockEvent.BreakEvent event = new BlockEvent.BreakEvent(level, pos, state, player);
 			NeoForge.EVENT_BUS.post(event);
 			if (event.isCanceled()) {
+				SkipNotice.report(be, level, SkipNotice.Reason.VETO);
 				return false;
 			}
 		}
 		List<ItemStack> drops = Block.getDrops(state, level, pos, level.getBlockEntity(pos), player,
 				player.getMainHandItem());
 		List<Insert> plan = plan(dests, drops);
-		if (plan == null || !level.removeBlock(pos, false)) {
+		if (plan == null) {
+			SkipNotice.report(be, level, SkipNotice.Reason.FULL);
+			return false;
+		}
+		if (!level.removeBlock(pos, false)) {
+			SkipNotice.report(be, level, SkipNotice.Reason.VETO);
 			return false;
 		}
 		for (Insert insert : plan) {

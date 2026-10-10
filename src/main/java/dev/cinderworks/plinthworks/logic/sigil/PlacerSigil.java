@@ -37,6 +37,8 @@ public class PlacerSigil implements SigilBehavior
 			}
 			if (WorldSigilSupport.place(level, player, source, pos.immutable(), Direction.UP)) {
 				moved++;
+			} else {
+				SkipNotice.report(be, level, SkipNotice.Reason.FAILED);
 			}
 		}
 	}

@@ -33,6 +33,7 @@ public class ModConfig
 	public static final ModConfigSpec.BooleanValue REQUIRE_FILTER;
 	public static final ModConfigSpec.ConfigValue<List<? extends String>> BLOCK_BLOCKLIST;
 	public static final ModConfigSpec.BooleanValue FIRE_BLOCK_EVENTS;
+	public static final ModConfigSpec.BooleanValue SKIP_MESSAGES;
 	public static final ModConfigSpec.IntValue ENERGY_BASE_STORAGE;
 	public static final ModConfigSpec.IntValue ENERGY_STORAGE_STEP;
 	public static final ModConfigSpec.IntValue ENERGY_STORAGE_MAX;
@@ -99,6 +100,8 @@ public class ModConfig
 		BLOCK_BLOCKLIST = BUILDER.defineList("blockBlocklist", List.of(), () -> "modid:block",
 				value -> value instanceof String entry && !entry.isBlank());
 		FIRE_BLOCK_EVENTS = BUILDER.define("fireBlockEvents", true);
+		// action bar line for players within 8 blocks, at most every 10 seconds per plinth
+		SKIP_MESSAGES = BUILDER.define("skipMessages", true);
 		BUILDER.pop();
 		BUILDER.pop();
 

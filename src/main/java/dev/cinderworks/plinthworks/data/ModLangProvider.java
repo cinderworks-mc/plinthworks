@@ -136,6 +136,12 @@ public class ModLangProvider extends LanguageProvider
 		add("gui.plinthworks.network_empty", "Nothing linked yet.");
 		add("gui.plinthworks.network_name", "Channel name");
 		add("gui.plinthworks.network_rename", "Rename");
+		add("message.plinthworks.skip.full.breaker", "The breaker skipped a block: nowhere to put the drops.");
+		add("message.plinthworks.skip.full.harvester", "The harvester skipped a crop: nowhere to put the drops.");
+		add("message.plinthworks.skip.veto.breaker", "The breaker skipped a block: a claim or another mod stopped it.");
+		add("message.plinthworks.skip.veto.harvester", "The harvester skipped a crop: a claim or another mod stopped it.");
+		add("message.plinthworks.skip.failed.placer", "The placer skipped a spot: the block would not go there.");
+		add("message.plinthworks.skip.failed.planter", "The planter skipped a spot: the plant would not go there.");
 		add("message.plinthworks.link_cleared", "Link cleared.");
 		add("message.plinthworks.link_bound", "Bound the link tool to %s.");
 		add("message.plinthworks.link_joined", "Linked to channel %s.");

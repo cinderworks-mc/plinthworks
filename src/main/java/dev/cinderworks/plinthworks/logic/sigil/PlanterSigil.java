@@ -35,6 +35,8 @@ public class PlanterSigil implements SigilBehavior
 			}
 			if (WorldSigilSupport.place(level, player, source, soil.immutable(), Direction.UP)) {
 				moved++;
+			} else {
+				SkipNotice.report(be, level, SkipNotice.Reason.FAILED);
 			}
 		}
 	}
