@@ -53,17 +53,22 @@ public class PlinthMenu extends AbstractContainerMenu
 		this.stats = stats;
 		this.networkMembers = java.util.List.copyOf(networkMembers);
 		this.plinthSlots = 2 + be.etchings().getSlots() + be.seals().getSlots();
-		addSlot(new SigilSlot(be.sigil(), 0, 10, 29));
+		addSlot(new SigilSlot(be, be.sigil(), 0, 10, 29));
 		for (int i = 0; i < be.etchings().getSlots(); i++) {
-			addSlot(new EtchingSlot(be.etchings(), i, 58 + i * 18, 29));
+			addSlot(new EtchingSlot(be, be.etchings(), i, 58 + i * 18, 29));
 		}
 		for (int i = 0; i < be.seals().getSlots(); i++) {
-			addSlot(new SealSlot(be.seals(), i, 58 + i * 18, 65));
+			addSlot(new SealSlot(be, be.seals(), i, 58 + i * 18, 65));
 		}
 		addSlot(new SlotItemHandler(be.display(), 0, 10, 65) {
 			@Override
 			public boolean isActive() {
 				return PlinthMenu.this.resourceMode() == ResourceMode.ITEM;
+			}
+
+			@Override
+			public void setChanged() {
+				PlinthMenu.this.be.slotsChanged();
 			}
 		});
 		addPlayerSlots(playerInv);

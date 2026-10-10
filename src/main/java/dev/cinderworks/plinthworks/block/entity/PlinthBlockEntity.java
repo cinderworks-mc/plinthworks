@@ -307,6 +307,11 @@ public class PlinthBlockEntity extends BlockEntity
 				.channel(channel).members();
 	}
 
+	// slot handler slots get an empty container, so shift click merges never reach us otherwise
+	public void slotsChanged() {
+		upgradesChanged();
+	}
+
 	private void upgradesChanged() {
 		cachedUpgrades = null;
 		energy.setCapacity(energyCapacity());
