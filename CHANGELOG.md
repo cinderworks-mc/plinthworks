@@ -2,6 +2,36 @@
 
 notable changes to plinthworks. loosely follows keep a changelog.
 
+## 0.2.3
+
+### known issues in 0.2.2
+
+update if you are on 0.2.2. a void plinth with no seal erased every chest, tank and
+energy buffer in its range cube, the crafting sigil could duplicate items, a plinth
+holding more than 99 items in its buffer threw on save and could take its chunk with
+it, and the energy gauge never moved.
+
+### fixed
+- void only drains the plinth's own buffer now, never nearby containers. an unfiltered
+  void is a plain trash can for whatever you feed it; add seals to destroy selectively.
+- the display buffer is capped at 99, the limit the item format allows. storage
+  etchings past the second no longer push a plinth into a count that cannot be saved.
+- the energy gauge, its tooltip and the FE/t row read the real numbers. anything over
+  32767 was being truncated on the way to the screen, so 40000 arrived as -25536.
+- shift-clicking into the sigil, etching, seal and display slots marks the plinth
+  changed, so a merged stack is no longer duplicated or lost on reload.
+- channel cleanup ran never instead of every 200 ticks, so dead members piled up in a
+  channel forever.
+- a corrupt redstone-mode value on load can no longer crash the plinth.
+
+### changed
+- crafting is off by default while the transfer path is reworked. turn it back on with
+  crafting.enabled if you accept the duplication risk.
+- the channel name and every seal filter edit now travel as their own packets instead
+  of being smuggled through gui button numbers, which is what let one click write the
+  wrong filter. the gui itself is unchanged.
+- saved plinths and the channel file carry a version stamp for future migrations.
+
 ## 0.2.2
 
 ### added
