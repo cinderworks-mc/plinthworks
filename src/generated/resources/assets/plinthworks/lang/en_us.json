@@ -96,13 +96,13 @@
   "plinthworks.seal.mod.desc": "Matches items from the same mod",
   "plinthworks.seal.tag.desc": "Matches items in a selected tag",
   "plinthworks.seal.whitelist": "Whitelist - %s keys",
-  "plinthworks.sigil.breaker.desc": "Breaks blocks and routes their drops into nearby storage",
-  "plinthworks.sigil.crafting.desc": "Crafts the displayed item from nearby ingredients",
-  "plinthworks.sigil.export.desc": "Pushes buffered resources into nearby blocks",
-  "plinthworks.sigil.harvester.desc": "Harvests mature crops and replants available seeds",
-  "plinthworks.sigil.import.desc": "Pulls resources from nearby blocks",
-  "plinthworks.sigil.magnet.desc": "Collects dropped items into nearby storage",
-  "plinthworks.sigil.placer.desc": "Places blocks pulled from nearby storage",
-  "plinthworks.sigil.planter.desc": "Plants seeds and saplings from nearby storage",
-  "plinthworks.sigil.void.desc": "Deletes resources from the plinth buffer"
+  "plinthworks.sigil.breaker.desc": "Breaks blocks in its area. Drops go to nearby storage.",
+  "plinthworks.sigil.crafting.desc": "Crafts the shown item from nearby ingredients. Off by default: set crafting.enabled in the config.",
+  "plinthworks.sigil.export.desc": "Pushes its buffer into neighbouring blocks",
+  "plinthworks.sigil.harvester.desc": "Harvests ripe crops and replants them",
+  "plinthworks.sigil.import.desc": "Pulls from neighbouring blocks into its buffer",
+  "plinthworks.sigil.magnet.desc": "Sweeps dropped items into nearby storage",
+  "plinthworks.sigil.placer.desc": "Places blocks it pulls from nearby storage",
+  "plinthworks.sigil.planter.desc": "Plants seeds and saplings it pulls from nearby storage",
+  "plinthworks.sigil.void.desc": "Deletes what is in its own buffer. Never touches neighbouring containers."
 }

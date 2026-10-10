@@ -35,15 +35,15 @@ public class ModLangProvider extends LanguageProvider
 			add(ModItems.SEALS.get(type).get(), sealName(type));
 		}
 		add(ModItems.LINK_TOOL.get(), "Link Tool");
-		add("plinthworks.sigil.import.desc", "Pulls resources from nearby blocks");
-		add("plinthworks.sigil.export.desc", "Pushes buffered resources into nearby blocks");
-		add("plinthworks.sigil.crafting.desc", "Crafts the displayed item from nearby ingredients");
-		add("plinthworks.sigil.void.desc", "Deletes resources from the plinth buffer");
-		add("plinthworks.sigil.breaker.desc", "Breaks blocks and routes their drops into nearby storage");
-		add("plinthworks.sigil.placer.desc", "Places blocks pulled from nearby storage");
-		add("plinthworks.sigil.planter.desc", "Plants seeds and saplings from nearby storage");
-		add("plinthworks.sigil.harvester.desc", "Harvests mature crops and replants available seeds");
-		add("plinthworks.sigil.magnet.desc", "Collects dropped items into nearby storage");
+		add("plinthworks.sigil.import.desc", "Pulls from neighbouring blocks into its buffer");
+		add("plinthworks.sigil.export.desc", "Pushes its buffer into neighbouring blocks");
+		add("plinthworks.sigil.crafting.desc", "Crafts the shown item from nearby ingredients. Off by default: set crafting.enabled in the config.");
+		add("plinthworks.sigil.void.desc", "Deletes what is in its own buffer. Never touches neighbouring containers.");
+		add("plinthworks.sigil.breaker.desc", "Breaks blocks in its area. Drops go to nearby storage.");
+		add("plinthworks.sigil.placer.desc", "Places blocks it pulls from nearby storage");
+		add("plinthworks.sigil.planter.desc", "Plants seeds and saplings it pulls from nearby storage");
+		add("plinthworks.sigil.harvester.desc", "Harvests ripe crops and replants them");
+		add("plinthworks.sigil.magnet.desc", "Sweeps dropped items into nearby storage");
 		add("plinthworks.etching.speed.desc", "Shortens the delay between operations");
 		add("plinthworks.etching.capacity.desc", "Moves more resources per operation");
 		add("plinthworks.etching.storage.desc", "Raises the plinth buffer limit");
