@@ -71,7 +71,7 @@
     }
   },
   "textures": {
-    "layer0": "plinthworks:item/seal_plate_tl",
+    "layer0": "plinthworks:item/seal_plate_tr",
     "layer1": "plinthworks:item/seal_item_exact"
   }
 }

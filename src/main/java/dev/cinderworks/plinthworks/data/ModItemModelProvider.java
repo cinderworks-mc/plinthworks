@@ -60,10 +60,11 @@ public class ModItemModelProvider extends ItemModelProvider
 
 	private static String sealCorner(SealType type) {
 		return switch (type) {
-			case ITEM, ITEM_EXACT -> "tl";
-			case MOD -> "tr";
-			case TAG -> "br";
-			case COMPONENT -> "bl";
+			case ITEM -> "tl";
+			case ITEM_EXACT -> "tr";
+			case MOD -> "br";
+			case TAG -> "bl";
+			case COMPONENT -> "tlbr";
 		};
 	}
 }
