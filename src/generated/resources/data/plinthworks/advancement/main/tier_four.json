@@ -1,0 +1,40 @@
+{
+  "parent": "plinthworks:main/etching",
+  "criteria": {
+    "has_tier_four": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "plinthworks:etching_speed_4",
+              "plinthworks:etching_capacity_4",
+              "plinthworks:etching_storage_4",
+              "plinthworks:etching_range_4"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "translate": "advancements.plinthworks.tier_four.description"
+    },
+    "frame": "goal",
+    "icon": {
+      "count": 1,
+      "id": "plinthworks:etching_speed_4"
+    },
+    "title": {
+      "translate": "advancements.plinthworks.tier_four.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_tier_four"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

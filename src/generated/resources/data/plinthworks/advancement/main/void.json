@@ -1,0 +1,34 @@
+{
+  "parent": "plinthworks:main/sigil",
+  "criteria": {
+    "has_void": {
+      "conditions": {
+        "items": [
+          {
+            "items": "plinthworks:sigil_void"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "translate": "advancements.plinthworks.void.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "plinthworks:sigil_void"
+    },
+    "title": {
+      "translate": "advancements.plinthworks.void.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_void"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

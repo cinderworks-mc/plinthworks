@@ -1,0 +1,62 @@
+{
+  "parent": "plinthworks:main/plinth_placed",
+  "criteria": {
+    "used_etching": {
+      "conditions": {
+        "location": [
+          {
+            "condition": "minecraft:location_check",
+            "predicate": {
+              "block": {
+                "blocks": "plinthworks:plinth"
+              }
+            }
+          },
+          {
+            "condition": "minecraft:match_tool",
+            "predicate": {
+              "items": [
+                "plinthworks:etching_speed_1",
+                "plinthworks:etching_speed_2",
+                "plinthworks:etching_speed_3",
+                "plinthworks:etching_speed_4",
+                "plinthworks:etching_capacity_1",
+                "plinthworks:etching_capacity_2",
+                "plinthworks:etching_capacity_3",
+                "plinthworks:etching_capacity_4",
+                "plinthworks:etching_storage_1",
+                "plinthworks:etching_storage_2",
+                "plinthworks:etching_storage_3",
+                "plinthworks:etching_storage_4",
+                "plinthworks:etching_range_1",
+                "plinthworks:etching_range_2",
+                "plinthworks:etching_range_3",
+                "plinthworks:etching_range_4"
+              ]
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:item_used_on_block"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "translate": "advancements.plinthworks.etching.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "plinthworks:etching_range_1"
+    },
+    "title": {
+      "translate": "advancements.plinthworks.etching.title"
+    }
+  },
+  "requirements": [
+    [
+      "used_etching"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

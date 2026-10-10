@@ -1,0 +1,34 @@
+{
+  "parent": "plinthworks:main/plinth_placed",
+  "criteria": {
+    "has_link_tool": {
+      "conditions": {
+        "items": [
+          {
+            "items": "plinthworks:link_tool"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "translate": "advancements.plinthworks.link_tool.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "plinthworks:link_tool"
+    },
+    "title": {
+      "translate": "advancements.plinthworks.link_tool.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_link_tool"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

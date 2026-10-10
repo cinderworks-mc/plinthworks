@@ -1,0 +1,51 @@
+{
+  "parent": "plinthworks:main/plinth_placed",
+  "criteria": {
+    "used_seal": {
+      "conditions": {
+        "location": [
+          {
+            "condition": "minecraft:location_check",
+            "predicate": {
+              "block": {
+                "blocks": "plinthworks:plinth"
+              }
+            }
+          },
+          {
+            "condition": "minecraft:match_tool",
+            "predicate": {
+              "items": [
+                "plinthworks:seal_item",
+                "plinthworks:seal_item_exact",
+                "plinthworks:seal_mod",
+                "plinthworks:seal_tag",
+                "plinthworks:seal_component"
+              ]
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:item_used_on_block"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "translate": "advancements.plinthworks.seal.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "plinthworks:seal_tag"
+    },
+    "title": {
+      "translate": "advancements.plinthworks.seal.title"
+    }
+  },
+  "requirements": [
+    [
+      "used_seal"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

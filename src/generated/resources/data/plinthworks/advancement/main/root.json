@@ -1,0 +1,34 @@
+{
+  "criteria": {
+    "has_core": {
+      "conditions": {
+        "items": [
+          {
+            "items": "plinthworks:plinth_core"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png",
+    "description": {
+      "translate": "advancements.plinthworks.root.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "plinthworks:plinth_core"
+    },
+    "title": {
+      "translate": "advancements.plinthworks.root.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_core"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

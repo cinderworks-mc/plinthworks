@@ -1,0 +1,35 @@
+{
+  "parent": "plinthworks:main/plinth_crafted",
+  "criteria": {
+    "placed_plinth": {
+      "conditions": {
+        "location": [
+          {
+            "block": "plinthworks:plinth",
+            "condition": "minecraft:block_state_property"
+          }
+        ]
+      },
+      "trigger": "minecraft:placed_block"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "translate": "advancements.plinthworks.plinth_placed.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "plinthworks:plinth"
+    },
+    "title": {
+      "translate": "advancements.plinthworks.plinth_placed.title"
+    }
+  },
+  "requirements": [
+    [
+      "placed_plinth"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

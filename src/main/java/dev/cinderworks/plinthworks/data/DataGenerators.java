@@ -5,9 +5,11 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.*;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.data.AdvancementProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @EventBusSubscriber(modid = Plinthworks.MODID)
@@ -26,5 +28,7 @@ public class DataGenerators
 		generator.addProvider(event.includeServer(), new ModRecipeProvider(output, registries));
 		generator.addProvider(event.includeServer(), new ModLootProvider(output, registries));
 		generator.addProvider(event.includeServer(), new ModTagProvider(output, registries, files));
+		generator.addProvider(event.includeServer(), new AdvancementProvider(output, registries, files,
+				List.of(new ModAdvancements())));
 	}
 }

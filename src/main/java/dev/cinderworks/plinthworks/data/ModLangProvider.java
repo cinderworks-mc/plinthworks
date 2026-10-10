@@ -37,6 +37,15 @@ public class ModLangProvider extends LanguageProvider
 			add(ModItems.SEALS.get(type).get(), sealName(type));
 		}
 		add(ModItems.LINK_TOOL.get(), "Link Tool");
+		advancement("root", "Plinthworks", "Craft a plinth core from iron and stone slabs");
+		advancement("plinth_crafted", "Solid Footing", "Craft a plinth from a core and four matching blocks");
+		advancement("plinth_placed", "Take a Stand", "Place a plinth anywhere in the world");
+		advancement("sigil", "Teach It Something", "Use a sigil on a plinth to open its screen");
+		advancement("void", "Black Hole", "Craft a void sigil to empty a plinth buffer");
+		advancement("etching", "Fine Print", "Use an etching on a plinth to tune it");
+		advancement("tier_four", "Tier IV", "Craft an etching at tier IV");
+		advancement("seal", "Fussy Eater", "Use a seal on a plinth to filter it");
+		advancement("link_tool", "Same Wavelength", "Craft a link tool to join plinths into a channel");
 		add("plinthworks.hint.plinth.1", "Does nothing until a sigil is slotted in.");
 		add("plinthworks.hint.plinth.2", "Wears the block it was crafted from.");
 		add("plinthworks.hint.plinth_core.1", "Craft with four of one block to make a plinth.");
@@ -131,6 +140,11 @@ public class ModLangProvider extends LanguageProvider
 		add("message.plinthworks.link_bound", "Bound the link tool to %s.");
 		add("message.plinthworks.link_joined", "Linked to channel %s.");
 		add("message.plinthworks.link_range", "That plinth is out of range. Links reach %s blocks, in one dimension.");
+	}
+
+	private void advancement(String id, String title, String description) {
+		add("advancements.plinthworks." + id + ".title", title);
+		add("advancements.plinthworks." + id + ".description", description);
 	}
 
 	private static String title(String value) {

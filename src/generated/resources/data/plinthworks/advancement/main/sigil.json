@@ -1,0 +1,55 @@
+{
+  "parent": "plinthworks:main/plinth_placed",
+  "criteria": {
+    "used_sigil": {
+      "conditions": {
+        "location": [
+          {
+            "condition": "minecraft:location_check",
+            "predicate": {
+              "block": {
+                "blocks": "plinthworks:plinth"
+              }
+            }
+          },
+          {
+            "condition": "minecraft:match_tool",
+            "predicate": {
+              "items": [
+                "plinthworks:sigil_import",
+                "plinthworks:sigil_export",
+                "plinthworks:sigil_crafting",
+                "plinthworks:sigil_void",
+                "plinthworks:sigil_breaker",
+                "plinthworks:sigil_placer",
+                "plinthworks:sigil_planter",
+                "plinthworks:sigil_harvester",
+                "plinthworks:sigil_magnet"
+              ]
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:item_used_on_block"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "description": {
+      "translate": "advancements.plinthworks.sigil.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "plinthworks:sigil_import"
+    },
+    "title": {
+      "translate": "advancements.plinthworks.sigil.title"
+    }
+  },
+  "requirements": [
+    [
+      "used_sigil"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
