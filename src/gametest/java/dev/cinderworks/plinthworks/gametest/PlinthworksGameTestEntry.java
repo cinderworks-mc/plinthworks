@@ -22,5 +22,6 @@ public class PlinthworksGameTestEntry
 		event.register(SealGameTests.class);
 		event.register(NetworkGameTests.class);
 		event.register(TransferGameTests.class);
+		event.register(BreakerGameTests.class);
 	}
 }
