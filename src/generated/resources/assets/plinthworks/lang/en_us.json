@@ -23,6 +23,7 @@
   "gui.plinthworks.blacklist": "Block list (%s)",
   "gui.plinthworks.channel_local": "Local",
   "gui.plinthworks.clear_keys": "Clear list",
+  "gui.plinthworks.click_for": "Click for %s",
   "gui.plinthworks.display": "Display",
   "gui.plinthworks.etchings": "Etchings",
   "gui.plinthworks.fluid_empty": "Empty",

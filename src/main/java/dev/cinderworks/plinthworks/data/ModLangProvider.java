@@ -127,6 +127,7 @@ public class ModLangProvider extends LanguageProvider
 		add("gui.plinthworks.transfer.round_robin", "Round robin");
 		add("gui.plinthworks.transfer.load_balanced", "Balanced");
 		add("gui.plinthworks.channel_local", "Local");
+		add("gui.plinthworks.click_for", "Click for %s");
 		add("gui.plinthworks.val_ticks", "%st");
 		add("gui.plinthworks.val_fe", "%s FE");
 		add("gui.plinthworks.val_mb", "%s mB");

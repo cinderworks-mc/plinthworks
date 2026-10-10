@@ -56,12 +56,12 @@ public class PlinthMenu extends AbstractContainerMenu
 		this.plinthSlots = 2 + be.etchings().getSlots() + be.seals().getSlots();
 		addSlot(new SigilSlot(be, be.sigil(), 0, 10, 29));
 		for (int i = 0; i < be.etchings().getSlots(); i++) {
-			addSlot(new EtchingSlot(be, be.etchings(), i, 58 + i * 18, 29));
+			addSlot(new EtchingSlot(be, be.etchings(), i, 50 + i * 18, 29));
 		}
 		for (int i = 0; i < be.seals().getSlots(); i++) {
-			addSlot(new SealSlot(be, be.seals(), i, 58 + i * 18, 65));
+			addSlot(new SealSlot(be, be.seals(), i, 62 + i * 20, 67));
 		}
-		addSlot(new SlotItemHandler(be.display(), 0, 10, 65) {
+		addSlot(new SlotItemHandler(be.display(), 0, 10, 63) {
 			@Override
 			public boolean isActive() {
 				return PlinthMenu.this.resourceMode() == ResourceMode.ITEM;
@@ -79,11 +79,11 @@ public class PlinthMenu extends AbstractContainerMenu
 	private void addPlayerSlots(Inventory inventory) {
 		for (int row = 0; row < 3; row++) {
 			for (int col = 0; col < 9; col++) {
-				addSlot(new Slot(inventory, col + row * 9 + 9, 10 + col * 18, 134 + row * 18));
+				addSlot(new Slot(inventory, col + row * 9 + 9, 9 + col * 18, 134 + row * 18));
 			}
 		}
 		for (int col = 0; col < 9; col++) {
-			addSlot(new Slot(inventory, col, 10 + col * 18, 192));
+			addSlot(new Slot(inventory, col, 9 + col * 18, 192));
 		}
 	}
 

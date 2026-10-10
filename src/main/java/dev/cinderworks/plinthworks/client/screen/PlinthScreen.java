@@ -1,21 +1,24 @@
 package dev.cinderworks.plinthworks.client.screen;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import dev.cinderworks.plinthworks.Plinthworks;
+import dev.cinderworks.plinthworks.client.PwMotion;
 import dev.cinderworks.plinthworks.item.SigilType;
 import dev.cinderworks.plinthworks.menu.PlinthMenu;
 import dev.cinderworks.plinthworks.logic.ResourceMode;
 import dev.cinderworks.plinthworks.logic.network.TransferMode;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.minecraft.world.inventory.Slot;
 import net.neoforged.neoforge.fluids.FluidStack;
 
+import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -24,29 +27,30 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 	private static final ResourceLocation TEXTURE =
 			Plinthworks.id("textures/gui/container/plinth.png");
 
-	private static final int LABEL = PwGui.TEXT;
-
-	// stat readout column (relative to panel), sits under the control toolbar
-	private static final int STAT_ICON_X = 139;
-	private static final int STAT_TEXT_X = 150;
-	private static final int STAT_TOP = 40;
-	private static final int ROW = 12;
-
-	// vertical gauge, drawn where the display slot sits when not in ITEM mode
+	// the slab is 178 wide, the readout plate hangs past its right edge
+	private static final int SLAB_WIDTH = 178;
 	private static final int GAUGE_X = 9;
 	private static final int GAUGE_Y = 62;
-	private static final int GAUGE_INNER = 2;
-	private static final int GAUGE_FILL_W = 14;
-	private static final int GAUGE_FILL_H = 48;
+	private static final int SOCKET_X = 7;
+	private static final int SOCKET_Y = 26;
+	private static final int TOOLBAR_X = 127;
+	private static final int TOOLBAR_Y = 19;
+	private static final int COMPACT_BELOW = 250;
 
-	private static final int ENERGY_FILL = 0xFFE0803A;
-	private static final int XP_FILL = 0xFFE0C07F;
-	private static final int FLUID_FALLBACK = 0xFF8A867F;
+	private final PwGauge gauge = new PwGauge();
+	private final PwStatPlate plate = new PwStatPlate();
+	private final RandomSource random = RandomSource.create();
+	private int age;
+	private int flickerUntil;
+	private int nextFlicker = 24;
 
 	public PlinthScreen(PlinthMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title);
-		imageWidth = 214;
+		imageWidth = 198;
 		imageHeight = 214;
+		titleLabelX = 13;
+		titleLabelY = 5;
+		inventoryLabelX = 8;
 		inventoryLabelY = 123;
 	}
 
@@ -55,86 +59,97 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 		super.init();
 		for (int i = 0; i < menu.blockEntity().seals().getSlots(); i++) {
 			int index = i;
-			addRenderableWidget(new PwTextButton(leftPos + 57 + i * 18, topPos + 84, 16, 11,
-					Component.literal(String.valueOf(i + 1)), () -> openSeal(index)));
+			addRenderableWidget(new PwSealTag(leftPos + 63 + i * 20, topPos + 84, i + 1, () -> openSeal(index)));
 		}
-		int tx = leftPos + 138;
-		int ty = topPos + 18;
-		addRenderableWidget(new PwIconButton(tx, ty, this::resourceIcon,
-				() -> Component.translatable("gui.plinthworks.resource.tip.state", resourceName()), () -> send(80)));
-		addRenderableWidget(new PwIconButton(tx + 18, ty, this::transferIcon,
-				() -> Component.translatable("gui.plinthworks.mode.tip.state", transferName()), () -> send(20)));
-		addRenderableWidget(new PwIconButton(tx + 36, ty, () -> PwGuiTextures.REDSTONE,
-				this::redstoneTip, () -> send(60)));
-		addRenderableWidget(new PwIconButton(tx + 54, ty, () -> PwGuiTextures.NETWORK,
-				() -> Component.translatable("gui.plinthworks.network_overview"),
+		int tx = leftPos + TOOLBAR_X;
+		int ty = topPos + TOOLBAR_Y;
+		addRenderableWidget(new PwIconButton(tx, ty, this::resourceIcon, this::resourceTip, () -> send(80)));
+		addRenderableWidget(new PwIconButton(tx + 17, ty, this::transferIcon, this::transferTip, () -> send(20)));
+		addRenderableWidget(new PwIconButton(tx + 34, ty, () -> PwGuiTextures.REDSTONE, this::redstoneTip,
+				() -> menu.blockEntity().redstoneMode() != dev.cinderworks.plinthworks.logic.RedstoneMode.ALWAYS,
+				() -> send(60)));
+		addRenderableWidget(new PwIconButton(tx + 51, ty, () -> PwGuiTextures.NETWORK,
+				() -> brass(Component.translatable("gui.plinthworks.network_overview")),
 				() -> minecraft.setScreen(new NetworkOverviewScreen(this, menu))));
 	}
 
 	@Override
+	protected void containerTick() {
+		super.containerTick();
+		age++;
+		gauge.tick(menu.resourceMode(), gaugeFraction());
+		if (age >= nextFlicker) {
+			flickerUntil = age + 3;
+			nextFlicker = age + 20 + random.nextInt(16);
+		}
+	}
+
+	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-		renderBackground(graphics, mouseX, mouseY, partialTick);
+		updatePlate();
 		super.render(graphics, mouseX, mouseY, partialTick);
+		if (hoveredSlot != null && hoveredSlot.isActive()) {
+			graphics.renderOutline(leftPos + hoveredSlot.x - 1, topPos + hoveredSlot.y - 1, 18, 18, 0xFFD2A55A);
+		}
 		renderGaugeTooltip(graphics, mouseX, mouseY);
+		renderPlateTooltip(graphics, mouseX, mouseY);
 		renderTooltip(graphics, mouseX, mouseY);
 	}
 
 	@Override
-	protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-		graphics.blit(TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 256);
-		if (menu.verb() != 0) {
-			PwGuiTextures.SLOT_LOADED.render(graphics, leftPos + 9, topPos + 28);
-		}
-		if (menu.resourceMode() != ResourceMode.ITEM) {
-			drawGauge(graphics);
-		}
+	public int getSlotColor(int index) {
+		return 0x30B38A4A;
 	}
 
-	private void drawGauge(GuiGraphics graphics) {
-		int fx = leftPos + GAUGE_X;
-		int fy = topPos + GAUGE_Y;
-		PwGuiTextures.GAUGE_FRAME.render(graphics, fx, fy);
-		int innerX = fx + GAUGE_INNER;
-		int innerBottom = fy + GAUGE_INNER + GAUGE_FILL_H;
-		float frac = gaugeFraction();
-		int fillPx = Math.round(frac * GAUGE_FILL_H);
-		if (fillPx > 0) {
-			int top = innerBottom - fillPx;
-			if (menu.resourceMode() == ResourceMode.FLUID) {
-				fillFluid(graphics, innerX, top, innerBottom);
+	@Override
+	protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
+		RenderSystem.enableBlend();
+		graphics.blit(TEXTURE, leftPos, topPos, 0, 0, SLAB_WIDTH, imageHeight, 256, 256);
+		if (menu.verb() != 0) {
+			PwThread.renderLit(graphics, leftPos, topPos, age);
+			boolean dim = !PwMotion.reduced() && age < flickerUntil;
+			if (dim) {
+				graphics.setColor(0.8F, 0.8F, 0.8F, 1F);
+			}
+			PwGuiTextures.SOCKET_LIT.render(graphics, leftPos + SOCKET_X, topPos + SOCKET_Y);
+			graphics.setColor(1F, 1F, 1F, 1F);
+		}
+		renderHints(graphics);
+		if (menu.resourceMode() != ResourceMode.ITEM) {
+			gauge.render(graphics, leftPos + GAUGE_X, topPos + GAUGE_Y, menu.resourceMode(),
+					menu.blockEntity().fluid().getFluid(), partialTick);
+			capGlyph().render(graphics, leftPos + 17, topPos + 55);
+		}
+		plate.renderBg(graphics, leftPos, topPos);
+	}
+
+	// a faint shape in each empty slot says what goes there
+	private void renderHints(GuiGraphics graphics) {
+		int etchings = menu.blockEntity().etchings().getSlots();
+		int seals = menu.blockEntity().seals().getSlots();
+		for (int i = 0; i < 1 + etchings + seals && i < menu.slots.size(); i++) {
+			Slot slot = menu.slots.get(i);
+			if (slot.hasItem()) {
+				continue;
+			}
+			int x = leftPos + slot.x;
+			int y = topPos + slot.y;
+			if (i == 0) {
+				PwGuiTextures.HINT_SIGIL.render(graphics, x + 3, y + 3);
+			} else if (i <= etchings) {
+				PwGuiTextures.HINT_ETCH.render(graphics, x + 5, y + 4);
 			} else {
-				int color = menu.resourceMode() == ResourceMode.ENERGY ? ENERGY_FILL : XP_FILL;
-				graphics.fill(innerX, top, innerX + GAUGE_FILL_W, innerBottom, color);
+				PwGuiTextures.HINT_SEAL.render(graphics, x + 4, y + 4);
 			}
 		}
-		PwGuiTextures.GAUGE_GLASS.render(graphics, fx, fy);
-		drawGaugeLabel(graphics, fx);
 	}
 
-	// tile the fluid's own still sprite up the fill, clipped to the filled height
-	private void fillFluid(GuiGraphics graphics, int innerX, int top, int innerBottom) {
-		FluidStack fluid = menu.blockEntity().fluid().getFluid();
-		if (fluid.isEmpty()) {
-			graphics.fill(innerX, top, innerX + GAUGE_FILL_W, innerBottom, FLUID_FALLBACK);
-			return;
-		}
-		IClientFluidTypeExtensions ext = IClientFluidTypeExtensions.of(fluid.getFluid());
-		TextureAtlasSprite sprite = Minecraft.getInstance()
-				.getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(ext.getStillTexture(fluid));
-		int tint = ext.getTintColor(fluid);
-		graphics.setColor(((tint >> 16) & 0xFF) / 255f, ((tint >> 8) & 0xFF) / 255f, (tint & 0xFF) / 255f, 1f);
-		graphics.enableScissor(innerX, top, innerX + GAUGE_FILL_W, innerBottom);
-		for (int y = innerBottom - 16; y + 16 > top; y -= 16) {
-			graphics.blit(innerX, y, 0, GAUGE_FILL_W, 16, sprite);
-		}
-		graphics.disableScissor();
-		graphics.setColor(1f, 1f, 1f, 1f);
-	}
-
-	private void drawGaugeLabel(GuiGraphics graphics, int fx) {
-		int lx = fx + 21;
-		graphics.drawString(font, Component.literal(compact(gaugeStored())), lx, topPos + GAUGE_Y + 4, LABEL, false);
-		graphics.drawString(font, Component.literal(gaugeUnit()), lx, topPos + GAUGE_Y + 14, LABEL, false);
+	private PwGuiTextures capGlyph() {
+		return switch (menu.resourceMode()) {
+			case ENERGY -> PwGuiTextures.CAP_ENERGY;
+			case XP -> PwGuiTextures.CAP_XP;
+			default -> PwGuiTextures.CAP_FLUID;
+		};
 	}
 
 	// guarded so an unsynced (0) capacity on the first frame never divides by zero
@@ -175,21 +190,32 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 		}
 		int fx = leftPos + GAUGE_X;
 		int fy = topPos + GAUGE_Y;
-		if (mouseX < fx || mouseX >= fx + 18 || mouseY < fy || mouseY >= fy + 52) {
+		if (mouseX < fx || mouseX >= fx + PwGauge.WIDTH || mouseY < fy || mouseY >= fy + PwGauge.HEIGHT) {
 			return;
 		}
 		graphics.renderComponentTooltip(font, gaugeTooltip(), mouseX, mouseY);
 	}
 
 	private List<Component> gaugeTooltip() {
-		return switch (menu.resourceMode()) {
-			case ENERGY -> List.of(Component.translatable("gui.plinthworks.stat_energy",
-					menu.energyStored(), menu.energyCapacity()));
-			case XP -> List.of(Component.translatable("gui.plinthworks.stat_xp",
-					menu.fluidStored() / Math.max(1, menu.xpMbPerPoint()), menu.fluidStored()));
-			default -> List.of(fluidName(), Component.translatable("gui.plinthworks.stat_fluid",
-					menu.fluidStored(), menu.fluidCapacity()));
-		};
+		int percent = Math.round(gaugeFraction() * 100);
+		List<Component> lines = new ArrayList<>();
+		switch (menu.resourceMode()) {
+			case ENERGY -> lines.add(brass(Component.translatable("gui.plinthworks.stat_energy",
+					number(menu.energyStored()), number(menu.energyCapacity()))));
+			case XP -> lines.add(brass(Component.translatable("gui.plinthworks.stat_xp",
+					number(menu.fluidStored() / Math.max(1, menu.xpMbPerPoint())), number(menu.fluidStored()))));
+			default -> {
+				lines.add(brass(fluidName()));
+				lines.add(Component.translatable("gui.plinthworks.stat_fluid",
+						number(menu.fluidStored()), number(menu.fluidCapacity())));
+			}
+		}
+		lines.add(Component.literal(percent + "%").withStyle(style -> style.withColor(PwGui.MUTED)));
+		return lines;
+	}
+
+	private static String number(int value) {
+		return NumberFormat.getIntegerInstance().format(value);
 	}
 
 	private Component fluidName() {
@@ -199,38 +225,66 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 				: fluid.getHoverName();
 	}
 
+	private void renderPlateTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
+		Component tip = plate.tipAt(mouseX - leftPos, mouseY - topPos);
+		if (tip != null) {
+			graphics.renderTooltip(font, tip, mouseX, mouseY);
+		}
+	}
+
 	@Override
 	protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
 		graphics.drawString(font, title, titleLabelX, titleLabelY, PwGui.TITLE, false);
-		graphics.drawString(font, Component.translatable("gui.plinthworks.sigil"), 10, 18, LABEL, false);
-		graphics.drawString(font, Component.translatable("gui.plinthworks.etchings"), 57, 18, LABEL, false);
-		graphics.drawString(font, Component.translatable("gui.plinthworks.display"), 10, 54, LABEL, false);
-		graphics.drawString(font, Component.translatable("gui.plinthworks.seals"), 57, 54, LABEL, false);
-		graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, PwGui.MUTED, false);
-		renderStats(graphics);
+		graphics.drawString(font, Component.translatable("gui.plinthworks.sigil"), 9, 17, PwGui.LABEL, false);
+		graphics.drawString(font, Component.translatable("gui.plinthworks.etchings"), 49, 17, PwGui.LABEL, false);
+		graphics.drawString(font, Component.translatable("gui.plinthworks.seals"), 61, 57, PwGui.LABEL, false);
+		if (menu.resourceMode() == ResourceMode.ITEM) {
+			graphics.drawString(font, Component.translatable("gui.plinthworks.display"), 9, 53, PwGui.LABEL, false);
+		} else {
+			drawGaugeValue(graphics);
+		}
+		if (height >= COMPACT_BELOW) {
+			graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, PwGui.MUTED, false);
+		}
+		plate.renderText(graphics, font);
 	}
 
-	private void renderStats(GuiGraphics graphics) {
-		int y = STAT_TOP;
+	private void drawGaugeValue(GuiGraphics graphics) {
+		int x = GAUGE_X + 24;
+		// an empty tube shows its hatching, the number just goes quiet
+		graphics.drawString(font, compact(gaugeStored()), x, GAUGE_Y + 4,
+				gaugeStored() == 0 ? PwGui.MUTED : PwGui.VALUE, false);
+		graphics.drawString(font, Component.literal(gaugeUnit()), x, GAUGE_Y + 14, PwGui.MUTED, false);
+	}
+
+	private void updatePlate() {
 		int value = menu.verb();
-		String verb = value == 0 ? "idle" : SigilType.values()[value - 1].name().toLowerCase(Locale.ROOT);
-		graphics.drawString(font, Component.translatable("gui.plinthworks.verb." + verb), STAT_ICON_X, y, PwGui.TITLE, false);
-		y += ROW;
-		statRow(graphics, PwGuiTextures.STAT_RATE,
-				Component.translatable("gui.plinthworks.val_ticks", menu.intervalTicks()), y);
-		y += ROW;
-		statRow(graphics, PwGuiTextures.STAT_MOVE, moveValue(), y);
-		y += ROW;
+		boolean active = value != 0;
+		String verb = active ? SigilType.values()[value - 1].name().toLowerCase(Locale.ROOT) : "idle";
+		List<PwStatPlate.Row> rows = new ArrayList<>();
+		rows.add(new PwStatPlate.Row(PwGuiTextures.STAT_RATE,
+				Component.translatable("gui.plinthworks.val_ticks", menu.intervalTicks()),
+				Component.translatable("gui.plinthworks.stat_interval", menu.intervalTicks())));
+		rows.add(new PwStatPlate.Row(PwGuiTextures.STAT_MOVE, moveValue(), moveTip()));
 		if (menu.resourceMode() == ResourceMode.ITEM) {
-			statRow(graphics, PwGuiTextures.STAT_HOLD, Component.literal(String.valueOf(menu.bufferSlots())), y);
-			y += ROW;
+			rows.add(new PwStatPlate.Row(PwGuiTextures.STAT_HOLD, Component.literal(String.valueOf(menu.bufferSlots())),
+					Component.translatable("gui.plinthworks.stat_storage", menu.bufferSlots())));
 		}
-		statRow(graphics, PwGuiTextures.STAT_REACH, Component.literal(String.valueOf(menu.range())), y);
-		y += ROW;
+		rows.add(new PwStatPlate.Row(PwGuiTextures.STAT_REACH, Component.literal(String.valueOf(menu.range())),
+				Component.translatable("gui.plinthworks.stat_range", menu.range())));
+		rows.add(channelRow());
+		plate.update(font, Component.translatable("gui.plinthworks.verb." + verb), active, rows);
+	}
+
+	private PwStatPlate.Row channelRow() {
 		String channel = menu.blockEntity().channel().isEmpty()
 				? Component.translatable("gui.plinthworks.channel_local").getString() : menu.blockEntity().channel();
-		statRow(graphics, PwGuiTextures.STAT_CHAN,
-				Component.translatable("gui.plinthworks.stat_channel", trim(channel, 46), menu.channelMembers()), y);
+		int members = menu.channelMembers();
+		int suffix = font.width(" (" + members + ")");
+		String shown = PwStatPlate.clip(font, channel, PwStatPlate.textLimit() - suffix);
+		return new PwStatPlate.Row(PwGuiTextures.STAT_CHAN,
+				Component.translatable("gui.plinthworks.stat_channel", shown, members),
+				Component.translatable("gui.plinthworks.stat_channel", channel, members));
 	}
 
 	private Component moveValue() {
@@ -241,16 +295,12 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 		};
 	}
 
-	private void statRow(GuiGraphics graphics, PwGuiTextures icon, Component value, int y) {
-		icon.render(graphics, STAT_ICON_X, y);
-		graphics.drawString(font, value, STAT_TEXT_X, y, PwGui.VALUE, false);
-	}
-
-	private String trim(String text, int maxWidth) {
-		while (text.length() > 1 && font.width(text) > maxWidth) {
-			text = text.substring(0, text.length() - 1);
-		}
-		return text;
+	private Component moveTip() {
+		return switch (menu.resourceMode()) {
+			case ITEM -> Component.translatable("gui.plinthworks.stat_throughput", menu.throughput());
+			case ENERGY -> Component.translatable("gui.plinthworks.stat_energy_move", menu.energyThroughput());
+			case FLUID, XP -> Component.translatable("gui.plinthworks.stat_fluid_move", menu.fluidThroughput());
+		};
 	}
 
 	private PwGuiTextures resourceIcon() {
@@ -270,25 +320,48 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 		};
 	}
 
-	private Component resourceName() {
-		return Component.translatable("gui.plinthworks.resource." + menu.resourceMode().name().toLowerCase(Locale.ROOT));
+	private Component resourceTip() {
+		return withNext(Component.translatable("gui.plinthworks.resource.tip.state", resourceName(menu.resourceMode())),
+				resourceName(menu.resourceMode().next()));
 	}
 
-	private Component transferName() {
-		return Component.translatable("gui.plinthworks.transfer."
-				+ TransferMode.values()[menu.transferMode()].name().toLowerCase(Locale.ROOT));
+	private Component transferTip() {
+		TransferMode mode = TransferMode.values()[menu.transferMode()];
+		return withNext(Component.translatable("gui.plinthworks.mode.tip.state", transferName(mode)),
+				transferName(mode.next()));
+	}
+
+	// the current mode in brass, then what a click switches to
+	private static Component withNext(MutableComponent current, Component next) {
+		return Component.empty().append(brass(current)).append("\n")
+				.append(Component.translatable("gui.plinthworks.click_for", next).withStyle(style -> style.withColor(PwGui.MUTED)));
+	}
+
+	private static MutableComponent brass(Component text) {
+		return text.copy().withStyle(style -> style.withColor(PwGui.BRASS));
+	}
+
+	private static Component resourceName(ResourceMode mode) {
+		return Component.translatable("gui.plinthworks.resource." + mode.name().toLowerCase(Locale.ROOT));
+	}
+
+	private static Component transferName(TransferMode mode) {
+		return Component.translatable("gui.plinthworks.transfer." + mode.name().toLowerCase(Locale.ROOT));
 	}
 
 	private Component redstoneTip() {
-		return switch (menu.blockEntity().redstoneMode()) {
+		return brass(switch (menu.blockEntity().redstoneMode()) {
 			case ALWAYS -> Component.translatable("gui.plinthworks.redstone.always.tip");
 			case PAUSE_WHEN_POWERED -> Component.translatable("gui.plinthworks.redstone.pause.tip");
 			case RUN_WHEN_POWERED -> Component.translatable("gui.plinthworks.redstone.run.tip");
-		};
+		});
 	}
 
 	private static String compact(int value) {
-		return value < 1000 ? String.valueOf(value) : value / 1000 + "k";
+		if (value < 1000) {
+			return String.valueOf(value);
+		}
+		return value < 1_000_000 ? value / 1000 + "k" : value / 1_000_000 + "M";
 	}
 
 	// item/exact/mod seals get the ghost-slot editor; tag/component stay on the display-capture screen

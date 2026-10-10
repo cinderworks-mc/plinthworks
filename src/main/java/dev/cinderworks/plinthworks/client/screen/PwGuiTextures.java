@@ -1,5 +1,6 @@
 package dev.cinderworks.plinthworks.client.screen;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import dev.cinderworks.plinthworks.Plinthworks;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -9,32 +10,48 @@ public enum PwGuiTextures
 {
 	BTN(0, 0, 16, 16),
 	BTN_HOVER(16, 0, 16, 16),
-	BTN_PRESSED(0, 16, 16, 16),
-	BTN_DISABLED(16, 16, 16, 16),
-	GAUGE_FRAME(32, 0, 18, 52),
-	GAUGE_GLASS(0, 32, 18, 52),
+	BTN_PRESSED(32, 0, 16, 16),
+	BTN_TOGGLED(48, 0, 16, 16),
+	BTN_DISABLED(64, 0, 16, 16),
+	BTN_FOCUS(80, 0, 20, 20),
 
-	RES_ITEM(56, 0, 16, 16),
-	RES_ENERGY(72, 0, 16, 16),
-	RES_FLUID(88, 0, 16, 16),
-	RES_XP(104, 0, 16, 16),
+	GAUGE_FRAME(0, 24, 23, 52),
+	GAUGE_GLASS(24, 24, 12, 44),
+	GAUGE_HATCH(38, 24, 12, 44),
+	CAP_ENERGY(52, 24, 7, 5),
+	CAP_FLUID(60, 24, 7, 5),
+	CAP_XP(68, 24, 7, 5),
 
-	TR_PRIORITY(56, 16, 16, 16),
-	TR_ROUND(72, 16, 16, 16),
-	TR_BALANCED(88, 16, 16, 16),
-	REDSTONE(104, 16, 16, 16),
-	NETWORK(56, 32, 16, 16),
+	RES_ITEM(0, 80, 16, 16),
+	RES_ENERGY(16, 80, 16, 16),
+	RES_FLUID(32, 80, 16, 16),
+	RES_XP(48, 80, 16, 16),
+	TR_PRIORITY(64, 80, 16, 16),
+	TR_ROUND(80, 80, 16, 16),
+	TR_BALANCED(96, 80, 16, 16),
+	REDSTONE(112, 80, 16, 16),
+	NETWORK(128, 80, 16, 16),
 
-	SLOT_LOADED(56, 64, 18, 18),
+	STAT_RATE(0, 100, 8, 8),
+	STAT_MOVE(8, 100, 8, 8),
+	STAT_HOLD(16, 100, 8, 8),
+	STAT_REACH(24, 100, 8, 8),
+	STAT_CHAN(32, 100, 8, 8),
 
-	STAT_RATE(56, 48, 8, 8),
-	STAT_MOVE(64, 48, 8, 8),
-	STAT_HOLD(72, 48, 8, 8),
-	STAT_REACH(80, 48, 8, 8),
-	STAT_CHAN(88, 48, 8, 8);
+	SOCKET_LIT(0, 112, 22, 22),
+	TAG(24, 112, 14, 11),
+	TAG_HOVER(38, 112, 14, 11),
+	TAG_PRESSED(52, 112, 14, 11),
+	HINT_ETCH(68, 112, 6, 7),
+	HINT_SEAL(76, 112, 8, 8),
+	HINT_SIGIL(86, 112, 10, 10),
+	RIVET_A(98, 112, 2, 2),
+	RIVET_B(101, 112, 2, 2),
+	PLUS(106, 112, 7, 7);
 
 	static final ResourceLocation SHEET = Plinthworks.id("textures/gui/container/plinth_widgets.png");
-	static final int SHEET_SIZE = 128;
+	static final int SHEET_W = 256;
+	static final int SHEET_H = 160;
 
 	final int u, v, w, h;
 
@@ -46,6 +63,8 @@ public enum PwGuiTextures
 	}
 
 	void render(GuiGraphics g, int x, int y) {
-		g.blit(SHEET, x, y, u, v, w, h, SHEET_SIZE, SHEET_SIZE);
+		// the sheet has soft edged pixels, and the gui does not always leave blending on
+		RenderSystem.enableBlend();
+		g.blit(SHEET, x, y, u, v, w, h, SHEET_W, SHEET_H);
 	}
 }
