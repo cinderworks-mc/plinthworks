@@ -1,6 +1,7 @@
 package dev.cinderworks.plinthworks;
 
 import dev.cinderworks.plinthworks.compat.CompatHooks;
+import dev.cinderworks.plinthworks.config.ClientConfig;
 import dev.cinderworks.plinthworks.config.ModConfig;
 import dev.cinderworks.plinthworks.net.ModNetwork;
 import dev.cinderworks.plinthworks.registry.*;
@@ -27,6 +28,7 @@ public class Plinthworks
 		modBus.addListener(ModBlockEntities::registerCapabilities);
 		modBus.addListener(ModNetwork::register);
 		container.registerConfig(Type.COMMON, ModConfig.SPEC);
+		container.registerConfig(Type.CLIENT, ClientConfig.SPEC);
 		CompatHooks.init();
 	}
 
