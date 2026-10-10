@@ -336,7 +336,7 @@ public class PlinthBlockEntity extends BlockEntity
 		baseState = NbtUtils.readBlockState(registries.lookupOrThrow(Registries.BLOCK), compound.getCompound("BaseState"));
 		cooldown = compound.getInt("Cooldown");
 		channel = compound.getString("Channel");
-		redstoneMode = RedstoneMode.values()[compound.getInt("RedstoneMode") % RedstoneMode.values().length];
+		redstoneMode = RedstoneMode.fromOrdinal(compound.getInt("RedstoneMode"));
 		resourceMode = ResourceMode.fromOrdinal(compound.getInt("ResourceMode"));
 		cachedUpgrades = null;
 		energy.setCapacity(energyCapacity());

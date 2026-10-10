@@ -10,6 +10,11 @@ public enum RedstoneMode
 		return values()[(ordinal() + 1) % values().length];
 	}
 
+	// same as ResourceMode, a negative stored int must not go out of bounds
+	public static RedstoneMode fromOrdinal(int ordinal) {
+		return values()[Math.floorMod(ordinal, values().length)];
+	}
+
 	public boolean allows(boolean powered) {
 		return switch (this) {
 			case ALWAYS -> true;
