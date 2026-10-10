@@ -5,6 +5,7 @@ import dev.cinderworks.plinthworks.component.LinkBinding;
 import dev.cinderworks.plinthworks.config.ModConfig;
 import dev.cinderworks.plinthworks.logic.network.PlinthNetwork;
 import dev.cinderworks.plinthworks.registry.ModDataComponents;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.core.component.DataComponents;
@@ -14,12 +15,20 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
 
+import java.util.List;
 import java.util.Optional;
 
 public class LinkToolItem extends Item
 {
 	public LinkToolItem() {
 		super(new Properties().stacksTo(1).component(ModDataComponents.LINK_BINDING.get(), LinkBinding.EMPTY));
+	}
+
+	@Override
+	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+		tooltip.add(Component.translatable("plinthworks.link_tool.bind").withStyle(ChatFormatting.GRAY));
+		tooltip.add(Component.translatable("plinthworks.link_tool.join").withStyle(ChatFormatting.GRAY));
+		tooltip.add(Component.translatable("plinthworks.link_tool.clear").withStyle(ChatFormatting.GRAY));
 	}
 
 	@Override

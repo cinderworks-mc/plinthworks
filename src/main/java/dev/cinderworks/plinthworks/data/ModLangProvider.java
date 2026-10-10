@@ -35,6 +35,9 @@ public class ModLangProvider extends LanguageProvider
 			add(ModItems.SEALS.get(type).get(), sealName(type));
 		}
 		add(ModItems.LINK_TOOL.get(), "Link Tool");
+		add("plinthworks.link_tool.bind", "Use on a plinth to bind it.");
+		add("plinthworks.link_tool.join", "Use on another to join its channel.");
+		add("plinthworks.link_tool.clear", "Sneak-use clears. Name it in an anvil to name the channel.");
 		add("plinthworks.sigil.import.desc", "Pulls from neighbouring blocks into its buffer");
 		add("plinthworks.sigil.export.desc", "Pushes its buffer into neighbouring blocks");
 		add("plinthworks.sigil.crafting.desc", "Crafts the shown item from nearby ingredients. Off by default: set crafting.enabled in the config.");
