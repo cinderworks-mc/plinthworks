@@ -15,13 +15,21 @@ class PwTextButton extends AbstractButton
 	private static final ResourceLocation HOVER = Plinthworks.id("button_hover");
 	private static final ResourceLocation PRESSED = Plinthworks.id("button_pressed");
 	private static final ResourceLocation DISABLED = Plinthworks.id("button_disabled");
+	private static final int DANGER_EDGE = 0xFFFF7A5A;
 
 	private final Runnable onPress;
 	private boolean down;
+	private boolean danger;
 
 	PwTextButton(int x, int y, int width, int height, Component label, Runnable onPress) {
 		super(x, y, width, height, label);
 		this.onPress = onPress;
+	}
+
+	// a destructive button gets a coloured bottom edge
+	PwTextButton danger() {
+		danger = true;
+		return this;
 	}
 
 	@Override
@@ -45,10 +53,13 @@ class PwTextButton extends AbstractButton
 		boolean pressed = active && down && isHovered();
 		ResourceLocation sprite = !active ? DISABLED : pressed ? PRESSED : isHoveredOrFocused() ? HOVER : NORMAL;
 		g.blitSprite(sprite, getX(), getY(), getWidth(), getHeight());
-		int color = !active ? PwGui.TITLE : isHoveredOrFocused() ? 0xFFFFFF : PwGui.VALUE;
+		if (danger && active) {
+			g.fill(getX() + 2, getY() + getHeight() - 2, getX() + getWidth() - 2, getY() + getHeight() - 1, DANGER_EDGE);
+		}
+		int color = !active ? PwGui.BRASS : isHoveredOrFocused() ? PwGui.VALUE : PwGui.LABEL;
 		int shift = pressed ? 1 : 0;
 		g.drawCenteredString(Minecraft.getInstance().font, getMessage(), getX() + getWidth() / 2 + shift,
-				getY() + (getHeight() - 8) / 2 + shift, color);
+				getY() + (getHeight() - 8) / 2 + shift - (active ? 0 : 1), color);
 	}
 
 	@Override

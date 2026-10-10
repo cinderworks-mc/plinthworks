@@ -53,7 +53,7 @@ public class SealMenu extends AbstractContainerMenu
 			public int getCount() { return 1; }
 		};
 		for (int i = 0; i < GHOST; i++) {
-			addSlot(new GhostSlot(ghost, i, 8 + i * 18, 20));
+			addSlot(new GhostSlot(ghost, i, 9 + i % 3 * 18, 20 + i / 3 * 18));
 		}
 		addPlayerSlots(playerInv);
 		addDataSlots(mode);
@@ -72,11 +72,11 @@ public class SealMenu extends AbstractContainerMenu
 	private void addPlayerSlots(Inventory inventory) {
 		for (int row = 0; row < 3; row++) {
 			for (int col = 0; col < 9; col++) {
-				addSlot(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
+				addSlot(new Slot(inventory, col + row * 9 + 9, 9 + col * 18, 88 + row * 18));
 			}
 		}
 		for (int col = 0; col < 9; col++) {
-			addSlot(new Slot(inventory, col, 8 + col * 18, 142));
+			addSlot(new Slot(inventory, col, 9 + col * 18, 146));
 		}
 	}
 
