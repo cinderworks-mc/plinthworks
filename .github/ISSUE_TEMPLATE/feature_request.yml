@@ -1,0 +1,44 @@
+name: feature request
+description: an idea for plinthworks, or a change to how something already works.
+title: "[feature] "
+labels: ["feature"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: what are you trying to do?
+      description: describe the situation first, not the solution.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: what would you like to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: alternatives and workarounds
+      description: what do you do today, and what did you consider?
+  - type: dropdown
+    id: area
+    attributes:
+      label: area
+      multiple: true
+      options:
+        - sigils
+        - seals
+        - etchings
+        - channels and the link tool
+        - world verbs
+        - energy, fluid or experience
+        - the screen
+        - config
+        - compatibility with another mod
+        - other
+  - type: textarea
+    id: context
+    attributes:
+      label: anything else
+      description: mods involved, screenshots, links. plinthworks is its own implementation, so ideas that need another mod's code or assets cannot be done here.

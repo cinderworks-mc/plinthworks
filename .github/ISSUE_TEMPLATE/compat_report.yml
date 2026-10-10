@@ -1,0 +1,58 @@
+name: compatibility report
+description: tell us how plinthworks behaves with another mod (it works, it breaks, or something is odd).
+title: "[compat] <mod name> <version>"
+labels: ["compat"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        check the open and closed issues for the mod first. a report that says "works" is as useful as one that says "breaks".
+  - type: input
+    id: modname
+    attributes:
+      label: mod name and link
+      placeholder: "ftb chunks, https://modrinth.com/mod/ftb-chunks"
+    validations:
+      required: true
+  - type: input
+    id: modversion
+    attributes:
+      label: mod version (and loader)
+      placeholder: "2101.1.22, neoforge 1.21.1"
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: minecraft / neoforge / plinthworks versions
+      placeholder: "1.21.1 / 21.1.248 / 0.2.3"
+    validations:
+      required: true
+  - type: textarea
+    id: tested
+    attributes:
+      label: what did you test?
+      description: which sigil, which resource mode, which blocks or containers from the other mod, single player or server?
+      placeholder: |
+        - import sigil next to the mod's chest
+        - fluid mode against the mod's tank
+    validations:
+      required: true
+  - type: dropdown
+    id: result
+    attributes:
+      label: result
+      options:
+        - works as expected
+        - works with a limitation (describe below)
+        - breaks something in plinthworks
+        - plinthworks breaks something in the other mod
+        - a claim or protection is bypassed
+        - crash or world problem
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: details
+      description: what exactly happened, how it differs from what you expected, and what you tried. attach `latest.log` for anything other than works, after removing your player name, ip address and the user name in file paths.

@@ -1,0 +1,137 @@
+name: bug report
+description: something in plinthworks does not work, crashes, loses items or ignores a claim.
+title: "[bug] "
+labels: ["bug", "needs-repro"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        thanks for the report. a bug with a short list of steps and the log file is usually fixed fast.
+
+        **privacy:** `latest.log` and crash reports contain your player name, your ip address when you were on a server, and your computer's user name in file paths. open the file and replace anything you do not want to share before attaching it. for a security problem, do **not** use this form: see `SECURITY.md`.
+  - type: input
+    id: minecraft
+    attributes:
+      label: minecraft version
+      placeholder: "1.21.1"
+    validations:
+      required: true
+  - type: input
+    id: neoforge
+    attributes:
+      label: neoforge version
+      placeholder: "21.1.248"
+    validations:
+      required: true
+  - type: input
+    id: plinthworks
+    attributes:
+      label: plinthworks version
+      description: the jar file name or the version shown in the mod list.
+      placeholder: "0.2.3"
+    validations:
+      required: true
+  - type: dropdown
+    id: side
+    attributes:
+      label: where did it happen?
+      options:
+        - single player
+        - multiplayer, as a client
+        - dedicated server (server log)
+        - i am not sure
+    validations:
+      required: true
+  - type: dropdown
+    id: sigil
+    attributes:
+      label: which sigil?
+      multiple: true
+      options:
+        - import
+        - export
+        - void
+        - magnet
+        - breaker
+        - placer
+        - planter
+        - harvester
+        - crafting
+        - none or not sure
+    validations:
+      required: true
+  - type: dropdown
+    id: resource
+    attributes:
+      label: resource mode
+      options:
+        - items
+        - energy
+        - fluid
+        - experience
+        - not sure
+    validations:
+      required: true
+  - type: input
+    id: channel
+    attributes:
+      label: channel and transfer mode
+      description: the channel name if the plinths were linked, and the transfer mode (priority, round robin, load balanced). write none if they were not linked.
+      placeholder: "none"
+  - type: textarea
+    id: mods
+    attributes:
+      label: other mods and their versions
+      description: the full list is best (paste the mod list or the output of `/neoforge mods`). say which ones touch storage, claims, fluids, energy or experience.
+      placeholder: "create 6.0.10, ftb chunks 2101.1.22, ..."
+    validations:
+      required: true
+  - type: dropdown
+    id: without_mods
+    attributes:
+      label: does it happen without other mods?
+      description: only neoforge and plinthworks.
+      options:
+        - yes, it still happens with only plinthworks
+        - no, it only happens with other mods installed
+        - i have not tried
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: what happened?
+      description: include the exact message text if there was one. screenshots help.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: what did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: steps to reproduce
+      description: numbered steps from a new world if you can. mention the etchings and seals in the plinth and any config you changed (`config/plinthworks-common.toml`).
+      placeholder: |
+        1. craft a plinth and put an import sigil in it
+        2. put a chest next to it
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: logs and crash report
+      description: drag `logs/latest.log` (or `logs/debug.log`) and any file from `crash-reports/` into this box, or paste a link. please read the privacy note above first.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: checklist
+      options:
+        - label: i looked at the existing issues and did not find this one.
+          required: true
+        - label: i removed my player name and ip address from the logs i attached.
+          required: false
