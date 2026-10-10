@@ -1,0 +1,51 @@
+name: datagen drift
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: datagen-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: check out
+        uses: actions/checkout@v4
+
+      - name: set up java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: set up gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      # generators never delete, so wipe first or orphan files hide from the diff
+      - name: wipe the generated tree
+        run: rm -rf src/generated/resources/assets src/generated/resources/data
+
+      - name: run the generators
+        run: ./gradlew runData --stacktrace
+
+      - name: fail if the generated tree drifted
+        run: |
+          git add --all -- src/generated/resources
+          if git diff --cached --quiet -- src/generated/resources; then
+            echo "src/generated/resources matches the providers"
+            exit 0
+          fi
+          echo "::error::src/generated/resources does not match the data providers. run 'rm -rf src/generated/resources/assets src/generated/resources/data && ./gradlew runData' and commit the result."
+          git diff --cached --name-status -- src/generated/resources
+          git diff --cached -- src/generated/resources | head -n 500
+          exit 1
