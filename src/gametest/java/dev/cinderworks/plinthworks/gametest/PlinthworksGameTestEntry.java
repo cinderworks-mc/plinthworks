@@ -18,5 +18,6 @@ public class PlinthworksGameTestEntry
 		event.register(GaugeGameTests.class);
 		event.register(ShiftClickGameTests.class);
 		event.register(PersistenceGameTests.class);
+		event.register(VisualGameTests.class);
 	}
 }
