@@ -49,4 +49,16 @@ class NetworkTest
 		assertTrue(graph.prune(pos -> pos == 1));
 		assertEquals(List.of(2L), graph.members("c"));
 	}
+
+	// the walk always worked, the gate never opened
+	@Test
+	void pruneGateOpensOnceAndThenOnInterval() {
+		assertTrue(ChannelGraph.shouldPrune(0, ChannelGraph.NEVER_PRUNED, 200));
+		assertTrue(ChannelGraph.shouldPrune(1_000_000_000L, ChannelGraph.NEVER_PRUNED, 200));
+		assertFalse(ChannelGraph.shouldPrune(100, 0, 200));
+		assertTrue(ChannelGraph.shouldPrune(200, 0, 200));
+		assertFalse(ChannelGraph.shouldPrune(399, 200, 200));
+		assertTrue(ChannelGraph.shouldPrune(400, 200, 200));
+		assertTrue(ChannelGraph.shouldPrune(1_000_000_000L, 999_999_000L, 200));
+	}
 }

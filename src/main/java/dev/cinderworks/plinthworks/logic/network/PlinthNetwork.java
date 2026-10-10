@@ -14,7 +14,7 @@ public class PlinthNetwork extends SavedData
 	private static final String FILE_NAME = "plinthworks_channels";
 	private static final long PRUNE_INTERVAL = 200;
 	private final ChannelGraph graph = new ChannelGraph();
-	private long lastPrune = Long.MIN_VALUE;
+	private long lastPrune = ChannelGraph.NEVER_PRUNED;
 
 	public PlinthNetwork() {}
 
@@ -22,7 +22,7 @@ public class PlinthNetwork extends SavedData
 		PlinthNetwork data = level.getDataStorage().computeIfAbsent(
 				new Factory<>(PlinthNetwork::new, PlinthNetwork::load), FILE_NAME);
 		long now = level.getGameTime();
-		if (now - data.lastPrune >= PRUNE_INTERVAL) {
+		if (ChannelGraph.shouldPrune(now, data.lastPrune, PRUNE_INTERVAL)) {
 			data.lastPrune = now;
 			data.prune(level);
 		}

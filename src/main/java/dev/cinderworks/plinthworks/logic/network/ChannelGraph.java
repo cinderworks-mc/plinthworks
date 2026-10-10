@@ -60,6 +60,14 @@ public class ChannelGraph
 		return members;
 	}
 
+	// subtracting MIN_VALUE overflows negative, so the old check never passed
+	// lives here because the tests can't load SavedData
+	public static final long NEVER_PRUNED = Long.MIN_VALUE;
+
+	public static boolean shouldPrune(long now, long lastPrune, long interval) {
+		return lastPrune == NEVER_PRUNED || now - lastPrune >= interval;
+	}
+
 	public boolean prune(LongPredicate drop) {
 		boolean changed = false;
 		for (Iterator<Channel> it = channels.values().iterator(); it.hasNext();) {
