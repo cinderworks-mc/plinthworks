@@ -16,7 +16,7 @@ final class PlinthModels
 	private static final float GLOW_LIFT = 0.06F;
 	private static final float PANEL_LIFT = 0.09F;
 
-	private static final String[] GLYPH_CELL = {"0,0", "8,0", "0,11", "8,11"};
+	private static final String[] GLYPH_CELL = {"0,0", "8,0", "0,5", "8,5"};
 
 	private PlinthModels() {}
 
@@ -94,10 +94,33 @@ final class PlinthModels
 		box(m, new float[]{12, 11, 4, 16, 14, 12}, 0, false, face(Direction.EAST, "side"),
 				face(Direction.UP, "top"), face(Direction.WEST, "inner"), sample(Direction.DOWN, "inner", 0, 15));
 		box(m, new float[]{4, 11, 4, 12, 12, 12}, 0, false, face(Direction.UP, "top"));
+		// brass band under the cornice, sticks out half a unit over the body
+		box(m, new float[]{1.5F, 10.5F, 1.5F, 14.5F, 11, 14.5F}, 0, false, join(sides("front", "side"),
+				sample(Direction.DOWN, "front", 14, 5)));
+		// hearth lintel and sill stand proud of the front and back faces
+		for (boolean north : new boolean[]{true, false}) {
+			Direction out = north ? Direction.NORTH : Direction.SOUTH;
+			float z0 = north ? 1.5F : 14;
+			float z1 = north ? 2 : 14.5F;
+			box(m, new float[]{5, 8, z0, 11, 9, z1}, 0, false, face(out, "front"), sample(Direction.EAST, "front", 10, 7),
+					sample(Direction.WEST, "front", 10, 7), sample(Direction.UP, "front", 5, 7), sample(Direction.DOWN, "front", 9, 7));
+			box(m, new float[]{5, 4, z0, 11, 5, z1}, 0, false, face(out, "front"), sample(Direction.EAST, "front", 10, 11),
+					sample(Direction.WEST, "front", 10, 11), sample(Direction.UP, "front", 6, 11), sample(Direction.DOWN, "front", 9, 11));
+		}
+		// posts: a stone shaft under a brass cap that leans half a unit in over the bowl
 		for (int px : new int[]{0, 12}) {
 			for (int pz : new int[]{0, 12}) {
-				box(m, new float[]{px, 14, pz, px + 4, 16, pz + 4}, 0, false,
-						join(sides("front", "side"), face(Direction.UP, "top")));
+				box(m, new float[]{px, 14, pz, px + 4, 15, pz + 4}, 0, false, sides("front", "side"));
+				float x0 = px == 0 ? 0 : 11.5F;
+				float x1 = px == 0 ? 4.5F : 16;
+				float z0 = pz == 0 ? 0 : 11.5F;
+				float z1 = pz == 0 ? 4.5F : 16;
+				float[] edge = {0, 0, 4, 1};
+				box(m, new float[]{x0, 15, z0, x1, 16, z1}, 0, false,
+						new Face(Direction.NORTH, "front", edge), new Face(Direction.SOUTH, "front", edge),
+						new Face(Direction.EAST, "side", edge), new Face(Direction.WEST, "side", edge),
+						new Face(Direction.UP, "top", new float[]{px, pz, px + 4, pz + 4}),
+						sample(Direction.DOWN, "inner", 0, 15));
 			}
 		}
 		return m;
@@ -121,10 +144,11 @@ final class PlinthModels
 
 	// lit grooves, hearth mouth and coal bed while the plinth works
 	static <T extends ModelBuilder<T>> T glow(T m) {
-		use(m, "glow_front", "glow_side", "glow_bowl");
+		use(m, "glow_front", "glow_side", "glow_bowl", "glow_top");
 		box(m, new float[]{2, 4, 2, 14, 11, 14}, GLOW_LIFT, true,
 				face(Direction.NORTH, "glow_front"), face(Direction.SOUTH, "glow_front"),
 				face(Direction.EAST, "glow_side"), face(Direction.WEST, "glow_side"));
+		box(m, new float[]{0, 14.05F, 0, 16, 14.05F, 16}, 0, true, face(Direction.UP, "glow_top"));
 		box(m, new float[]{4, 12.04F, 4, 12, 12.04F, 12}, 0, true,
 				new Face(Direction.UP, "glow_bowl", new float[]{4, 4, 12, 12}));
 		return m;
@@ -136,7 +160,7 @@ final class PlinthModels
 		String[] cell = GLYPH_CELL[mode].split(",");
 		float u = Integer.parseInt(cell[0]);
 		float v = Integer.parseInt(cell[1]);
-		box(m, new float[]{14 + PANEL_LIFT, 5, 5, 14 + PANEL_LIFT, 10, 11}, 0, false,
+		box(m, new float[]{14 + PANEL_LIFT, 4, 5, 14 + PANEL_LIFT, 9, 11}, 0, false,
 				new Face(Direction.EAST, "glyphs", new float[]{u, v, u + 6, v + 5}));
 		return m;
 	}
@@ -146,8 +170,8 @@ final class PlinthModels
 		use(m, "glyphs");
 		for (int i = 1; i <= level; i++) {
 			int col = 3 + 2 * i;
-			box(m, new float[]{2 - PANEL_LIFT, 5, col, 2 - PANEL_LIFT, 9, col + 1}, 0, false,
-					new Face(Direction.WEST, "glyphs", new float[]{col, 7, col + 1, 11}));
+			box(m, new float[]{2 - PANEL_LIFT, 4, col, 2 - PANEL_LIFT, 8, col + 1}, 0, false,
+					new Face(Direction.WEST, "glyphs", new float[]{9 + i, 12, 10 + i, 16}));
 		}
 		return m;
 	}

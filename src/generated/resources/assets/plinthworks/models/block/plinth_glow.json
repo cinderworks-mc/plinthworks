@@ -58,6 +58,28 @@
     {
       "faces": {
         "up": {
+          "texture": "#glow_top"
+        }
+      },
+      "from": [
+        0,
+        14.05,
+        0
+      ],
+      "neoforge_data": {
+        "ambient_occlusion": false,
+        "block_light": 15
+      },
+      "shade": false,
+      "to": [
+        16,
+        14.05,
+        16
+      ]
+    },
+    {
+      "faces": {
+        "up": {
           "texture": "#glow_bowl"
         }
       },
@@ -83,6 +105,7 @@
     "glow_bowl": "plinthworks:block/plinth_glow_bowl",
     "glow_front": "plinthworks:block/plinth_glow_front",
     "glow_side": "plinthworks:block/plinth_glow_side",
+    "glow_top": "plinthworks:block/plinth_glow_top",
     "particle": "plinthworks:block/plinth_stone"
   }
 }

@@ -3,51 +3,69 @@
     {
       "faces": {
         "west": {
-          "texture": "#glyphs"
+          "texture": "#glyphs",
+          "uv": [
+            10.0,
+            12.0,
+            11.0,
+            16.0
+          ]
         }
       },
       "from": [
         1.91,
-        5,
+        4,
         5
       ],
       "to": [
         1.91,
-        9,
+        8,
         6
       ]
     },
     {
       "faces": {
         "west": {
-          "texture": "#glyphs"
+          "texture": "#glyphs",
+          "uv": [
+            11.0,
+            12.0,
+            12.0,
+            16.0
+          ]
         }
       },
       "from": [
         1.91,
-        5,
+        4,
         7
       ],
       "to": [
         1.91,
-        9,
+        8,
         8
       ]
     },
     {
       "faces": {
         "west": {
-          "texture": "#glyphs"
+          "texture": "#glyphs",
+          "uv": [
+            12.0,
+            12.0,
+            13.0,
+            16.0
+          ]
         }
       },
       "from": [
         1.91,
-        5,
+        4,
         9
       ],
       "to": [
         1.91,
-        9,
+        8,
         10
       ]
     }
