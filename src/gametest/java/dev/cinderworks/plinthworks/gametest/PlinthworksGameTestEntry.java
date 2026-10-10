@@ -15,5 +15,6 @@ public class PlinthworksGameTestEntry
 
 	private static void register(RegisterGameTestsEvent event) {
 		event.register(BufferGameTests.class);
+		event.register(GaugeGameTests.class);
 	}
 }
