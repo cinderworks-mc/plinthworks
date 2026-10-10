@@ -39,7 +39,7 @@ public class PlinthMenu extends AbstractContainerMenu
 
 	private PlinthMenu(int id, Inventory playerInv, BlockPos pos, java.util.List<BlockPos> members) {
 		this(id, playerInv, (PlinthBlockEntity) playerInv.player.level().getBlockEntity(pos),
-				new SimpleContainerData(19), members);
+				new SimpleContainerData(22), members);
 	}
 
 	public PlinthMenu(int id, Inventory playerInv, PlinthBlockEntity be) {
@@ -230,31 +230,31 @@ public class PlinthMenu extends AbstractContainerMenu
 	}
 
 	public int energyStored() {
-		return stats.get(8);
+		return wide(8);
 	}
 
 	public int energyCapacity() {
-		return stats.get(9);
+		return wide(10);
 	}
 
 	public int energyThroughput() {
-		return stats.get(10);
+		return wide(12);
 	}
 
 	public int fluidStored() {
-		return wide(11);
+		return wide(14);
 	}
 
 	public int fluidCapacity() {
-		return wide(13);
+		return wide(16);
 	}
 
 	public int fluidThroughput() {
-		return wide(15);
+		return wide(18);
 	}
 
 	public int xpMbPerPoint() {
-		return wide(17);
+		return wide(20);
 	}
 
 	private int wide(int index) {
@@ -321,17 +321,20 @@ public class PlinthMenu extends AbstractContainerMenu
 								.channel(be.channel()).mode().ordinal();
 					}
 					case 7 -> be.resourceMode().ordinal();
-					case 8 -> be.energy().getEnergyStored();
-					case 9 -> be.energy().getMaxEnergyStored();
-					case 10 -> ResourceTypes.ENERGY.throughput(u);
-					case 11 -> be.fluid().getFluidAmount() & 0xffff;
-					case 12 -> be.fluid().getFluidAmount() >>> 16;
-					case 13 -> be.fluid().getCapacity() & 0xffff;
-					case 14 -> be.fluid().getCapacity() >>> 16;
-					case 15 -> ResourceTypes.FLUID.throughput(u) & 0xffff;
-					case 16 -> ResourceTypes.FLUID.throughput(u) >>> 16;
-					case 17 -> dev.cinderworks.plinthworks.config.ModConfig.XP_MB_PER_POINT.get() & 0xffff;
-					case 18 -> dev.cinderworks.plinthworks.config.ModConfig.XP_MB_PER_POINT.get() >>> 16;
+					case 8 -> be.energy().getEnergyStored() & 0xffff;
+					case 9 -> be.energy().getEnergyStored() >>> 16;
+					case 10 -> be.energy().getMaxEnergyStored() & 0xffff;
+					case 11 -> be.energy().getMaxEnergyStored() >>> 16;
+					case 12 -> ResourceTypes.ENERGY.throughput(u) & 0xffff;
+					case 13 -> ResourceTypes.ENERGY.throughput(u) >>> 16;
+					case 14 -> be.fluid().getFluidAmount() & 0xffff;
+					case 15 -> be.fluid().getFluidAmount() >>> 16;
+					case 16 -> be.fluid().getCapacity() & 0xffff;
+					case 17 -> be.fluid().getCapacity() >>> 16;
+					case 18 -> ResourceTypes.FLUID.throughput(u) & 0xffff;
+					case 19 -> ResourceTypes.FLUID.throughput(u) >>> 16;
+					case 20 -> dev.cinderworks.plinthworks.config.ModConfig.XP_MB_PER_POINT.get() & 0xffff;
+					case 21 -> dev.cinderworks.plinthworks.config.ModConfig.XP_MB_PER_POINT.get() >>> 16;
 					default -> 0;
 				};
 			}
@@ -341,7 +344,7 @@ public class PlinthMenu extends AbstractContainerMenu
 
 			@Override
 			public int getCount() {
-				return 19;
+				return 22;
 			}
 		};
 	}
