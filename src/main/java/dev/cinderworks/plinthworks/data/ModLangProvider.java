@@ -6,6 +6,8 @@ import dev.cinderworks.plinthworks.registry.*;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 
+import java.util.Locale;
+
 public class ModLangProvider extends LanguageProvider
 {
 	private static final String[] ROMAN = {"", "I", "II", "III", "IV"};
@@ -94,6 +96,18 @@ public class ModLangProvider extends LanguageProvider
 		add("gui.plinthworks.resource.tip", "What this plinth moves");
 		add("gui.plinthworks.mode.tip.state", "Transfer: %s");
 		add("gui.plinthworks.resource.tip.state", "Moves: %s");
+		add("gui.plinthworks.verb.idle", "Idle");
+		for (SigilType type : SigilType.values()) {
+			add("gui.plinthworks.verb." + type.name().toLowerCase(Locale.ROOT), title(type.name()));
+		}
+		add("gui.plinthworks.resource.item", "Items");
+		add("gui.plinthworks.resource.energy", "Energy");
+		add("gui.plinthworks.resource.fluid", "Fluid");
+		add("gui.plinthworks.resource.xp", "XP");
+		add("gui.plinthworks.transfer.priority", "Priority");
+		add("gui.plinthworks.transfer.round_robin", "Round robin");
+		add("gui.plinthworks.transfer.load_balanced", "Balanced");
+		add("gui.plinthworks.channel_local", "Local");
 		add("gui.plinthworks.val_ticks", "%st");
 		add("gui.plinthworks.val_fe", "%s FE");
 		add("gui.plinthworks.val_mb", "%s mB");

@@ -17,6 +17,7 @@ import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtension
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.List;
+import java.util.Locale;
 
 public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 {
@@ -212,8 +213,8 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 	private void renderStats(GuiGraphics graphics) {
 		int y = STAT_TOP;
 		int value = menu.verb();
-		String verb = value == 0 ? "idle" : SigilType.values()[value - 1].name().toLowerCase();
-		graphics.drawString(font, Component.literal(title(verb)), STAT_ICON_X, y, PwGui.TITLE, false);
+		String verb = value == 0 ? "idle" : SigilType.values()[value - 1].name().toLowerCase(Locale.ROOT);
+		graphics.drawString(font, Component.translatable("gui.plinthworks.verb." + verb), STAT_ICON_X, y, PwGui.TITLE, false);
 		y += ROW;
 		statRow(graphics, PwGuiTextures.STAT_RATE,
 				Component.translatable("gui.plinthworks.val_ticks", menu.intervalTicks()), y);
@@ -226,7 +227,8 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 		}
 		statRow(graphics, PwGuiTextures.STAT_REACH, Component.literal(String.valueOf(menu.range())), y);
 		y += ROW;
-		String channel = menu.blockEntity().channel().isEmpty() ? "local" : menu.blockEntity().channel();
+		String channel = menu.blockEntity().channel().isEmpty()
+				? Component.translatable("gui.plinthworks.channel_local").getString() : menu.blockEntity().channel();
 		statRow(graphics, PwGuiTextures.STAT_CHAN,
 				Component.translatable("gui.plinthworks.stat_channel", trim(channel, 46), menu.channelMembers()), y);
 	}
@@ -269,20 +271,12 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 	}
 
 	private Component resourceName() {
-		return Component.literal(switch (menu.resourceMode()) {
-			case ITEM -> "item";
-			case ENERGY -> "FE";
-			case FLUID -> "fluid";
-			case XP -> "xp";
-		});
+		return Component.translatable("gui.plinthworks.resource." + menu.resourceMode().name().toLowerCase(Locale.ROOT));
 	}
 
 	private Component transferName() {
-		return Component.literal(switch (TransferMode.values()[menu.transferMode()]) {
-			case PRIORITY -> "priority";
-			case ROUND_ROBIN -> "round";
-			case LOAD_BALANCED -> "balanced";
-		});
+		return Component.translatable("gui.plinthworks.transfer."
+				+ TransferMode.values()[menu.transferMode()].name().toLowerCase(Locale.ROOT));
 	}
 
 	private Component redstoneTip() {
@@ -309,9 +303,5 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 
 	private void send(int id) {
 		minecraft.gameMode.handleInventoryButtonClick(menu.containerId, id);
-	}
-
-	private static String title(String value) {
-		return Character.toUpperCase(value.charAt(0)) + value.substring(1);
 	}
 }

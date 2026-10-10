@@ -10,6 +10,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+import java.util.Locale;
+
 public class NetworkOverviewScreen extends Screen
 {
 	private final PlinthScreen parent;
@@ -49,8 +51,9 @@ public class NetworkOverviewScreen extends Screen
 		PwGui.inset(graphics, x, y + 116, 180, 18);
 		super.render(graphics, mouseX, mouseY, partialTick);
 		graphics.drawString(font, title, x, y, PwGui.TITLE, false);
-		String mode = TransferMode.values()[menu.transferMode()].name().toLowerCase();
-		graphics.drawString(font, Component.literal(mode), x, y + 13, PwGui.MUTED, false);
+		Component mode = Component.translatable("gui.plinthworks.transfer."
+				+ TransferMode.values()[menu.transferMode()].name().toLowerCase(Locale.ROOT));
+		graphics.drawString(font, mode, x, y + 13, PwGui.MUTED, false);
 		if (menu.networkMembers().isEmpty()) {
 			graphics.drawString(font, Component.translatable("gui.plinthworks.network_empty"),
 					x + 5, y + 31, PwGui.MUTED, false);
