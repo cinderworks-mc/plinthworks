@@ -61,6 +61,31 @@ public class BreakerGameTests
 		}).thenSucceed();
 	}
 
+	@GameTest(template = Support.TEMPLATE, templateNamespace = Support.NAMESPACE)
+	public static void fullStorageNoticeIsThrottled(GameTestHelper helper) {
+		PlinthBlockEntity be = Support.plinth(helper, POS);
+		Support.fit(be, SigilType.BREAKER);
+		helper.setBlock(TARGET, Blocks.DIRT);
+		long[] first = new long[1];
+		helper.startSequence().thenIdle(WAIT).thenExecute(() -> {
+			first[0] = be.nextSkipNotice();
+			Support.expect(helper, first[0] > 0, "the skipped block never started the notice timer");
+			Support.expect(helper, helper.getBlockState(TARGET).is(Blocks.DIRT), "the block broke with nowhere to put the drops");
+		}).thenIdle(WAIT).thenExecute(() -> {
+			Support.expectEquals(helper, first[0], be.nextSkipNotice(), "notice timer after a second skip");
+		}).thenSucceed();
+	}
+
+	@GameTest(template = Support.TEMPLATE, templateNamespace = Support.NAMESPACE)
+	public static void noNoticeWhenTheBreakWorks(GameTestHelper helper) {
+		setup(helper);
+		PlinthBlockEntity be = (PlinthBlockEntity) helper.getBlockEntity(POS);
+		helper.startSequence().thenIdle(WAIT).thenExecute(() -> {
+			Support.expect(helper, helper.getBlockState(TARGET).isAir(), "the block was not broken");
+			Support.expectEquals(helper, 0L, be.nextSkipNotice(), "notice timer after a clean break");
+		}).thenSucceed();
+	}
+
 	private static void setup(GameTestHelper helper) {
 		PlinthBlockEntity be = Support.plinth(helper, POS);
 		Support.fit(be, SigilType.BREAKER);
