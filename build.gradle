@@ -13,6 +13,20 @@ java {
 	}
 }
 
+// test only code, on the classpath of the dev runs and never in the jar
+sourceSets {
+	gametest {
+		compileClasspath += sourceSets.main.output
+		runtimeClasspath += sourceSets.main.output
+	}
+}
+
+configurations {
+	gametestImplementation.extendsFrom implementation
+	gametestCompileOnly.extendsFrom compileOnly
+	gametestRuntimeOnly.extendsFrom runtimeOnly
+}
+
 repositories {
 	mavenCentral()
 	maven {
@@ -32,13 +46,19 @@ neoForge {
 	runs {
 		client {
 			client()
+			sourceSet = sourceSets.gametest
+			systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
 		}
 		server {
 			server()
+			sourceSet = sourceSets.gametest
+			systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
 		}
 		gameTestServer {
 			type = 'gameTestServer'
 			gameDirectory = file('run/gametest')
+			sourceSet = sourceSets.gametest
+			systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
 		}
 		data {
 			data()
@@ -51,8 +71,11 @@ neoForge {
 	mods {
 		plinthworks {
 			sourceSet sourceSets.main
+			sourceSet sourceSets.gametest
 		}
 	}
+
+	addModdingDependenciesTo(sourceSets.gametest)
 
 	unitTest {
 		enable()
