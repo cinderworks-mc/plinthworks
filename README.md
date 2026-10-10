@@ -2,15 +2,121 @@
 
 pedestals you can teach to do things. slot in a sigil to import or export items, add filters and upgrades, and link plinths together.
 
-each plinth has one screen for its sigil, upgrades, filters, and network. you can see what it's moving and change its setup without carrying a set of single-purpose tools.
+each plinth has one screen for its sigil, etchings, seals and network. you can see what it is moving and change its setup without carrying a set of single purpose tools.
 
-## what's in it
+![a pair of plinths on grass](assets/screenshots/plinths.png)
 
-- sigils - import and export items
-- etchings (t1-t4) - upgrade speed, capacity, storage, and range
-- seals - filter by item, tag, mod, or component
-- channels - link plinths across distance
-- the plinth wears whatever block you craft it from
+## what a plinth is
+
+a plinth is a block that holds a small buffer and runs one sigil. the sigil decides what it does. etchings change how fast, how much and how far. seals decide what it is allowed to touch.
+
+a plinth wears the block it is crafted from. put one plinth core and four of the same base block in the crafting grid and you get a plinth that looks like that block. bases are listed in the `plinthworks:plinth_bases` tag (stone, cobblestone, bricks, sandstone, deepslate, blackstone, quartz, purpur and a few more).
+
+the plinth core is made from an iron ingot and three stone slabs. the other parts are shapeless recipes built on a blank sigil, blank seal or blank etching. look them up in your recipe viewer or in `src/generated/resources/data/plinthworks/recipe`.
+
+## resource modes
+
+a plinth moves one kind of resource at a time. cycle the mode in the screen.
+
+- items. the default.
+- energy. moves fe between neighbouring blocks that expose it.
+- fluid. moves fluids between tanks.
+- experience. moves xp as a fluid. neoforge has no xp fluid of its own, so this only works when another mod supplies one. the default list in the config names create enchantment industry's experience fluid and the `c:experience` and `forge:experience` tags. with no such mod installed, this mode has nothing to move.
+
+## sigils
+
+the sigil in the plinth decides what it does.
+
+- import. pulls resources from nearby blocks into the plinth.
+- export. pushes the plinth's buffer into nearby blocks.
+- void. deletes what is in the plinth's own buffer. it never touches nearby containers. add seals to destroy only some things.
+- magnet. collects dropped items into nearby storage.
+- breaker. breaks blocks in its area and sends the drops to nearby storage.
+- placer. places blocks it pulls from nearby storage.
+- planter. plants seeds and saplings from nearby storage.
+- harvester. harvests mature crops and replants.
+- crafting. crafts the displayed item from nearby ingredients. it is off by default because of a duplication risk while that path is reworked. turn it on with `crafting.enabled`.
+
+### world verbs
+
+breaker, placer, planter, harvester and magnet act on the cube around the plinth, sized by the range etching. they run through a fake player and fire the normal break events, so land claim mods can veto them. plinths and bedrock are never broken, and block entities are skipped unless you turn on `world.verbs.breakBlockEntities`. a verb skips a block instead of spilling its drops when there is nowhere to put them.
+
+## etchings
+
+etchings are upgrades. there are four kinds and each has four tiers.
+
+- speed. shorter delay between operations.
+- capacity. more resources per operation.
+- storage. a bigger buffer.
+- range. a bigger search and linking reach.
+
+the tier is shown in the item name (tier i to tier iv) and in its tooltip. a plinth has four etching slots by default.
+
+each etching is a blank etching plus one ingredient: redstone for speed, a chest for capacity, a barrel for storage and an ender pearl for range. every tier up is the tier below plus the same ingredient again.
+
+## seals
+
+seals filter what a plinth is allowed to move. a plinth has three seal slots by default, and each seal can be a whitelist or a blacklist.
+
+- item. matches an item and ignores its components.
+- exact. matches an item and all of its components.
+- mod. matches every item from one mod.
+- tag. matches the items in a tag.
+- component. matches a selected item component.
+
+item, exact and mod seals have a ghost slot editor. drop an item in to add a key.
+
+## channels and the link tool
+
+plinths can be linked into a channel, so a plinth can pass resources to a plinth far away.
+
+- use the link tool on a plinth to bind it. name the tool in an anvil to name the channel.
+- use it on another plinth within link range (24 blocks by default, same dimension) to join that channel.
+- sneak and use it on a plinth to clear the binding.
+- the network screen lists the members of a channel and lets you rename it.
+
+transfer modes decide how a channel shares work: priority, round robin or load balanced.
+
+redstone modes: always runs, pause when powered, or run only when powered.
+
+## the screen
+
+everything is on one screen: the sigil, etchings, seals, the display slot or gauge, the resource, transfer and redstone buttons, and a stat panel with the rate, move amount, buffer and reach. seal settings and the network overview open from it.
+
+![the plinth screen](assets/screenshots/screen.png)
+
+## config
+
+the config file is `config/plinthworks-common.toml`. some of the settings you may want to change.
+
+- `speed`, `capacity`, `storage` and `range` set the base value, the step per tier and the cap for each etching.
+- `etchings.slots` and `seals.slots` set how many slots a plinth has.
+- `link.range` is how far apart linked plinths can be.
+- `world.verbs.fireBlockEvents` fires break events through a fake player. it is on by default.
+- `world.verbs.breakBlockEntities`, `requireFilter` and `blockBlocklist` control what the breaker is allowed to break.
+- `energy` and `fluid` set buffer sizes and throughput.
+- `xp.fluids` and `xp.mbPerPoint` set which fluid counts as experience and how much of it makes one point.
+- `crafting.enabled` turns the crafting sigil on.
+
+## requirements and install
+
+- minecraft 1.21.1
+- neoforge 21.1.x
+- java 21
+
+put the jar in your `mods` folder. jei, emi and create are optional. plinthworks does not add recipe pages or kinetic support for them yet.
+
+## building
+
+you need java 21. gradle fetches the rest.
+
+```sh
+./gradlew build
+./gradlew test
+./gradlew runGameTestServer
+```
+
+the gametests live in `src/gametest` and are not part of the jar. see [CONTRIBUTING.md](.github/CONTRIBUTING.md) for more.
 
 ## where it came from
 
@@ -18,6 +124,8 @@ plinthworks is inspired by mowmaster's [pedestals](https://github.com/Mowmaster/
 
 ## planned
 
-more sigils for quarrying, smelting, collecting items, and harvesting, plus infusions: permanent upgrades etched onto a sigil. these will come after the item-transfer features are stable.
+more sigils for quarrying and smelting, plus infusions: permanent upgrades etched onto a sigil.
 
-neoforge 1.21.1. mit licensed.
+## licence
+
+code is mit, see [LICENSE](LICENSE). there is no separate licence file for the art, so the source files in `art-source` and the textures made from them are under the same mit licence. see [THIRD_PARTY.md](THIRD_PARTY.md) for the notes on minecraft and neoforge.
