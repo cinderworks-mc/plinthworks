@@ -8,12 +8,13 @@ import net.minecraft.network.chat.Component;
 
 import java.util.function.Supplier;
 
-// 16x16 stone button: icon + tooltip refreshed from suppliers each frame so mode changes show live
+// 16x16 stone button: icon and tooltip text come from suppliers so mode changes show live
 class PwIconButton extends AbstractButton
 {
 	private final Supplier<PwGuiTextures> icon;
 	private final Supplier<Component> tip;
 	private final Runnable onPress;
+	private Component shownTip;
 	private boolean down;
 
 	PwIconButton(int x, int y, Supplier<PwGuiTextures> icon, Supplier<Component> tip, Runnable onPress) {
@@ -41,7 +42,7 @@ class PwIconButton extends AbstractButton
 
 	@Override
 	protected void renderWidget(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-		setTooltip(Tooltip.create(tip.get()));
+		refreshTooltip();
 		boolean pressed = active && down && isHovered();
 		PwGuiTextures face = !active ? PwGuiTextures.BTN_DISABLED
 				: pressed ? PwGuiTextures.BTN_PRESSED
@@ -53,6 +54,15 @@ class PwIconButton extends AbstractButton
 		}
 		icon.get().render(g, getX() + shift, getY() + shift);
 		g.setColor(1F, 1F, 1F, 1F);
+	}
+
+	// the tooltip is rebuilt only when its text changes, not every frame
+	private void refreshTooltip() {
+		Component now = tip.get();
+		if (!now.equals(shownTip)) {
+			shownTip = now;
+			setTooltip(Tooltip.create(now));
+		}
 	}
 
 	@Override
