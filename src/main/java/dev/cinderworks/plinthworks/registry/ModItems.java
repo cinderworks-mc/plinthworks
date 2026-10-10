@@ -12,11 +12,16 @@ public class ModItems
 {
 	public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Plinthworks.MODID);
 
-	public static final DeferredItem<BlockItem> PLINTH = ITEMS.registerSimpleBlockItem("plinth", ModBlocks.PLINTH);
-	public static final DeferredItem<Item> PLINTH_CORE = ITEMS.registerSimpleItem("plinth_core");
-	public static final DeferredItem<Item> SIGIL_BASE = ITEMS.registerSimpleItem("sigil_base");
-	public static final DeferredItem<Item> ETCHING_BASE = ITEMS.registerSimpleItem("etching_base");
-	public static final DeferredItem<Item> SEAL_BASE = ITEMS.registerSimpleItem("seal_base");
+	public static final DeferredItem<BlockItem> PLINTH = ITEMS.register("plinth", () -> new HintBlockItem(
+			ModBlocks.PLINTH.get(), new Item.Properties(), "plinthworks.hint.plinth.1", "plinthworks.hint.plinth.2"));
+	public static final DeferredItem<Item> PLINTH_CORE = ITEMS.register("plinth_core", () -> new HintItem(
+			new Item.Properties(), "plinthworks.hint.plinth_core.1", "plinthworks.hint.plinth_core.2"));
+	public static final DeferredItem<Item> SIGIL_BASE = ITEMS.register("sigil_base", () -> new HintItem(
+			new Item.Properties(), "plinthworks.hint.sigil_base.1", "plinthworks.hint.sigil_base.2"));
+	public static final DeferredItem<Item> ETCHING_BASE = ITEMS.register("etching_base", () -> new HintItem(
+			new Item.Properties(), "plinthworks.hint.etching_base.1", "plinthworks.hint.etching_base.2"));
+	public static final DeferredItem<Item> SEAL_BASE = ITEMS.register("seal_base", () -> new HintItem(
+			new Item.Properties(), "plinthworks.hint.seal_base.1", "plinthworks.hint.seal_base.2"));
 	public static final DeferredItem<LinkToolItem> LINK_TOOL = ITEMS.register("link_tool", LinkToolItem::new);
 	public static final Map<SigilType, DeferredItem<SigilItem>> SIGILS = registerSigils();
 	public static final Map<EtchingType, Map<EtchingTier, DeferredItem<EtchingItem>>> ETCHINGS = registerEtchings();

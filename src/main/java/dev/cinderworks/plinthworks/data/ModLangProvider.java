@@ -37,6 +37,16 @@ public class ModLangProvider extends LanguageProvider
 			add(ModItems.SEALS.get(type).get(), sealName(type));
 		}
 		add(ModItems.LINK_TOOL.get(), "Link Tool");
+		add("plinthworks.hint.plinth.1", "Does nothing until a sigil is slotted in.");
+		add("plinthworks.hint.plinth.2", "Wears the block it was crafted from.");
+		add("plinthworks.hint.plinth_core.1", "Craft with four of one block to make a plinth.");
+		add("plinthworks.hint.plinth_core.2", "Stone, bricks, sandstone and similar blocks only.");
+		add("plinthworks.hint.sigil_base.1", "Craft with one ingredient to make a sigil.");
+		add("plinthworks.hint.sigil_base.2", "The ingredient picks the job.");
+		add("plinthworks.hint.etching_base.1", "Craft with one ingredient to make an etching.");
+		add("plinthworks.hint.etching_base.2", "The ingredient picks the stat: Rate, Move, Hold or Reach.");
+		add("plinthworks.hint.seal_base.1", "Craft with one ingredient to make a seal.");
+		add("plinthworks.hint.seal_base.2", "The ingredient picks how it matches.");
 		add("plinthworks.link_tool.bind", "Use on a plinth to bind it.");
 		add("plinthworks.link_tool.join", "Use on another to join its channel.");
 		add("plinthworks.link_tool.clear", "Sneak-use clears. Name it in an anvil to name the channel.");
