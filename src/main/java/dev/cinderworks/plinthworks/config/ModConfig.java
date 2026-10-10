@@ -88,7 +88,8 @@ public class ModConfig
 		BUILDER.pop();
 
 		BUILDER.push("crafting");
-		CRAFTING_ENABLED = BUILDER.define("enabled", true);
+		// off until the transfer path is reworked
+		CRAFTING_ENABLED = BUILDER.define("enabled", false);
 		BUILDER.pop();
 
 		BUILDER.push("world");
