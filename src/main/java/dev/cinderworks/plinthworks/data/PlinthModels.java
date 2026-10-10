@@ -16,6 +16,11 @@ final class PlinthModels
 	private static final float GLOW_LIFT = 0.06F;
 	private static final float PANEL_LIFT = 0.09F;
 
+	// where the mound sides live in the inner and glow_mound textures
+	private static final float[] MOUND_LOW = {0, 5, 10, 7};
+	private static final float[] CROWN_FRONT = {0, 8, 4, 10};
+	private static final float[] CROWN_SIDE = {0, 10, 6, 12};
+
 	private static final String[] GLYPH_CELL = {"0,0", "8,0", "0,5", "8,5"};
 
 	private PlinthModels() {}
@@ -81,54 +86,40 @@ final class PlinthModels
 		return model.texture("particle", tex("stone")).renderType("cutout");
 	}
 
-	// foot, rim around the bowl, bowl floor and the four posts
+	// foot, cap, the two brass flanking blocks, the tray posts and the coal mound in the bowl
 	static <T extends ModelBuilder<T>> T fixed(T m) {
 		use(m, "front", "side", "top", "inner");
-		box(m, new float[]{0, 0, 0, 16, 2, 16}, 0, false, join(sides("front", "side"), sample(Direction.UP, "inner", 1, 15)));
-		box(m, new float[]{0, 11, 0, 16, 14, 4}, 0, false, join(sides("front", "side"),
-				face(Direction.UP, "top"), face(Direction.SOUTH, "inner"), sample(Direction.DOWN, "inner", 0, 15)));
-		box(m, new float[]{0, 11, 12, 16, 14, 16}, 0, false, join(sides("front", "side"),
-				face(Direction.UP, "top"), face(Direction.NORTH, "inner"), sample(Direction.DOWN, "inner", 0, 15)));
-		box(m, new float[]{0, 11, 4, 4, 14, 12}, 0, false, face(Direction.WEST, "side"),
-				face(Direction.UP, "top"), face(Direction.EAST, "inner"), sample(Direction.DOWN, "inner", 0, 15));
-		box(m, new float[]{12, 11, 4, 16, 14, 12}, 0, false, face(Direction.EAST, "side"),
-				face(Direction.UP, "top"), face(Direction.WEST, "inner"), sample(Direction.DOWN, "inner", 0, 15));
-		box(m, new float[]{4, 11, 4, 12, 12, 12}, 0, false, face(Direction.UP, "top"));
-		// brass band under the cornice, sticks out half a unit over the body
-		box(m, new float[]{1.5F, 10.5F, 1.5F, 14.5F, 11, 14.5F}, 0, false, join(sides("front", "side"),
-				sample(Direction.DOWN, "front", 14, 5)));
-		// hearth lintel and sill stand proud of the front and back faces
-		for (boolean north : new boolean[]{true, false}) {
-			Direction out = north ? Direction.NORTH : Direction.SOUTH;
-			float z0 = north ? 1.5F : 14;
-			float z1 = north ? 2 : 14.5F;
-			box(m, new float[]{5, 8, z0, 11, 9, z1}, 0, false, face(out, "front"), sample(Direction.EAST, "front", 10, 7),
-					sample(Direction.WEST, "front", 10, 7), sample(Direction.UP, "front", 5, 7), sample(Direction.DOWN, "front", 9, 7));
-			box(m, new float[]{5, 4, z0, 11, 5, z1}, 0, false, face(out, "front"), sample(Direction.EAST, "front", 10, 11),
-					sample(Direction.WEST, "front", 10, 11), sample(Direction.UP, "front", 6, 11), sample(Direction.DOWN, "front", 9, 11));
+		// charcoal foot, the worn block draws the step and the body
+		box(m, new float[]{0, 0, 0, 16, 2, 16}, 0, false, join(sides("front", "side"),
+				sample(Direction.UP, "inner", 1, 15), sample(Direction.DOWN, "inner", 0, 15)));
+		// cap overhangs the body by two units all round
+		box(m, new float[]{0, 11, 0, 16, 13, 16}, 0, false, join(sides("front", "side"),
+				face(Direction.UP, "top"), sample(Direction.DOWN, "inner", 0, 15)));
+		// tray posts at the four corners of the bowl, the gap between each pair shows the mound
+		for (float[] post : new float[][]{{5, 0}, {9, 0}, {5, 14}, {9, 14}}) {
+			box(m, new float[]{post[0], 13, post[1], post[0] + 2, 15, post[1] + 2}, 0, false,
+					join(sides("front", "side"), face(Direction.UP, "top")));
 		}
-		// posts: a stone shaft under a brass cap that leans half a unit in over the bowl
-		for (int px : new int[]{0, 12}) {
-			for (int pz : new int[]{0, 12}) {
-				box(m, new float[]{px, 14, pz, px + 4, 15, pz + 4}, 0, false, sides("front", "side"));
-				float x0 = px == 0 ? 0 : 11.5F;
-				float x1 = px == 0 ? 4.5F : 16;
-				float z0 = pz == 0 ? 0 : 11.5F;
-				float z1 = pz == 0 ? 4.5F : 16;
-				float[] edge = {0, 0, 4, 1};
-				box(m, new float[]{x0, 15, z0, x1, 16, z1}, 0, false,
-						new Face(Direction.NORTH, "front", edge), new Face(Direction.SOUTH, "front", edge),
-						new Face(Direction.EAST, "side", edge), new Face(Direction.WEST, "side", edge),
-						new Face(Direction.UP, "top", new float[]{px, pz, px + 4, pz + 4}),
-						sample(Direction.DOWN, "inner", 0, 15));
-			}
-		}
+		// brass flanking blocks, the outer faces carry the relief and the inner faces stay plain
+		box(m, new float[]{0, 13, 5, 5, 16, 11}, 0, false, face(Direction.NORTH, "front"), face(Direction.SOUTH, "front"),
+				face(Direction.WEST, "side"), sample(Direction.EAST, "inner", 4, 15), face(Direction.UP, "top"));
+		box(m, new float[]{11, 13, 5, 16, 16, 11}, 0, false, face(Direction.NORTH, "front"), face(Direction.SOUTH, "front"),
+				face(Direction.EAST, "side"), sample(Direction.WEST, "inner", 4, 15), face(Direction.UP, "top"));
+		// coal mound, a wide course and a crown that rises over the flanks
+		box(m, new float[]{5, 13, 3, 11, 15, 13}, 0, false, face(Direction.NORTH, "front"), face(Direction.SOUTH, "front"),
+				new Face(Direction.EAST, "inner", MOUND_LOW), new Face(Direction.WEST, "inner", MOUND_LOW),
+				face(Direction.UP, "top"));
+		box(m, new float[]{6, 15, 5, 10, 17, 11}, 0, false, new Face(Direction.NORTH, "inner", CROWN_FRONT),
+				new Face(Direction.SOUTH, "inner", CROWN_FRONT), new Face(Direction.EAST, "inner", CROWN_SIDE),
+				new Face(Direction.WEST, "inner", CROWN_SIDE), face(Direction.UP, "top"));
 		return m;
 	}
 
-	// trim drawn over the worn block's body, empty pixels let the block show through
+	// trim drawn over the worn block: a contact line on the step, carved pillars, hearth frame and the side panels
 	static <T extends ModelBuilder<T>> T worn(T m) {
 		use(m, "front", "mode", "gauge");
+		box(m, new float[]{1, 2, 1, 15, 4, 15}, TRIM_LIFT, false, face(Direction.NORTH, "front"),
+				face(Direction.SOUTH, "front"), face(Direction.EAST, "mode"), face(Direction.WEST, "gauge"));
 		box(m, new float[]{2, 4, 2, 14, 11, 14}, TRIM_LIFT, false, face(Direction.NORTH, "front"),
 				face(Direction.SOUTH, "front"), face(Direction.EAST, "mode"), face(Direction.WEST, "gauge"));
 		return m;
@@ -142,15 +133,23 @@ final class PlinthModels
 		return m;
 	}
 
-	// lit grooves, hearth mouth and coal bed while the plinth works
+	// hearth, sigil stems, the cap grooves and the crown of the mound light up while the plinth works
 	static <T extends ModelBuilder<T>> T glow(T m) {
-		use(m, "glow_front", "glow_side", "glow_bowl", "glow_top");
+		use(m, "glow_front", "glow_side", "glow_bowl", "glow_top", "glow_mound");
 		box(m, new float[]{2, 4, 2, 14, 11, 14}, GLOW_LIFT, true,
 				face(Direction.NORTH, "glow_front"), face(Direction.SOUTH, "glow_front"),
 				face(Direction.EAST, "glow_side"), face(Direction.WEST, "glow_side"));
-		box(m, new float[]{0, 14.05F, 0, 16, 14.05F, 16}, 0, true, face(Direction.UP, "glow_top"));
-		box(m, new float[]{4, 12.04F, 4, 12, 12.04F, 12}, 0, true,
-				new Face(Direction.UP, "glow_bowl", new float[]{4, 4, 12, 12}));
+		box(m, new float[]{0, 11, 0, 16, 13, 16}, GLOW_LIFT, true, face(Direction.NORTH, "glow_front"),
+				face(Direction.SOUTH, "glow_front"), face(Direction.EAST, "glow_side"), face(Direction.WEST, "glow_side"));
+		box(m, new float[]{5, 13, 3, 11, 15.04F, 13}, 0.03F, true,
+				face(Direction.NORTH, "glow_front"), face(Direction.SOUTH, "glow_front"),
+				new Face(Direction.EAST, "glow_mound", MOUND_LOW), new Face(Direction.WEST, "glow_mound", MOUND_LOW),
+				face(Direction.UP, "glow_bowl"));
+		box(m, new float[]{6, 15.04F, 5, 10, 17.04F, 11}, 0.03F, true, new Face(Direction.NORTH, "glow_mound", CROWN_FRONT),
+				new Face(Direction.SOUTH, "glow_mound", CROWN_FRONT), new Face(Direction.EAST, "glow_mound", CROWN_SIDE),
+				new Face(Direction.WEST, "glow_mound", CROWN_SIDE), face(Direction.UP, "glow_bowl"));
+		box(m, new float[]{7, 13.04F, 0, 9, 13.04F, 2}, 0, true, face(Direction.UP, "glow_top"));
+		box(m, new float[]{7, 13.04F, 14, 9, 13.04F, 16}, 0, true, face(Direction.UP, "glow_top"));
 		return m;
 	}
 
@@ -160,18 +159,18 @@ final class PlinthModels
 		String[] cell = GLYPH_CELL[mode].split(",");
 		float u = Integer.parseInt(cell[0]);
 		float v = Integer.parseInt(cell[1]);
-		box(m, new float[]{14 + PANEL_LIFT, 4, 5, 14 + PANEL_LIFT, 9, 11}, 0, false,
+		box(m, new float[]{14 + PANEL_LIFT, 5, 5, 14 + PANEL_LIFT, 10, 11}, 0, false,
 				new Face(Direction.EAST, "glyphs", new float[]{u, v, u + 6, v + 5}));
 		return m;
 	}
 
-	// lit gauge bars on the west face, the bar at column 3 + 2i is lit from level i on
+	// lit gauge bars on the west face, the bar at column 5 + i is lit from level i on
 	static <T extends ModelBuilder<T>> T gauge(T m, int level) {
 		use(m, "glyphs");
 		for (int i = 1; i <= level; i++) {
-			int col = 3 + 2 * i;
-			box(m, new float[]{2 - PANEL_LIFT, 4, col, 2 - PANEL_LIFT, 8, col + 1}, 0, false,
-					new Face(Direction.WEST, "glyphs", new float[]{9 + i, 12, 10 + i, 16}));
+			int col = 5 + i;
+			box(m, new float[]{2 - PANEL_LIFT, 5, col, 2 - PANEL_LIFT, 10, col + 1}, 0, false,
+					new Face(Direction.WEST, "glyphs", new float[]{9 + i, 11, 10 + i, 16}));
 		}
 		return m;
 	}

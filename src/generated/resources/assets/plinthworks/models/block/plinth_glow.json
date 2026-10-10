@@ -57,13 +57,196 @@
     },
     {
       "faces": {
+        "east": {
+          "texture": "#glow_side",
+          "uv": [
+            0.0,
+            3.0,
+            16.0,
+            5.0
+          ]
+        },
+        "north": {
+          "texture": "#glow_front",
+          "uv": [
+            0.0,
+            3.0,
+            16.0,
+            5.0
+          ]
+        },
+        "south": {
+          "texture": "#glow_front",
+          "uv": [
+            0.0,
+            3.0,
+            16.0,
+            5.0
+          ]
+        },
+        "west": {
+          "texture": "#glow_side",
+          "uv": [
+            0.0,
+            3.0,
+            16.0,
+            5.0
+          ]
+        }
+      },
+      "from": [
+        -0.06,
+        11,
+        -0.06
+      ],
+      "neoforge_data": {
+        "ambient_occlusion": false,
+        "block_light": 15
+      },
+      "shade": false,
+      "to": [
+        16.06,
+        13,
+        16.06
+      ]
+    },
+    {
+      "faces": {
+        "east": {
+          "texture": "#glow_mound",
+          "uv": [
+            0.0,
+            5.0,
+            10.0,
+            7.0
+          ]
+        },
+        "north": {
+          "texture": "#glow_front",
+          "uv": [
+            5.0,
+            0.96000004,
+            11.0,
+            3.0
+          ]
+        },
+        "south": {
+          "texture": "#glow_front",
+          "uv": [
+            5.0,
+            0.96000004,
+            11.0,
+            3.0
+          ]
+        },
+        "up": {
+          "texture": "#glow_bowl",
+          "uv": [
+            5.0,
+            3.0,
+            11.0,
+            13.0
+          ]
+        },
+        "west": {
+          "texture": "#glow_mound",
+          "uv": [
+            0.0,
+            5.0,
+            10.0,
+            7.0
+          ]
+        }
+      },
+      "from": [
+        4.97,
+        13,
+        2.97
+      ],
+      "neoforge_data": {
+        "ambient_occlusion": false,
+        "block_light": 15
+      },
+      "shade": false,
+      "to": [
+        11.03,
+        15.04,
+        13.03
+      ]
+    },
+    {
+      "faces": {
+        "east": {
+          "texture": "#glow_mound",
+          "uv": [
+            0.0,
+            10.0,
+            6.0,
+            12.0
+          ]
+        },
+        "north": {
+          "texture": "#glow_mound",
+          "uv": [
+            0.0,
+            8.0,
+            4.0,
+            10.0
+          ]
+        },
+        "south": {
+          "texture": "#glow_mound",
+          "uv": [
+            0.0,
+            8.0,
+            4.0,
+            10.0
+          ]
+        },
+        "up": {
+          "texture": "#glow_bowl",
+          "uv": [
+            6.0,
+            5.0,
+            10.0,
+            11.0
+          ]
+        },
+        "west": {
+          "texture": "#glow_mound",
+          "uv": [
+            0.0,
+            10.0,
+            6.0,
+            12.0
+          ]
+        }
+      },
+      "from": [
+        5.97,
+        15.04,
+        4.97
+      ],
+      "neoforge_data": {
+        "ambient_occlusion": false,
+        "block_light": 15
+      },
+      "shade": false,
+      "to": [
+        10.03,
+        17.04,
+        11.03
+      ]
+    },
+    {
+      "faces": {
         "up": {
           "texture": "#glow_top"
         }
       },
       "from": [
-        0,
-        14.05,
+        7,
+        13.04,
         0
       ],
       "neoforge_data": {
@@ -72,21 +255,21 @@
       },
       "shade": false,
       "to": [
-        16,
-        14.05,
-        16
+        9,
+        13.04,
+        2
       ]
     },
     {
       "faces": {
         "up": {
-          "texture": "#glow_bowl"
+          "texture": "#glow_top"
         }
       },
       "from": [
-        4,
-        12.04,
-        4
+        7,
+        13.04,
+        14
       ],
       "neoforge_data": {
         "ambient_occlusion": false,
@@ -94,9 +277,9 @@
       },
       "shade": false,
       "to": [
-        12,
-        12.04,
-        12
+        9,
+        13.04,
+        16
       ]
     }
   ],
@@ -104,6 +287,7 @@
   "textures": {
     "glow_bowl": "plinthworks:block/plinth_glow_bowl",
     "glow_front": "plinthworks:block/plinth_glow_front",
+    "glow_mound": "plinthworks:block/plinth_glow_mound",
     "glow_side": "plinthworks:block/plinth_glow_side",
     "glow_top": "plinthworks:block/plinth_glow_top",
     "particle": "plinthworks:block/plinth_stone"
