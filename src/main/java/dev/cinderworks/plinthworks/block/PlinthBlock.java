@@ -33,10 +33,13 @@ public class PlinthBlock extends BaseEntityBlock
 	public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
 	public static final IntegerProperty MODE = IntegerProperty.create("mode", 0, ResourceMode.values().length - 1);
 	public static final IntegerProperty GAUGE = IntegerProperty.create("gauge", 0, PlinthVisual.GAUGE_MAX);
+	// foot, step, body, cap with its tray posts, the coal mound and the two flanking blocks
 	private static final VoxelShape SHAPE = Shapes.or(
-			Block.box(0, 0, 0, 16, 14, 16),
-			Block.box(0, 14, 0, 4, 16, 4), Block.box(12, 14, 0, 16, 16, 4),
-			Block.box(0, 14, 12, 4, 16, 16), Block.box(12, 14, 12, 16, 16, 16));
+			Block.box(0, 0, 0, 16, 2, 16), Block.box(1, 2, 1, 15, 4, 15), Block.box(2, 4, 2, 14, 11, 14),
+			Block.box(0, 11, 0, 16, 13, 16), Block.box(5, 13, 0, 7, 15, 2), Block.box(9, 13, 0, 11, 15, 2),
+			Block.box(5, 13, 14, 7, 15, 16), Block.box(9, 13, 14, 11, 15, 16),
+			Block.box(5, 13, 3, 11, 15, 13), Block.box(6, 15, 5, 10, 17, 11),
+			Block.box(0, 13, 5, 5, 16, 11), Block.box(11, 13, 5, 16, 16, 11));
 
 	public PlinthBlock(Properties properties) {
 		super(properties);

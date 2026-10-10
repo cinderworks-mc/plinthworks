@@ -28,8 +28,8 @@ public class PlinthRenderer implements BlockEntityRenderer<PlinthBlockEntity>
 		float l = be.getLevel().getGameTime() + partialTick;
 		float bob = (float) Math.sin(l / 10.0F) * 0.03F;
 		poseStack.pushPose();
-		// sits in the bowl, just over the rim
-		poseStack.translate(0.5F, 0.90F + bob, 0.5F);
+		// floats over the coal mound
+		poseStack.translate(0.5F, 1.26F + bob, 0.5F);
 		poseStack.mulPose(Axis.YP.rotationDegrees(l * 3.0F));
 		poseStack.scale(0.45F, 0.45F, 0.45F);
 		minecraft.getItemRenderer().renderStatic(stack, ItemDisplayContext.GROUND, light, overlay, poseStack,
