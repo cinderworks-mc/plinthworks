@@ -13,6 +13,8 @@ public class PlinthNetwork extends SavedData
 {
 	private static final String FILE_NAME = "plinthworks_channels";
 	private static final long PRUNE_INTERVAL = 200;
+	// for future migrations, nothing reads it yet
+	private static final int DATA_VERSION = 1;
 	private final ChannelGraph graph = new ChannelGraph();
 	private long lastPrune = ChannelGraph.NEVER_PRUNED;
 
@@ -111,6 +113,7 @@ public class PlinthNetwork extends SavedData
 			channel.putLongArray("Members", graph.members(name).stream().mapToLong(Long::longValue).toArray());
 			list.add(channel);
 		}
+		tag.putInt("DataVersion", DATA_VERSION);
 		tag.put("Channels", list);
 		return tag;
 	}

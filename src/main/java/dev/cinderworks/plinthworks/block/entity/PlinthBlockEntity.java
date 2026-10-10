@@ -30,6 +30,9 @@ import java.util.List;
 
 public class PlinthBlockEntity extends BlockEntity
 {
+	// for future migrations, nothing reads it yet
+	private static final int DATA_VERSION = 1;
+
 	private final ItemStackHandler display = new ItemStackHandler(1) {
 		// the stack codec caps count at 99, anything bigger throws on save
 		@Override
@@ -354,6 +357,7 @@ public class PlinthBlockEntity extends BlockEntity
 	@Override
 	protected void saveAdditional(CompoundTag compound, HolderLookup.Provider registries) {
 		super.saveAdditional(compound, registries);
+		compound.putInt("DataVersion", DATA_VERSION);
 		compound.put("Display", display.serializeNBT(registries));
 		compound.put("Sigil", sigil.serializeNBT(registries));
 		compound.put("Etchings", etchings.serializeNBT(registries));
