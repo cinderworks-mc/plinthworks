@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.*;
 
 import java.util.List;
+import java.util.Locale;
 
 public class SigilItem extends Item
 {
@@ -23,6 +24,6 @@ public class SigilItem extends Item
 	@Override
 	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
 		tooltip.add(Component.translatable(Plinthworks.MODID + ".sigil."
-				+ type.name().toLowerCase() + ".desc").withStyle(ChatFormatting.GRAY));
+				+ type.name().toLowerCase(Locale.ROOT) + ".desc").withStyle(ChatFormatting.GRAY));
 	}
 }

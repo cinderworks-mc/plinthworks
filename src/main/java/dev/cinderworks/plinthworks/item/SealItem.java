@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.*;
 
 import java.util.List;
+import java.util.Locale;
 
 public class SealItem extends Item
 {
@@ -25,7 +26,7 @@ public class SealItem extends Item
 	@Override
 	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
 		tooltip.add(Component.translatable(Plinthworks.MODID + ".seal."
-				+ type.name().toLowerCase() + ".desc").withStyle(ChatFormatting.GRAY));
+				+ type.name().toLowerCase(Locale.ROOT) + ".desc").withStyle(ChatFormatting.GRAY));
 		SealConfig config = stack.getOrDefault(ModDataComponents.SEAL_CONFIG.get(), SealConfig.EMPTY);
 		tooltip.add(Component.translatable(config.whitelist() ? "plinthworks.seal.whitelist"
 				: "plinthworks.seal.blacklist", config.keys().size()).withStyle(ChatFormatting.DARK_GRAY));

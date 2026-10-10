@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.*;
 
 import java.util.List;
+import java.util.Locale;
 
 public class EtchingItem extends Item
 {
@@ -29,7 +30,7 @@ public class EtchingItem extends Item
 	@Override
 	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
 		tooltip.add(Component.translatable(Plinthworks.MODID + ".etching."
-				+ type.name().toLowerCase() + ".desc").withStyle(ChatFormatting.GRAY));
+				+ type.name().toLowerCase(Locale.ROOT) + ".desc").withStyle(ChatFormatting.GRAY));
 		tooltip.add(Component.translatable("plinthworks.etching.tier", tier.level())
 				.withStyle(ChatFormatting.DARK_GRAY));
 	}
