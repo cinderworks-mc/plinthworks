@@ -126,16 +126,11 @@ public class PlinthTick
 		voidBuffer(be, upgrades, ResourceTypes.get(be.resourceMode()));
 	}
 
+	// own buffer only, a void shouldn't eat neighbouring chests and tanks
 	private static <T, R> void voidBuffer(PlinthBlockEntity be, UpgradeSet upgrades, ResourceType<T, R> type) {
 		int left = type.throughput(upgrades);
 		Predicate<R> filter = type.filter(be, upgrades);
-		left -= type.discard(type.buffer(be), left, filter);
-		for (T source : type.nearby(be, upgrades.range())) {
-			left -= type.discard(source, left, filter);
-			if (left <= 0) {
-				return;
-			}
-		}
+		type.discard(type.buffer(be), left, filter);
 	}
 
 	public static List<IItemHandler> itemHandlers(PlinthBlockEntity be, UpgradeSet upgrades) {
