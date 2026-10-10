@@ -1,0 +1,32 @@
+{
+  "elements": [
+    {
+      "faces": {
+        "east": {
+          "texture": "#glyphs",
+          "uv": [
+            8.0,
+            11.0,
+            14.0,
+            16.0
+          ]
+        }
+      },
+      "from": [
+        14.09,
+        5,
+        5
+      ],
+      "to": [
+        14.09,
+        10,
+        11
+      ]
+    }
+  ],
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "glyphs": "plinthworks:block/plinth_glyphs",
+    "particle": "plinthworks:block/plinth_stone"
+  }
+}

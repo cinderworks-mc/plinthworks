@@ -1,7 +1,86 @@
 {
-  "variants": {
-    "": {
-      "model": "plinthworks:block/plinth"
+  "multipart": [
+    {
+      "apply": {
+        "model": "plinthworks:block/plinth_fixed"
+      }
+    },
+    {
+      "apply": {
+        "model": "plinthworks:block/plinth_worn"
+      }
+    },
+    {
+      "apply": {
+        "model": "plinthworks:block/plinth_glow"
+      },
+      "when": {
+        "active": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "plinthworks:block/plinth_glyph_item"
+      },
+      "when": {
+        "mode": "0"
+      }
+    },
+    {
+      "apply": {
+        "model": "plinthworks:block/plinth_glyph_energy"
+      },
+      "when": {
+        "mode": "1"
+      }
+    },
+    {
+      "apply": {
+        "model": "plinthworks:block/plinth_glyph_fluid"
+      },
+      "when": {
+        "mode": "2"
+      }
+    },
+    {
+      "apply": {
+        "model": "plinthworks:block/plinth_glyph_xp"
+      },
+      "when": {
+        "mode": "3"
+      }
+    },
+    {
+      "apply": {
+        "model": "plinthworks:block/plinth_gauge_1"
+      },
+      "when": {
+        "gauge": "1|2|3|4"
+      }
+    },
+    {
+      "apply": {
+        "model": "plinthworks:block/plinth_gauge_2"
+      },
+      "when": {
+        "gauge": "2|3|4"
+      }
+    },
+    {
+      "apply": {
+        "model": "plinthworks:block/plinth_gauge_3"
+      },
+      "when": {
+        "gauge": "3|4"
+      }
+    },
+    {
+      "apply": {
+        "model": "plinthworks:block/plinth_gauge_4"
+      },
+      "when": {
+        "gauge": "4"
+      }
     }
-  }
+  ]
 }

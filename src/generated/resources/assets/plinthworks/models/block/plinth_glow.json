@@ -1,0 +1,88 @@
+{
+  "elements": [
+    {
+      "faces": {
+        "east": {
+          "texture": "#glow_side",
+          "uv": [
+            2.0,
+            5.0,
+            14.0,
+            12.0
+          ]
+        },
+        "north": {
+          "texture": "#glow_front",
+          "uv": [
+            2.0,
+            5.0,
+            14.0,
+            12.0
+          ]
+        },
+        "south": {
+          "texture": "#glow_front",
+          "uv": [
+            2.0,
+            5.0,
+            14.0,
+            12.0
+          ]
+        },
+        "west": {
+          "texture": "#glow_side",
+          "uv": [
+            2.0,
+            5.0,
+            14.0,
+            12.0
+          ]
+        }
+      },
+      "from": [
+        1.94,
+        4,
+        1.94
+      ],
+      "neoforge_data": {
+        "ambient_occlusion": false,
+        "block_light": 15
+      },
+      "shade": false,
+      "to": [
+        14.06,
+        11,
+        14.06
+      ]
+    },
+    {
+      "faces": {
+        "up": {
+          "texture": "#glow_bowl"
+        }
+      },
+      "from": [
+        4,
+        12.04,
+        4
+      ],
+      "neoforge_data": {
+        "ambient_occlusion": false,
+        "block_light": 15
+      },
+      "shade": false,
+      "to": [
+        12,
+        12.04,
+        12
+      ]
+    }
+  ],
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "glow_bowl": "plinthworks:block/plinth_glow_bowl",
+    "glow_front": "plinthworks:block/plinth_glow_front",
+    "glow_side": "plinthworks:block/plinth_glow_side",
+    "particle": "plinthworks:block/plinth_stone"
+  }
+}

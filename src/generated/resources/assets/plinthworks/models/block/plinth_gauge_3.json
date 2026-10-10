@@ -1,0 +1,60 @@
+{
+  "elements": [
+    {
+      "faces": {
+        "west": {
+          "texture": "#glyphs"
+        }
+      },
+      "from": [
+        1.91,
+        5,
+        5
+      ],
+      "to": [
+        1.91,
+        9,
+        6
+      ]
+    },
+    {
+      "faces": {
+        "west": {
+          "texture": "#glyphs"
+        }
+      },
+      "from": [
+        1.91,
+        5,
+        7
+      ],
+      "to": [
+        1.91,
+        9,
+        8
+      ]
+    },
+    {
+      "faces": {
+        "west": {
+          "texture": "#glyphs"
+        }
+      },
+      "from": [
+        1.91,
+        5,
+        9
+      ],
+      "to": [
+        1.91,
+        9,
+        10
+      ]
+    }
+  ],
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "glyphs": "plinthworks:block/plinth_glyphs",
+    "particle": "plinthworks:block/plinth_stone"
+  }
+}
