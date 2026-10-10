@@ -15,10 +15,19 @@ java {
 
 repositories {
 	mavenCentral()
+	maven {
+		name = 'ParchmentMC'
+		url = 'https://maven.parchmentmc.org'
+	}
 }
 
 neoForge {
 	version = project.neoforge_version
+
+	parchment {
+		minecraftVersion = project.parchment_minecraft_version
+		mappingsVersion = project.parchment_mappings_version
+	}
 
 	runs {
 		client {
@@ -26,6 +35,10 @@ neoForge {
 		}
 		server {
 			server()
+		}
+		gameTestServer {
+			type = 'gameTestServer'
+			gameDirectory = file('run/gametest')
 		}
 		data {
 			data()
@@ -39,6 +52,11 @@ neoForge {
 		plinthworks {
 			sourceSet sourceSets.main
 		}
+	}
+
+	unitTest {
+		enable()
+		testedMod = mods.plinthworks
 	}
 }
 
