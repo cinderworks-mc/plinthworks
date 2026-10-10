@@ -1,5 +1,6 @@
 package dev.cinderworks.plinthworks.block.entity;
 
+import dev.cinderworks.plinthworks.block.PlinthBlock;
 import dev.cinderworks.plinthworks.component.*;
 import dev.cinderworks.plinthworks.config.ModConfig;
 import dev.cinderworks.plinthworks.item.*;
@@ -120,11 +121,10 @@ public class PlinthBlockEntity extends BlockEntity
 	}
 
 	public static void serverTick(Level level, BlockPos pos, BlockState state, PlinthBlockEntity be) {
-		if (!be.redstoneAllows()) {
-			return;
-		}
+		boolean powered = be.redstoneAllows();
 		UpgradeSet upgrades = be.upgrades();
-		if (upgrades.verb() == null) {
+		be.syncVisual(PlinthVisual.active(powered, upgrades.verb() != null));
+		if (!powered || upgrades.verb() == null) {
 			return;
 		}
 		if (be.cooldown-- > 0) {
@@ -132,6 +132,29 @@ public class PlinthBlockEntity extends BlockEntity
 		}
 		be.cooldown = upgrades.intervalTicks();
 		PlinthTick.run(be, upgrades);
+	}
+
+	// pushes glow, mode glyph and gauge into the blockstate; setBlock only fires when something actually changed
+	private void syncVisual(boolean active) {
+		if (level == null || level.isClientSide) {
+			return;
+		}
+		BlockState state = getBlockState();
+		if (!(state.getBlock() instanceof PlinthBlock)) {
+			return;
+		}
+		int installed = 0;
+		for (int i = 0; i < etchings.getSlots(); i++) {
+			if (!etchings.getStackInSlot(i).isEmpty()) {
+				installed++;
+			}
+		}
+		BlockState wanted = state.setValue(PlinthBlock.ACTIVE, active)
+				.setValue(PlinthBlock.MODE, resourceMode.ordinal())
+				.setValue(PlinthBlock.GAUGE, PlinthVisual.gauge(installed));
+		if (wanted != state) {
+			level.setBlock(worldPosition, wanted, Block.UPDATE_CLIENTS);
+		}
 	}
 
 	public boolean putDisplayedItem(Player player, ItemStack held) {

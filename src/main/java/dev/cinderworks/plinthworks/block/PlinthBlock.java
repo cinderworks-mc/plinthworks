@@ -5,6 +5,7 @@ import dev.cinderworks.plinthworks.block.entity.PlinthBlockEntity;
 import dev.cinderworks.plinthworks.component.PlinthContents;
 import dev.cinderworks.plinthworks.menu.PlinthMenu;
 import dev.cinderworks.plinthworks.item.*;
+import dev.cinderworks.plinthworks.logic.PlinthVisual;
 import dev.cinderworks.plinthworks.logic.ResourceMode;
 import dev.cinderworks.plinthworks.registry.*;
 import net.minecraft.core.BlockPos;
@@ -19,6 +20,8 @@ import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.*;
 import net.minecraft.world.level.block.state.*;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.*;
 import net.minecraft.world.phys.shapes.*;
 import org.jetbrains.annotations.Nullable;
@@ -26,10 +29,23 @@ import org.jetbrains.annotations.Nullable;
 public class PlinthBlock extends BaseEntityBlock
 {
 	public static final MapCodec<PlinthBlock> CODEC = simpleCodec(PlinthBlock::new);
-	private static final VoxelShape SHAPE = Block.box(2, 0, 2, 14, 12, 14);
+	// only the model reads these: glow, resource glyph and how many etching bars are lit
+	public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
+	public static final IntegerProperty MODE = IntegerProperty.create("mode", 0, ResourceMode.values().length - 1);
+	public static final IntegerProperty GAUGE = IntegerProperty.create("gauge", 0, PlinthVisual.GAUGE_MAX);
+	private static final VoxelShape SHAPE = Shapes.or(
+			Block.box(0, 0, 0, 16, 14, 16),
+			Block.box(0, 14, 0, 4, 16, 4), Block.box(12, 14, 0, 16, 16, 4),
+			Block.box(0, 14, 12, 4, 16, 16), Block.box(12, 14, 12, 16, 16, 16));
 
 	public PlinthBlock(Properties properties) {
 		super(properties);
+		registerDefaultState(stateDefinition.any().setValue(ACTIVE, false).setValue(MODE, 0).setValue(GAUGE, 0));
+	}
+
+	@Override
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+		builder.add(ACTIVE, MODE, GAUGE);
 	}
 
 	@Override
@@ -44,7 +60,8 @@ public class PlinthBlock extends BaseEntityBlock
 
 	@Override
 	protected RenderShape getRenderShape(BlockState state) {
-		return RenderShape.INVISIBLE;
+		// the trim is a baked model, the worn block body is drawn by the block entity renderer
+		return RenderShape.MODEL;
 	}
 
 	@Override
