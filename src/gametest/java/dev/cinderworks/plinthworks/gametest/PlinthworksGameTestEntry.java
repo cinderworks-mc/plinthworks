@@ -14,6 +14,6 @@ public class PlinthworksGameTestEntry
 	}
 
 	private static void register(RegisterGameTestsEvent event) {
-		event.register(SmokeGameTests.class);
+		event.register(BufferGameTests.class);
 	}
 }
