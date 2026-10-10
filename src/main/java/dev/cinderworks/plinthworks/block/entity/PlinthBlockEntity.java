@@ -15,6 +15,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.Containers;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -30,9 +31,21 @@ import java.util.List;
 public class PlinthBlockEntity extends BlockEntity
 {
 	private final ItemStackHandler display = new ItemStackHandler(1) {
+		// the stack codec caps count at 99, anything bigger throws on save
+		@Override
+		public int getSlotLimit(int slot) {
+			ItemStack held = getStackInSlot(slot);
+			return bufferLimit(held.isEmpty() ? Item.DEFAULT_MAX_STACK_SIZE : held.getMaxStackSize());
+		}
+
 		@Override
 		protected int getStackLimit(int slot, ItemStack stack) {
-			return stack.getMaxStackSize() * upgrades().bufferSlots();
+			return bufferLimit(stack.getMaxStackSize());
+		}
+
+		private int bufferLimit(int unit) {
+			return (int) Math.min(Item.ABSOLUTE_MAX_STACK_SIZE,
+					(long) Math.max(0, unit) * upgrades().bufferSlots());
 		}
 
 		@Override
