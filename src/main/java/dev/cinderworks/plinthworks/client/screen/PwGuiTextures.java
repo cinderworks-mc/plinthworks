@@ -4,12 +4,15 @@ import dev.cinderworks.plinthworks.Plinthworks;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 
-// one region table for the bronze widget sheet, keeps every blit off magic coords
+// one region table for the stone widget sheet, keeps every blit off magic coords
 public enum PwGuiTextures
 {
 	BTN(0, 0, 16, 16),
 	BTN_HOVER(16, 0, 16, 16),
+	BTN_PRESSED(0, 16, 16, 16),
+	BTN_DISABLED(16, 16, 16, 16),
 	GAUGE_FRAME(32, 0, 18, 52),
+	GAUGE_GLASS(0, 32, 18, 52),
 
 	RES_ITEM(56, 0, 16, 16),
 	RES_ENERGY(72, 0, 16, 16),

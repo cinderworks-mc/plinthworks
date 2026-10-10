@@ -7,7 +7,6 @@ import dev.cinderworks.plinthworks.logic.ResourceMode;
 import dev.cinderworks.plinthworks.logic.network.TransferMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -24,8 +23,7 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 	private static final ResourceLocation TEXTURE =
 			Plinthworks.id("textures/gui/container/plinth.png");
 
-	// light ash panel, so labels keep the near-black ink
-	private static final int LABEL = 0x404040;
+	private static final int LABEL = PwGui.TEXT;
 
 	// stat readout column (relative to panel), sits under the control toolbar
 	private static final int STAT_ICON_X = 139;
@@ -56,9 +54,8 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 		super.init();
 		for (int i = 0; i < menu.blockEntity().seals().getSlots(); i++) {
 			int index = i;
-			addRenderableWidget(Button.builder(Component.literal(String.valueOf(i + 1)),
-					b -> openSeal(index))
-					.bounds(leftPos + 57 + i * 18, topPos + 84, 16, 11).build());
+			addRenderableWidget(new PwTextButton(leftPos + 57 + i * 18, topPos + 84, 16, 11,
+					Component.literal(String.valueOf(i + 1)), () -> openSeal(index)));
 		}
 		int tx = leftPos + 138;
 		int ty = topPos + 18;
@@ -109,6 +106,7 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 				graphics.fill(innerX, top, innerX + GAUGE_FILL_W, innerBottom, color);
 			}
 		}
+		PwGuiTextures.GAUGE_GLASS.render(graphics, fx, fy);
 		drawGaugeLabel(graphics, fx);
 	}
 
@@ -202,12 +200,12 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 
 	@Override
 	protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-		graphics.drawString(font, title, titleLabelX, titleLabelY, LABEL, false);
+		graphics.drawString(font, title, titleLabelX, titleLabelY, PwGui.TITLE, false);
 		graphics.drawString(font, Component.translatable("gui.plinthworks.sigil"), 10, 18, LABEL, false);
 		graphics.drawString(font, Component.translatable("gui.plinthworks.etchings"), 57, 18, LABEL, false);
 		graphics.drawString(font, Component.translatable("gui.plinthworks.display"), 10, 54, LABEL, false);
 		graphics.drawString(font, Component.translatable("gui.plinthworks.seals"), 57, 54, LABEL, false);
-		graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, LABEL, false);
+		graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, PwGui.MUTED, false);
 		renderStats(graphics);
 	}
 
@@ -215,7 +213,7 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 		int y = STAT_TOP;
 		int value = menu.verb();
 		String verb = value == 0 ? "idle" : SigilType.values()[value - 1].name().toLowerCase();
-		graphics.drawString(font, Component.literal(title(verb)), STAT_ICON_X, y, LABEL, false);
+		graphics.drawString(font, Component.literal(title(verb)), STAT_ICON_X, y, PwGui.TITLE, false);
 		y += ROW;
 		statRow(graphics, PwGuiTextures.STAT_RATE,
 				Component.translatable("gui.plinthworks.val_ticks", menu.intervalTicks()), y);
@@ -243,7 +241,7 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 
 	private void statRow(GuiGraphics graphics, PwGuiTextures icon, Component value, int y) {
 		icon.render(graphics, STAT_ICON_X, y);
-		graphics.drawString(font, value, STAT_TEXT_X, y, LABEL, false);
+		graphics.drawString(font, value, STAT_TEXT_X, y, PwGui.VALUE, false);
 	}
 
 	private String trim(String text, int maxWidth) {
