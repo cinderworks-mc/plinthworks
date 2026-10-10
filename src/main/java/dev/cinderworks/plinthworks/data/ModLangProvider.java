@@ -28,7 +28,7 @@ public class ModLangProvider extends LanguageProvider
 		for (EtchingType type : EtchingType.values()) {
 			for (EtchingTier tier : EtchingTier.values()) {
 				add(ModItems.ETCHINGS.get(type).get(tier).get(),
-						title(type.name()) + " Etching (Tier " + ROMAN[tier.level()] + ")");
+						etchingStat(type) + " Etching " + ROMAN[tier.level()]);
 			}
 		}
 		for (SealType type : SealType.values()) {
@@ -111,10 +111,20 @@ public class ModLangProvider extends LanguageProvider
 		return Character.toUpperCase(lower.charAt(0)) + lower.substring(1).replace('_', ' ');
 	}
 
+	// named after the stat labels in the plinth screen
+	private static String etchingStat(EtchingType type) {
+		return switch (type) {
+			case SPEED -> "Rate";
+			case CAPACITY -> "Move";
+			case STORAGE -> "Hold";
+			case RANGE -> "Reach";
+		};
+	}
+
 	private static String sealName(SealType type) {
 		return switch (type) {
 			case ITEM -> "Item Seal";
-			case ITEM_EXACT -> "Exact Item Seal";
+			case ITEM_EXACT -> "Exact Seal";
 			case MOD -> "Mod Seal";
 			case TAG -> "Tag Seal";
 			case COMPONENT -> "Component Seal";
