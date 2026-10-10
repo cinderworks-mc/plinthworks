@@ -24,7 +24,7 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 	private static final ResourceLocation TEXTURE =
 			Plinthworks.id("textures/gui/container/plinth.png");
 
-	// vanilla-style gray panel, so labels use the near-black vanilla ink
+	// light ash panel, so labels keep the near-black ink
 	private static final int LABEL = 0x404040;
 
 	// stat readout column (relative to panel), sits under the control toolbar
@@ -40,9 +40,9 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 	private static final int GAUGE_FILL_W = 14;
 	private static final int GAUGE_FILL_H = 48;
 
-	private static final int ENERGY_FILL = 0xFFE6A83C;
-	private static final int XP_FILL = 0xFF6ABE4A;
-	private static final int FLUID_FALLBACK = 0xFF3A6EA5;
+	private static final int ENERGY_FILL = 0xFFE0803A;
+	private static final int XP_FILL = 0xFFE0C07F;
+	private static final int FLUID_FALLBACK = 0xFF8A867F;
 
 	public PlinthScreen(PlinthMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title);
@@ -84,6 +84,9 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 	@Override
 	protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
 		graphics.blit(TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 256);
+		if (menu.verb() != 0) {
+			PwGuiTextures.SLOT_LOADED.render(graphics, leftPos + 9, topPos + 28);
+		}
 		if (menu.resourceMode() != ResourceMode.ITEM) {
 			drawGauge(graphics);
 		}

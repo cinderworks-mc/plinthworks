@@ -22,6 +22,8 @@ public enum PwGuiTextures
 	REDSTONE(104, 16, 16, 16),
 	NETWORK(56, 32, 16, 16),
 
+	SLOT_LOADED(56, 64, 18, 18),
+
 	STAT_RATE(56, 48, 8, 8),
 	STAT_MOVE(64, 48, 8, 8),
 	STAT_HOLD(72, 48, 8, 8),
