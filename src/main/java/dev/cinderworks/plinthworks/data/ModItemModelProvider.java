@@ -8,8 +8,6 @@ import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
-import java.util.Locale;
-
 public class ModItemModelProvider extends ItemModelProvider
 {
 	public ModItemModelProvider(PackOutput output, ExistingFileHelper files) {
@@ -20,16 +18,15 @@ public class ModItemModelProvider extends ItemModelProvider
 	protected void registerModels() {
 		withExistingParent("plinth", modLoc("block/plinth_item"));
 		flat("sigil_base");
-		singleTexture("etching_base", mcLoc("item/generated"), "layer0", modLoc("item/etching_base"));
+		flat("etching_base");
 		singleTexture("seal_base", mcLoc("item/generated"), "layer0", modLoc("item/seal_base"));
-		// etchings and seals are two flat layers, a plate and a glyph on top, so they get a little thickness
+		// seals are two flat layers, a plate and a glyph on top, so they get a little thickness
 		for (SigilType type : SigilType.values()) {
 			flat(type.path());
 		}
 		for (EtchingType type : EtchingType.values()) {
-			String plate = "etching_plate_" + type.name().toLowerCase(Locale.ROOT);
 			for (EtchingTier tier : EtchingTier.values()) {
-				layered(type.path(tier), plate);
+				flat(type.path(tier));
 			}
 		}
 		for (SealType type : SealType.values()) {
