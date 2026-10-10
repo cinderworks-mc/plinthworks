@@ -15,7 +15,7 @@ public class ModItemModelProvider extends ItemModelProvider
 
 	@Override
 	protected void registerModels() {
-		withExistingParent("plinth", modLoc("block/plinth"));
+		withExistingParent("plinth", modLoc("block/plinth_item"));
 		singleTexture("plinth_core", mcLoc("item/generated"), "layer0", modLoc("item/plinth_core"));
 		singleTexture("sigil_base", mcLoc("item/generated"), "layer0", modLoc("item/sigil_base"));
 		singleTexture("etching_base", mcLoc("item/generated"), "layer0", modLoc("item/etching_base"));

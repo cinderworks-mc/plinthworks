@@ -16,11 +16,10 @@ public class PlinthRenderer implements BlockEntityRenderer<PlinthBlockEntity>
 	public void render(PlinthBlockEntity be, float partialTick, PoseStack poseStack, MultiBufferSource buffers,
 			int light, int overlay) {
 		Minecraft minecraft = Minecraft.getInstance();
+		// the worn block shows on the step and the body, the baked model draws the trim over them
 		// boxes in /16 units (x0,y0,z0 -> x1,y1,z1)
-		renderBox(minecraft, be, poseStack, buffers, light, overlay, 3, 0, 3, 13, 3, 13);   // base
-		renderBox(minecraft, be, poseStack, buffers, light, overlay, 4, 3, 4, 12, 4, 12);    // chamfer
-		renderBox(minecraft, be, poseStack, buffers, light, overlay, 5, 4, 5, 11, 10, 11);   // stem
-		renderBox(minecraft, be, poseStack, buffers, light, overlay, 3, 10, 3, 13, 14, 13);  // cap
+		renderBox(minecraft, be, poseStack, buffers, light, overlay, 1, 2, 1, 15, 4, 15);    // step
+		renderBox(minecraft, be, poseStack, buffers, light, overlay, 2, 4, 2, 14, 11, 14);   // body
 
 		ItemStack stack = be.getDisplayedItem();
 		if (stack.isEmpty() || be.getLevel() == null) {
@@ -29,7 +28,7 @@ public class PlinthRenderer implements BlockEntityRenderer<PlinthBlockEntity>
 		float l = be.getLevel().getGameTime() + partialTick;
 		float bob = (float) Math.sin(l / 10.0F) * 0.03F;
 		poseStack.pushPose();
-		// rest on the cap top (16/16 = 1.0)
+		// sits in the bowl, just over the rim
 		poseStack.translate(0.5F, 0.90F + bob, 0.5F);
 		poseStack.mulPose(Axis.YP.rotationDegrees(l * 3.0F));
 		poseStack.scale(0.45F, 0.45F, 0.45F);
