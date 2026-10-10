@@ -2,12 +2,14 @@ package dev.cinderworks.plinthworks.client.screen;
 
 import dev.cinderworks.plinthworks.logic.network.TransferMode;
 import dev.cinderworks.plinthworks.menu.PlinthMenu;
+import dev.cinderworks.plinthworks.net.SetChannelPayload;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class NetworkOverviewScreen extends Screen
 {
@@ -62,10 +64,7 @@ public class NetworkOverviewScreen extends Screen
 	}
 
 	private void renameChannel() {
-		minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 30);
-		channelName.getValue().chars().forEach(value ->
-				minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 1000 + value));
-		minecraft.gameMode.handleInventoryButtonClick(menu.containerId, 31);
+		PacketDistributor.sendToServer(new SetChannelPayload(channelName.getValue()));
 	}
 
 	@Override

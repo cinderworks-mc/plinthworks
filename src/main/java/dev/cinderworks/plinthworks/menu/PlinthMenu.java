@@ -8,6 +8,7 @@ import dev.cinderworks.plinthworks.logic.ResourceMode;
 import dev.cinderworks.plinthworks.logic.UpgradeSet;
 import dev.cinderworks.plinthworks.logic.resource.ResourceTypes;
 import dev.cinderworks.plinthworks.logic.seal.SealMatch;
+import dev.cinderworks.plinthworks.net.SealEdit;
 import dev.cinderworks.plinthworks.registry.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.TypedDataComponent;
@@ -22,12 +23,12 @@ import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class PlinthMenu extends AbstractContainerMenu
 {
+	private static final int KEY_INDEX_LIMIT = 64;
+
 	private final PlinthBlockEntity be;
 	private final ContainerData stats;
 	private final int plinthSlots;
 	private final java.util.List<BlockPos> networkMembers;
-	private final StringBuilder channelInput = new StringBuilder();
-	private int editSeal;
 
 	public PlinthMenu(int id, Inventory playerInv, RegistryFriendlyByteBuf data) {
 		this(id, playerInv, data.readBlockPos(), readMembers(data));
@@ -125,21 +126,6 @@ public class PlinthMenu extends AbstractContainerMenu
 
 	@Override
 	public boolean clickMenuButton(Player player, int id) {
-		if (id == 30) {
-			channelInput.setLength(0);
-			return true;
-		}
-		if (id >= 1000 && id <= 1127 && channelInput.length() < 32) {
-			channelInput.append((char) (id - 1000));
-			return true;
-		}
-		if (id == 31 && be.getLevel() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
-			String name = LinkToolItem.channelName(channelInput.toString());
-			dev.cinderworks.plinthworks.logic.network.PlinthNetwork.get(serverLevel).add(name, be.getBlockPos());
-			be.setChannel(name);
-			broadcastChanges();
-			return true;
-		}
 		if (id == 20 && be.getLevel() instanceof net.minecraft.server.level.ServerLevel serverLevel
 				&& !be.channel().isEmpty()) {
 			dev.cinderworks.plinthworks.logic.network.PlinthNetwork.get(serverLevel).cycleMode(be.channel());
@@ -165,37 +151,43 @@ public class PlinthMenu extends AbstractContainerMenu
 			}
 			return true;
 		}
-		// the seal-config screen sends this first so every following op targets the seal it opened, not slot 0
-		if (id >= 40 && id < 40 + be.seals().getSlots()) {
-			editSeal = id - 40;
-			return true;
+		return false;
+	}
+
+	// the payload already sanitized the name
+	public void applyChannel(String name) {
+		if (!(be.getLevel() instanceof net.minecraft.server.level.ServerLevel serverLevel)) {
+			return;
 		}
-		ItemStack sealStack = be.seals().getStackInSlot(editSeal);
+		dev.cinderworks.plinthworks.logic.network.PlinthNetwork.get(serverLevel).add(name, be.getBlockPos());
+		be.setChannel(name);
+		broadcastChanges();
+	}
+
+	public void applySealEdit(SealEdit action, int index, int key) {
+		if (index < 0 || index >= be.seals().getSlots() || key < 0 || key >= KEY_INDEX_LIMIT) {
+			return;
+		}
+		ItemStack sealStack = be.seals().getStackInSlot(index);
 		if (!(sealStack.getItem() instanceof SealItem seal)) {
-			return false;
+			return;
 		}
 		sealStack = sealStack.copy();
 		SealConfig config = sealStack.getOrDefault(ModDataComponents.SEAL_CONFIG.get(), SealConfig.EMPTY);
-		if (id == 0) {
-			sealStack.set(ModDataComponents.SEAL_CONFIG.get(), config.toggleMode());
-			be.seals().setStackInSlot(editSeal, sealStack);
-			broadcastChanges();
-			return true;
+		switch (action) {
+			case TOGGLE_MODE -> sealStack.set(ModDataComponents.SEAL_CONFIG.get(), config.toggleMode());
+			case CLEAR_KEYS -> sealStack.set(ModDataComponents.SEAL_CONFIG.get(),
+					new SealConfig(config.whitelist(), java.util.List.of()));
+			default -> {
+				MatchKey match = keyFor(seal.type(), action, key);
+				if (match == null) {
+					return;
+				}
+				sealStack.set(ModDataComponents.SEAL_CONFIG.get(), config.with(match));
+			}
 		}
-		if (id == 1) {
-			sealStack.set(ModDataComponents.SEAL_CONFIG.get(), new SealConfig(config.whitelist(), java.util.List.of()));
-			be.seals().setStackInSlot(editSeal, sealStack);
-			broadcastChanges();
-			return true;
-		}
-		MatchKey key = keyFor(seal.type(), id);
-		if (key == null) {
-			return false;
-		}
-		sealStack.set(ModDataComponents.SEAL_CONFIG.get(), config.with(key));
-		be.seals().setStackInSlot(editSeal, sealStack);
+		be.seals().setStackInSlot(index, sealStack);
 		broadcastChanges();
-		return true;
 	}
 
 	public PlinthBlockEntity blockEntity() {
@@ -274,21 +266,27 @@ public class PlinthMenu extends AbstractContainerMenu
 		return be.seals().getStackInSlot(index);
 	}
 
-	private MatchKey keyFor(SealType type, int id) {
+	// the action has to match the seal type
+	private MatchKey keyFor(SealType type, SealEdit action, int key) {
 		ItemStack shown = be.getDisplayedItem();
 		if (shown.isEmpty()) {
 			return null;
 		}
 		ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(shown.getItem());
-		return switch (type) {
-			case ITEM -> new MatchKey.ItemKey(itemId);
-			case ITEM_EXACT -> new MatchKey.ComponentKey(Plinthworks.id("exact"),
-					SealMatch.componentFingerprint(shown));
-			case MOD -> new MatchKey.ModKey(itemId.getNamespace());
-			case TAG -> shown.getTags().skip(Math.max(0, id - 100L)).findFirst()
+		return switch (action) {
+			case ADD_DISPLAYED -> switch (type) {
+				case ITEM -> new MatchKey.ItemKey(itemId);
+				case ITEM_EXACT -> new MatchKey.ComponentKey(Plinthworks.id("exact"),
+						SealMatch.componentFingerprint(shown));
+				case MOD -> new MatchKey.ModKey(itemId.getNamespace());
+				default -> null;
+			};
+			case ADD_TAG -> type != SealType.TAG ? null : shown.getTags().skip(key).findFirst()
 					.map(tag -> (MatchKey) new MatchKey.TagKey(tag.location())).orElse(null);
-			case COMPONENT -> shown.getComponents().stream().skip(Math.max(0, id - 200L)).findFirst()
-					.map(component -> componentKey(component)).orElse(null);
+			case ADD_COMPONENT -> type != SealType.COMPONENT ? null
+					: shown.getComponents().stream().skip(key).findFirst()
+							.map(component -> componentKey(component)).orElse(null);
+			default -> null;
 		};
 	}
 

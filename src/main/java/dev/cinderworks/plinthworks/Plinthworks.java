@@ -2,6 +2,7 @@ package dev.cinderworks.plinthworks;
 
 import dev.cinderworks.plinthworks.compat.CompatHooks;
 import dev.cinderworks.plinthworks.config.ModConfig;
+import dev.cinderworks.plinthworks.net.ModNetwork;
 import dev.cinderworks.plinthworks.registry.*;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
@@ -24,6 +25,7 @@ public class Plinthworks
 		ModRecipes.SERIALIZERS.register(modBus);
 		ModMenus.MENUS.register(modBus);
 		modBus.addListener(ModBlockEntities::registerCapabilities);
+		modBus.addListener(ModNetwork::register);
 		container.registerConfig(Type.COMMON, ModConfig.SPEC);
 		CompatHooks.init();
 	}
