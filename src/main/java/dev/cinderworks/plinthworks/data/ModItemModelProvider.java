@@ -31,6 +31,6 @@ public class ModItemModelProvider extends ItemModelProvider
 		for (SealType type : SealType.values()) {
 			basicItem(ModItems.SEALS.get(type).get());
 		}
-		basicItem(ModItems.LINK_TOOL.get());
+		// the link tool is a 3d model written by art-source/scripts/link_tool.lua
 	}
 }
