@@ -100,10 +100,10 @@ public class ModLangProvider extends LanguageProvider
 		add("gui.plinthworks.network_empty", "Nothing linked yet.");
 		add("gui.plinthworks.network_name", "Channel name");
 		add("gui.plinthworks.network_rename", "Rename");
-		add("message.plinthworks.link_cleared", "Link binding cleared");
-		add("message.plinthworks.link_bound", "Bound link tool to %s");
-		add("message.plinthworks.link_joined", "Linked to channel %s");
-		add("message.plinthworks.link_range", "That plinth is outside linking range");
+		add("message.plinthworks.link_cleared", "Link cleared.");
+		add("message.plinthworks.link_bound", "Bound the link tool to %s.");
+		add("message.plinthworks.link_joined", "Linked to channel %s.");
+		add("message.plinthworks.link_range", "That plinth is out of range. Links reach %s blocks, in one dimension.");
 	}
 
 	private static String title(String value) {

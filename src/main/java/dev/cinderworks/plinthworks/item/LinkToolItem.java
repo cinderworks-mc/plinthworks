@@ -57,7 +57,7 @@ public class LinkToolItem extends Item
 		GlobalPos anchor = binding.anchor().get();
 		if (!anchor.dimension().equals(level.dimension())
 				|| Math.sqrt(anchor.pos().distSqr(pos)) > ModConfig.LINK_RANGE.get()) {
-			player.displayClientMessage(Component.translatable("message.plinthworks.link_range"), true);
+			player.displayClientMessage(Component.translatable("message.plinthworks.link_range", ModConfig.LINK_RANGE.get()), true);
 			return InteractionResult.FAIL;
 		}
 		PlinthNetwork.get(level).add(binding.channel(), pos);
