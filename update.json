@@ -1,0 +1,10 @@
+{
+  "homepage": "https://github.com/cinderworks-mc/plinthworks",
+  "promos": {
+    "1.21.1-recommended": "0.2.3",
+    "1.21.1-latest": "0.2.3"
+  },
+  "1.21.1": {
+    "0.2.3": "void no longer erases nearby containers, crafting is off by default, big buffers can no longer corrupt a chunk, the energy gauge reads correctly, and shift-clicking the plinth slots no longer dupes or loses items. update from 0.2.2."
+  }
+}

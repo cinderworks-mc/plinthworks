@@ -8,6 +8,8 @@ issueTrackerURL="https://github.com/cinderworks-mc/plinthworks/issues"
 modId="${mod_id}"
 version="${mod_version}"
 displayName="${mod_name}"
+updateJSONURL="https://raw.githubusercontent.com/cinderworks-mc/plinthworks/main/update.json"
+displayURL="https://github.com/cinderworks-mc/plinthworks"
 authors="Cinder Works"
 description='''plinths you teach to move and filter items, with linking across distance.'''
 
