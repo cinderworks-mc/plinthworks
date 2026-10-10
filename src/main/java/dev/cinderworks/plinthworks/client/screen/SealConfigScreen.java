@@ -18,6 +18,10 @@ public class SealConfigScreen extends Screen
 	private final PlinthScreen parent;
 	private final PlinthMenu menu;
 	private final int sealIndex;
+	private PwTextButton clearButton;
+	private int armed;
+	private int left;
+	private int top;
 
 	public SealConfigScreen(PlinthScreen parent, PlinthMenu menu, int sealIndex) {
 		super(Component.translatable("gui.plinthworks.seal_config"));
@@ -28,16 +32,17 @@ public class SealConfigScreen extends Screen
 
 	@Override
 	protected void init() {
-		int x = width / 2 - 90;
-		int y = height / 2 - 65;
+		left = (width - PwFrame.WIDTH) / 2;
+		top = (height - PwFrame.HEIGHT) / 2;
 		ItemStack sealStack = menu.seal(sealIndex);
 		if (!(sealStack.getItem() instanceof SealItem seal)) {
 			return;
 		}
-		addRenderableWidget(new PwTextButton(x, y + 24, 86, 20,
+		addRenderableWidget(new PwTextButton(left + 12, top + 24, 86, 16,
 				Component.translatable("gui.plinthworks.toggle_mode"), () -> send(SealEdit.TOGGLE_MODE, 0)));
-		addRenderableWidget(new PwTextButton(x + 94, y + 24, 86, 20,
-				Component.translatable("gui.plinthworks.clear_keys"), () -> send(SealEdit.CLEAR_KEYS, 0)));
+		clearButton = new PwTextButton(left + 98, top + 24, 86, 16,
+				Component.translatable("gui.plinthworks.clear_keys"), this::clearKeys).danger();
+		addRenderableWidget(clearButton);
 
 		ItemStack shown = menu.blockEntity().getDisplayedItem();
 		if (shown.isEmpty()) {
@@ -45,13 +50,33 @@ public class SealConfigScreen extends Screen
 		}
 		if (seal.type() == SealType.TAG) {
 			shown.getTags().limit(4).forEach(tag ->
-					addKeyButton(tag.location().toString(), SealEdit.ADD_TAG, nextKeyButton(), x, y));
+					addKeyButton(tag.location().toString(), SealEdit.ADD_TAG, nextKeyButton()));
 		} else if (seal.type() == SealType.COMPONENT) {
 			shown.getComponents().stream().limit(4).forEach(component ->
-					addKeyButton(componentName(component), SealEdit.ADD_COMPONENT, nextKeyButton(), x, y));
+					addKeyButton(componentName(component), SealEdit.ADD_COMPONENT, nextKeyButton()));
 		} else {
 			addKeyButton(Component.translatable("gui.plinthworks.add_displayed").getString(),
-					SealEdit.ADD_DISPLAYED, 0, x, y);
+					SealEdit.ADD_DISPLAYED, 0);
+		}
+	}
+
+	// the first click arms the button, a second one within three seconds clears
+	private void clearKeys() {
+		if (armed > 0) {
+			armed = 0;
+			clearButton.setMessage(Component.translatable("gui.plinthworks.clear_keys"));
+			send(SealEdit.CLEAR_KEYS, 0);
+		} else {
+			armed = 60;
+			clearButton.setMessage(Component.literal("Sure?"));
+		}
+	}
+
+	@Override
+	public void tick() {
+		super.tick();
+		if (armed > 0 && --armed == 0) {
+			clearButton.setMessage(Component.translatable("gui.plinthworks.clear_keys"));
 		}
 	}
 
@@ -59,9 +84,9 @@ public class SealConfigScreen extends Screen
 		return Math.max(0, children().size() - 2);
 	}
 
-	private void addKeyButton(String label, SealEdit action, int key, int x, int y) {
+	private void addKeyButton(String label, SealEdit action, int key) {
 		int row = nextKeyButton();
-		addRenderableWidget(new PwTextButton(x, y + 50 + row * 22, 180, 20,
+		addRenderableWidget(new PwTextButton(left + 12, top + 46 + row * 20, 172, 18,
 				Component.literal(label), () -> send(action, key)));
 	}
 
@@ -78,22 +103,26 @@ public class SealConfigScreen extends Screen
 		minecraft.setScreen(parent);
 	}
 
+	// the frame goes on top of the dimmed world, under the widgets
+	@Override
+	public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+		super.renderBackground(graphics, mouseX, mouseY, partialTick);
+		PwFrame.render(graphics, left, top);
+	}
+
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-		renderBackground(graphics, mouseX, mouseY, partialTick);
-		int x = width / 2 - 90;
-		int y = height / 2 - 65;
-		PwGui.panel(graphics, x - 12, y - 12, 204, 162);
 		super.render(graphics, mouseX, mouseY, partialTick);
-		graphics.drawString(font, title, x, y, PwGui.TITLE, false);
+		graphics.drawString(font, title, left + 13, top + 5, PwGui.TITLE, false);
 		ItemStack seal = menu.seal(sealIndex);
 		if (!(seal.getItem() instanceof SealItem)) {
-			graphics.drawString(font, Component.translatable("gui.plinthworks.no_seal"), x, y + 12, PwGui.MUTED, false);
+			graphics.drawString(font, Component.translatable("gui.plinthworks.no_seal"), left + 12, top + 28,
+					PwGui.MUTED, false);
 			return;
 		}
 		SealConfig config = seal.getOrDefault(ModDataComponents.SEAL_CONFIG.get(), SealConfig.EMPTY);
-		graphics.drawString(font, Component.translatable(config.whitelist()
-				? "gui.plinthworks.whitelist" : "gui.plinthworks.blacklist", config.keys().size()),
-				x, y + 12, PwGui.TEXT, false);
+		Component mode = Component.translatable(config.whitelist()
+				? "gui.plinthworks.whitelist" : "gui.plinthworks.blacklist", config.keys().size());
+		graphics.drawString(font, mode, left + 172 - font.width(mode), top + 5, PwGui.MUTED, false);
 	}
 }

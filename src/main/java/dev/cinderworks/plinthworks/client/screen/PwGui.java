@@ -1,14 +1,9 @@
 package dev.cinderworks.plinthworks.client.screen;
 
-import dev.cinderworks.plinthworks.Plinthworks;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
-
 // text and fill colours shared by the screens, see the contrast test for the pairs that must stay readable
 final class PwGui
 {
 	static final int TITLE = 0xE0C07F;
-	static final int TEXT = 0xBBB6AB;
 	static final int LABEL = 0xCFC8B8;
 	static final int VALUE = 0xE6E0D2;
 	static final int MUTED = 0xB0AA9E;
@@ -20,18 +15,7 @@ final class PwGui
 	static final int FIELD = 0x353331;
 	static final int PLATE = 0x2B2927;
 
-	private static final ResourceLocation PANEL = Plinthworks.id("panel");
-	private static final ResourceLocation INSET = Plinthworks.id("inset");
-
 	private PwGui() {}
-
-	static void panel(GuiGraphics g, int x, int y, int w, int h) {
-		g.blitSprite(PANEL, x, y, w, h);
-	}
-
-	static void inset(GuiGraphics g, int x, int y, int w, int h) {
-		g.blitSprite(INSET, x, y, w, h);
-	}
 
 	static double luminance(int rgb) {
 		return 0.2126 * channel(rgb >> 16) + 0.7152 * channel(rgb >> 8) + 0.0722 * channel(rgb);

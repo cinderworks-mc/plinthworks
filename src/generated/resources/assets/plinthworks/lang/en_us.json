@@ -31,6 +31,8 @@
   "gui.plinthworks.mode.tip.state": "Transfer: %s",
   "gui.plinthworks.mode_blacklist": "Block",
   "gui.plinthworks.mode_whitelist": "Allow",
+  "gui.plinthworks.network_count": "%s plinths",
+  "gui.plinthworks.network_count_one": "%s plinth",
   "gui.plinthworks.network_empty": "Nothing linked yet.",
   "gui.plinthworks.network_members": "On this channel",
   "gui.plinthworks.network_mode": "Mode",
