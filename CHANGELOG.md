@@ -36,6 +36,7 @@ notable changes to plinthworks. loosely follows keep a changelog.
 - long labels are clipped to their buttons.
 - an unnamed link tool joins the channel of the plinth it binds to instead of replacing it. a named tool still wins.
 - the licence file is in the jar.
+- removed the config keys area.maxVolume and fuelProfile.enabled. nothing read them.
 
 ### tests
 - gametests for the skip notice throttle, and a text contrast check for the screens.
