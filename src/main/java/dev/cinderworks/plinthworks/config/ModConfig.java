@@ -24,8 +24,6 @@ public class ModConfig
 	public static final ModConfigSpec.IntValue RANGE_MAX;
 	public static final ModConfigSpec.IntValue ETCHING_SLOTS;
 	public static final ModConfigSpec.IntValue SEAL_SLOTS;
-	public static final ModConfigSpec.IntValue MAX_AREA_VOLUME;
-	public static final ModConfigSpec.BooleanValue FUEL_COSTS;
 	public static final ModConfigSpec.IntValue MAX_HANDLERS;
 	public static final ModConfigSpec.IntValue LINK_RANGE;
 	public static final ModConfigSpec.BooleanValue CRAFTING_ENABLED;
@@ -128,14 +126,6 @@ public class ModConfig
 				"#c:experience", "#forge:experience"), () -> "modid:fluid",
 				value -> value instanceof String entry && !entry.isBlank());
 		XP_MB_PER_POINT = BUILDER.defineInRange("mbPerPoint", 20, 1, Integer.MAX_VALUE);
-		BUILDER.pop();
-
-		BUILDER.push("area");
-		MAX_AREA_VOLUME = BUILDER.defineInRange("maxVolume", 4096, 1, 32768);
-		BUILDER.pop();
-
-		BUILDER.push("fuelProfile");
-		FUEL_COSTS = BUILDER.define("enabled", false);
 		BUILDER.pop();
 
 		SPEC = BUILDER.build();
