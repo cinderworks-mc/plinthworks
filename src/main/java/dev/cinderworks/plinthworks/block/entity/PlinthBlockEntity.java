@@ -377,6 +377,10 @@ public class PlinthBlockEntity extends BlockEntity
 		etchings.deserializeNBT(registries, compound.getCompound("Etchings"));
 		seals.deserializeNBT(registries, compound.getCompound("Seals"));
 		baseState = NbtUtils.readBlockState(registries.lookupOrThrow(Registries.BLOCK), compound.getCompound("BaseState"));
+		// missing data and blocks from a removed mod both read back as air, which would draw no body at all
+		if (baseState.isAir()) {
+			baseState = Blocks.STONE.defaultBlockState();
+		}
 		cooldown = compound.getInt("Cooldown");
 		channel = compound.getString("Channel");
 		channelChecked = false;

@@ -462,4 +462,14 @@ public class PlaytestGameTests
 		Support.expectEquals(helper, 12, player.getInventory().getItem(0).getCount(), "items left in the inventory");
 		helper.succeed();
 	}
+
+	@GameTest(template = Support.TEMPLATE, templateNamespace = Support.NAMESPACE)
+	public static void plinthLoadedWithoutABaseStaysStone(GameTestHelper helper) {
+		PlinthBlockEntity be = Support.plinth(helper, POS);
+		CompoundTag tag = new CompoundTag();
+		tag.putString("Channel", "");
+		be.loadWithComponents(tag, Support.registries(helper));
+		Support.expect(helper, be.getBaseState().is(Blocks.STONE), "a plinth loaded from partial data has base " + be.getBaseState());
+		helper.succeed();
+	}
 }
