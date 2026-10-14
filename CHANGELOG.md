@@ -2,6 +2,35 @@
 
 notable changes to plinthworks. loosely follows keep a changelog.
 
+## 0.2.4
+
+### added
+- a short advancement chain from crafting the plinth core to a tier IV plinth.
+- action bar messages when a world verb skips a block, for players within 8 blocks, at
+  most once every 10 seconds per plinth. turn them off with world.verbs.skipMessages.
+- a client config with a reduced motion switch for the gui animations.
+- tooltips on the plinth, the plinth core, the blank sigil, etching and seal, and the
+  link tool.
+- skinned tooltips on the plinth screens.
+- the link tool lights its thread once it holds a plinth.
+
+### changed
+- new plinth model and textures: a stepped foot, a body that shows the block it was
+  crafted from, and a cap with two brass flanking blocks over a coal mound. the mound
+  glows when the plinth is running, and the displayed item floats above it.
+- redrawn sigils, etchings and seals, so each kind has its own shape. the link tool
+  and the plinth core item are redrawn as well, and there is a new mod icon.
+- the plinth screen is redone with a stepped slab, a gauge tube and a stat plate.
+  the seal key editor is a three by three tray, and the channel overview and tag seal
+  editor share one frame with a scrolling member list.
+- etchings are named after what they change: rate, move, hold and reach.
+- one wording throughout: allow list and block list, and channel. link messages end
+  with full stops and state the link range.
+- screen labels for resource, transfer and verb are translatable.
+
+### tests
+- gametests for the skip notice throttle, and a text contrast check for the screens.
+
 ## 0.2.3
 
 ### known issues in 0.2.2
