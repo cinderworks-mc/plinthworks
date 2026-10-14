@@ -238,4 +238,109 @@ public class PlaytestGameTests
 			Support.expect(helper, members.contains(helper.absolutePos(POS)), "a plinth restored with a channel is not a member: " + members);
 		}).thenSucceed();
 	}
+
+	@GameTest(template = Support.TEMPLATE, templateNamespace = Support.NAMESPACE)
+	public static void everyAdvancementCanBeEarnedByPlaying(GameTestHelper helper) {
+		var player = helper.makeMockServerPlayerInLevel();
+		var server = helper.getLevel().getServer();
+		var level = helper.getLevel();
+		helper.setBlock(new BlockPos(5, 1, 5), Blocks.STONE);
+		BlockPos floor = helper.absolutePos(new BlockPos(5, 1, 5));
+		var hit = new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(floor).add(0, 0.5, 0),
+				net.minecraft.core.Direction.UP, floor, false);
+		var hand = net.minecraft.world.InteractionHand.MAIN_HAND;
+		java.util.function.Consumer<ItemStack> give = stack -> {
+			player.getInventory().add(stack);
+			player.containerMenu.broadcastChanges();
+		};
+		give.accept(new ItemStack(dev.cinderworks.plinthworks.registry.ModItems.PLINTH_CORE.get()));
+		give.accept(new ItemStack(dev.cinderworks.plinthworks.registry.ModItems.PLINTH.get()));
+		ItemStack plinthItem = new ItemStack(dev.cinderworks.plinthworks.registry.ModItems.PLINTH.get());
+		player.setItemInHand(hand, plinthItem);
+		player.gameMode.useItemOn(player, level, plinthItem, hand, hit);
+		BlockPos placedAt = floor.above();
+		Support.expect(helper, level.getBlockState(placedAt).is(dev.cinderworks.plinthworks.registry.ModBlocks.PLINTH.get()),
+				"the plinth was not placed by a player item use");
+		var plinthHit = new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(placedAt),
+				net.minecraft.core.Direction.UP, placedAt, false);
+		// the mock player has no client to open a screen on, so the menu part runs on a fake player and the
+		// trigger fires for the real one with the same arguments the server would pass
+		var opener = Support.player(helper);
+		java.util.function.Consumer<ItemStack> useOnPlinth = stack -> {
+			opener.setItemInHand(hand, stack);
+			var result = level.getBlockState(placedAt).useItemOn(stack, level, opener, hand, plinthHit);
+			Support.expect(helper, result.consumesAction(), stack + " used on the plinth did not consume the click: " + result);
+			opener.closeContainer();
+			net.minecraft.advancements.CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger(player, placedAt, stack);
+		};
+		useOnPlinth.accept(new ItemStack(dev.cinderworks.plinthworks.registry.ModItems.SIGILS.get(SigilType.IMPORT).get()));
+		useOnPlinth.accept(new ItemStack(dev.cinderworks.plinthworks.registry.ModItems.ETCHINGS.get(EtchingType.RANGE).get(EtchingTier.T1).get()));
+		useOnPlinth.accept(new ItemStack(dev.cinderworks.plinthworks.registry.ModItems.SEALS.get(SealType.TAG).get()));
+		give.accept(new ItemStack(dev.cinderworks.plinthworks.registry.ModItems.SIGILS.get(SigilType.VOID).get()));
+		give.accept(new ItemStack(dev.cinderworks.plinthworks.registry.ModItems.ETCHINGS.get(EtchingType.SPEED).get(EtchingTier.T4).get()));
+		give.accept(new ItemStack(dev.cinderworks.plinthworks.registry.ModItems.LINK_TOOL.get()));
+		java.util.List<String> missing = new java.util.ArrayList<>();
+		int total = 0;
+		for (var holder : server.getAdvancements().getAllAdvancements()) {
+			if (!holder.id().getNamespace().equals("plinthworks") || holder.id().getPath().startsWith("recipes/")) {
+				continue;
+			}
+			total++;
+			if (!player.getAdvancements().getOrStartProgress(holder).isDone()) {
+				missing.add(holder.id().getPath());
+			}
+		}
+		Support.expectEquals(helper, 9, total, "number of plinthworks advancements loaded");
+		Support.expect(helper, missing.isEmpty(), "not earned by simulated play: " + missing);
+		helper.succeed();
+	}
+
+	@GameTest(template = Support.TEMPLATE, templateNamespace = Support.NAMESPACE)
+	public static void everyTextTheServerBuildsHasATranslation(GameTestHelper helper) throws Exception {
+		com.google.gson.JsonObject lang;
+		try (var in = PlaytestGameTests.class.getResourceAsStream("/assets/plinthworks/lang/en_us.json")) {
+			lang = com.google.gson.JsonParser.parseReader(new java.io.InputStreamReader(in)).getAsJsonObject();
+		}
+		java.util.List<String> missing = new java.util.ArrayList<>();
+		java.util.function.Consumer<net.minecraft.network.chat.Component> check = text -> {
+			text.visit(content -> java.util.Optional.<Object>empty());
+			if (text.getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t && !lang.has(t.getKey())) {
+				missing.add(t.getKey());
+			}
+		};
+		for (var item : net.minecraft.core.registries.BuiltInRegistries.ITEM) {
+			var id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item);
+			if (!id.getNamespace().equals("plinthworks")) {
+				continue;
+			}
+			ItemStack stack = new ItemStack(item);
+			check.accept(stack.getHoverName());
+			java.util.List<net.minecraft.network.chat.Component> lines = new java.util.ArrayList<>();
+			item.appendHoverText(stack, net.minecraft.world.item.Item.TooltipContext.of(helper.getLevel()), lines,
+					net.minecraft.world.item.TooltipFlag.NORMAL);
+			lines.forEach(check);
+		}
+		for (var holder : helper.getLevel().getServer().getAdvancements().getAllAdvancements()) {
+			if (holder.id().getNamespace().equals("plinthworks") && holder.value().display().isPresent()) {
+				check.accept(holder.value().display().get().getTitle());
+				check.accept(holder.value().display().get().getDescription());
+			}
+		}
+		for (SigilType verb : SigilType.values()) {
+			for (var reason : dev.cinderworks.plinthworks.logic.sigil.SkipNotice.Reason.values()) {
+				boolean worldVerb = verb == SigilType.BREAKER || verb == SigilType.HARVESTER
+						|| verb == SigilType.PLACER || verb == SigilType.PLANTER;
+				if (worldVerb && !lang.has("message.plinthworks.skip." + reason.name().toLowerCase() + "." + verb.name().toLowerCase())) {
+					// only the pairs the verbs actually report need to exist
+					boolean reported = (verb == SigilType.BREAKER || verb == SigilType.HARVESTER) && reason != dev.cinderworks.plinthworks.logic.sigil.SkipNotice.Reason.FAILED
+							|| (verb == SigilType.PLACER || verb == SigilType.PLANTER) && reason == dev.cinderworks.plinthworks.logic.sigil.SkipNotice.Reason.FAILED;
+					if (reported) {
+						missing.add("skip " + reason + " " + verb);
+					}
+				}
+			}
+		}
+		Support.expect(helper, missing.isEmpty(), "no translation for " + missing);
+		helper.succeed();
+	}
 }
