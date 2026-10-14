@@ -11,6 +11,7 @@ public class PlinthworksGameTestEntry
 {
 	public PlinthworksGameTestEntry(IEventBus modBus) {
 		modBus.addListener(PlinthworksGameTestEntry::register);
+		modBus.addListener(PlaytestSupport::registerCapabilities);
 	}
 
 	private static void register(RegisterGameTestsEvent event) {
@@ -23,5 +24,6 @@ public class PlinthworksGameTestEntry
 		event.register(NetworkGameTests.class);
 		event.register(TransferGameTests.class);
 		event.register(BreakerGameTests.class);
+		event.register(PlaytestGameTests.class);
 	}
 }
