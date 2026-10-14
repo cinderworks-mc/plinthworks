@@ -2,6 +2,7 @@ package dev.cinderworks.plinthworks.client.screen;
 
 import dev.cinderworks.plinthworks.component.SealConfig;
 import dev.cinderworks.plinthworks.item.*;
+import dev.cinderworks.plinthworks.logic.seal.SealMatch;
 import dev.cinderworks.plinthworks.menu.PlinthMenu;
 import dev.cinderworks.plinthworks.net.SealEdit;
 import dev.cinderworks.plinthworks.net.SealEditPayload;
@@ -49,8 +50,8 @@ public class SealConfigScreen extends Screen
 			return;
 		}
 		if (seal.type() == SealType.TAG) {
-			shown.getTags().limit(4).forEach(tag ->
-					addKeyButton(tag.location().toString(), SealEdit.ADD_TAG, nextKeyButton()));
+			SealMatch.sortedTags(shown).stream().limit(4).forEach(tag ->
+					addKeyButton(tag.toString(), SealEdit.ADD_TAG, nextKeyButton()));
 		} else if (seal.type() == SealType.COMPONENT) {
 			shown.getComponents().stream().limit(4).forEach(component ->
 					addKeyButton(componentName(component), SealEdit.ADD_COMPONENT, nextKeyButton()));

@@ -63,6 +63,13 @@ public class SealMatch
 		return value != null && key.value().equals(String.valueOf(value));
 	}
 
+	// the tags of a stack come out of an immutable set with a different order in every JVM, so a tag
+	// number only means the same tag to a client and a server when both sort first
+	public static List<net.minecraft.resources.ResourceLocation> sortedTags(ItemStack stack) {
+		return stack.getTags().map(TagKey::location)
+				.sorted(java.util.Comparator.comparing(net.minecraft.resources.ResourceLocation::toString)).toList();
+	}
+
 	public static String componentFingerprint(ItemStack stack) {
 		return BuiltInRegistries.ITEM.getKey(stack.getItem()) + "|" + stack.getComponentsPatch();
 	}

@@ -472,4 +472,25 @@ public class PlaytestGameTests
 		Support.expect(helper, be.getBaseState().is(Blocks.STONE), "a plinth loaded from partial data has base " + be.getBaseState());
 		helper.succeed();
 	}
+
+	// the tag list is rebuilt from an immutable set whose iteration order is random per JVM, so a client and a
+	// dedicated server only agree on "tag number 2" if both sort first
+	@GameTest(template = Support.TEMPLATE, templateNamespace = Support.NAMESPACE)
+	public static void tagSealKeyIndexMeansTheSameTagOnEverySide(GameTestHelper helper) {
+		PlinthBlockEntity be = Support.plinth(helper, POS);
+		be.seals().setStackInSlot(0, Support.seal(SealType.TAG, true));
+		be.display().setStackInSlot(0, new ItemStack(Items.OAK_LOG));
+		var player = Support.player(helper);
+		var menu = new dev.cinderworks.plinthworks.menu.PlinthMenu(1, player.getInventory(), be);
+		java.util.List<String> sorted = new ItemStack(Items.OAK_LOG).getTags().map(tag -> tag.location().toString()).sorted().toList();
+		java.util.List<String> chosen = new java.util.ArrayList<>();
+		for (int i = 0; i < sorted.size(); i++) {
+			be.seals().setStackInSlot(0, Support.seal(SealType.TAG, true));
+			menu.applySealEdit(dev.cinderworks.plinthworks.net.SealEdit.ADD_TAG, 0, i);
+			var keys = be.seals().getStackInSlot(0).get(dev.cinderworks.plinthworks.registry.ModDataComponents.SEAL_CONFIG.get()).keys();
+			chosen.add(((MatchKey.TagKey) keys.get(0)).tag().toString());
+		}
+		Support.expectEquals(helper, sorted, chosen, "tag chosen by index");
+		helper.succeed();
+	}
 }
