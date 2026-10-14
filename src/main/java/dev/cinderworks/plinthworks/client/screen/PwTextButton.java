@@ -58,7 +58,11 @@ class PwTextButton extends AbstractButton
 		}
 		int color = !active ? PwGui.BRASS : isHoveredOrFocused() ? PwGui.VALUE : PwGui.LABEL;
 		int shift = pressed ? 1 : 0;
-		g.drawCenteredString(Minecraft.getInstance().font, getMessage(), getX() + getWidth() / 2 + shift,
+		// long tag and component names must stay inside the button
+		var font = Minecraft.getInstance().font;
+		Component label = font.width(getMessage()) <= getWidth() - 8 ? getMessage()
+				: Component.literal(PwStatPlate.clip(font, getMessage().getString(), getWidth() - 8));
+		g.drawCenteredString(font, label, getX() + getWidth() / 2 + shift,
 				getY() + (getHeight() - 8) / 2 + shift - (active ? 0 : 1), color);
 	}
 
