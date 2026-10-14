@@ -541,4 +541,42 @@ public class PlaytestGameTests
 					"round robin drained only one member: " + b.getDisplayedItem().getCount() + " and " + c.getDisplayedItem().getCount());
 		}).thenSucceed();
 	}
+
+	// config is global, so these two share the batch with the breaker toggle and run one after another
+	@GameTest(template = Support.TEMPLATE, templateNamespace = Support.NAMESPACE, batch = "config")
+	public static void xpModeOnlyMovesConfiguredFluids(GameTestHelper helper) {
+		java.util.List<String> before = new java.util.ArrayList<>(ModConfig.XP_FLUIDS.get());
+		ModConfig.XP_FLUIDS.set(java.util.List.of("minecraft:lava"));
+		PlinthBlockEntity be = Support.plinth(helper, POS);
+		Support.fit(be, SigilType.IMPORT);
+		be.cycleResourceMode();
+		be.cycleResourceMode();
+		be.cycleResourceMode();
+		Support.expectEquals(helper, dev.cinderworks.plinthworks.logic.ResourceMode.XP, be.resourceMode(), "resource mode");
+		helper.setBlock(WEST, Blocks.WATER_CAULDRON.defaultBlockState().setValue(net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL, 3));
+		helper.startSequence().thenIdle(WAIT).thenExecute(() -> {
+			Support.expectEquals(helper, 0, be.fluid().getFluidAmount(), "xp mode took water");
+			helper.setBlock(WEST, Blocks.LAVA_CAULDRON);
+		}).thenIdle(WAIT).thenExecute(() -> {
+			ModConfig.XP_FLUIDS.set(before);
+			Support.expectEquals(helper, 1000, be.fluid().getFluidAmount(), "xp mode with lava configured as xp");
+		}).thenSucceed();
+	}
+
+	@GameTest(template = Support.TEMPLATE, templateNamespace = Support.NAMESPACE)
+	public static void fluidModeMovesFluidBothWays(GameTestHelper helper) {
+		PlinthBlockEntity in = Support.plinth(helper, POS);
+		Support.fit(in, SigilType.IMPORT);
+		in.cycleResourceMode();
+		in.cycleResourceMode();
+		helper.setBlock(WEST, Blocks.WATER_CAULDRON.defaultBlockState().setValue(net.minecraft.world.level.block.LayeredCauldronBlock.LEVEL, 3));
+		helper.startSequence().thenIdle(WAIT).thenExecute(() -> {
+			Support.expectEquals(helper, 1000, in.fluid().getFluidAmount(), "fluid imported from the cauldron");
+			Support.expect(helper, helper.getBlockState(WEST).is(Blocks.CAULDRON), "cauldron after the import: " + helper.getBlockState(WEST));
+			in.sigil().setStackInSlot(0, Support.sigil(SigilType.EXPORT));
+		}).thenIdle(WAIT).thenExecute(() -> {
+			Support.expectEquals(helper, 0, in.fluid().getFluidAmount(), "fluid left in the plinth after export");
+			Support.expect(helper, helper.getBlockState(WEST).is(Blocks.WATER_CAULDRON), "cauldron refilled: " + helper.getBlockState(WEST));
+		}).thenSucceed();
+	}
 }
