@@ -28,6 +28,15 @@ notable changes to plinthworks. loosely follows keep a changelog.
   with full stops and state the link range.
 - screen labels for resource, transfer and verb are translatable.
 
+### fixed
+- a plinth that loads with a channel (from /setblock, /clone, a structure or a paste) now joins the channel network instead of sitting outside it.
+- shift clicking no longer puts items into the buffer slot while it is hidden in energy, fluid and xp modes.
+- a plinth whose base block cannot be read falls back to stone instead of becoming air.
+- the tag seal editor picks the tag you clicked on a dedicated server. client and server now list tags in the same order.
+- long labels are clipped to their buttons.
+- an unnamed link tool joins the channel of the plinth it binds to instead of replacing it. a named tool still wins.
+- the licence file is in the jar.
+
 ### tests
 - gametests for the skip notice throttle, and a text contrast check for the screens.
 
