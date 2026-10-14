@@ -122,7 +122,7 @@ the gametests live in `src/gametest` and are not part of the jar. see [CONTRIBUT
 
 ## where it came from
 
-plinthworks is inspired by mowmaster's [pedestals](https://github.com/Mowmaster/Pedestals), which a lot of us have played with for years. this is a separate implementation, written from scratch with our own art. the biggest change is the interface: setup and inspection happen on one screen.
+plinthworks is inspired by mowmaster's [pedestals](https://github.com/Mowmaster/Pedestals). it is an unofficial, separate mod written from scratch with its own code and art, and it is not affiliated with mowmaster. the biggest change is the interface: setup and inspection happen on one screen.
 
 ## planned
 
@@ -131,3 +131,5 @@ more sigils for quarrying and smelting, plus infusions: permanent upgrades etche
 ## licence
 
 code is mit, see [LICENSE](LICENSE). there is no separate licence file for the art, so the source files in `art-source` and the textures made from them are under the same mit licence. see [THIRD_PARTY.md](THIRD_PARTY.md) for the notes on minecraft and neoforge.
+
+plinthworks is not an official minecraft product. it is not approved by or associated with mojang or microsoft.

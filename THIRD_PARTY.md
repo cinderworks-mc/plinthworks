@@ -5,7 +5,7 @@ plinthworks' own source code, build scripts and data files are under the mit lic
 ## platform
 
 - minecraft is a trademark of mojang ab and microsoft. this mod is not affiliated with or endorsed by them. using it needs a legitimate copy of the game and follows the minecraft eula and brand guidelines.
-- the lettering in the banner and social images under `assets/branding`, when they are added, uses the glyph shapes of minecraft's default font. those shapes belong to mojang and are not covered by the licence.
+- the lettering in the banner and social images under `assets/branding` uses the glyph shapes of minecraft's default font. those shapes belong to mojang and are not covered by the licence.
 - neoforge (lgpl-2.1-only) is the modding platform and is not bundled. official mojang mappings are used through neoforge's tooling.
 
 ## optional mods (soft dependencies, not bundled)
@@ -17,7 +17,7 @@ plinthworks' own source code, build scripts and data files are under the mit lic
 
 ## inspiration
 
-plinthworks is inspired by mowmaster's [pedestals](https://github.com/Mowmaster/Pedestals), which a lot of us have played with for years. this is a separate implementation, written from scratch with our own art. none of its code or assets are used.
+plinthworks is inspired by mowmaster's [pedestals](https://github.com/Mowmaster/Pedestals). it is an unofficial, separate mod written from scratch with its own code and art, and it is not affiliated with mowmaster. none of its code or assets are used.
 
 ## tools
 
