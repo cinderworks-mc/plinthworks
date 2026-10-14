@@ -516,4 +516,29 @@ public class PlaytestGameTests
 		Support.expectEquals(helper, 2, a.channelMembers(), "members");
 		helper.succeed();
 	}
+
+	@GameTest(template = Support.TEMPLATE, templateNamespace = Support.NAMESPACE)
+	public static void transferModesChangeWhoGivesFirst(GameTestHelper helper) {
+		String name = "gt_modes_" + System.nanoTime() % 1000000;
+		PlinthBlockEntity out = Support.plinth(helper, POS);
+		out.etchings().setStackInSlot(0, Support.etching(EtchingType.SPEED, EtchingTier.T4, 2));
+		out.sigil().setStackInSlot(0, Support.sigil(SigilType.EXPORT));
+		helper.setBlock(WEST, Blocks.CHEST);
+		PlinthBlockEntity b = Support.plinth(helper, new BlockPos(2, 1, 8));
+		PlinthBlockEntity c = Support.plinth(helper, new BlockPos(2, 1, 11));
+		for (PlinthBlockEntity be : java.util.List.of(out, b, c)) {
+			be.setChannel(name);
+		}
+		b.display().setStackInSlot(0, new ItemStack(Items.COBBLESTONE, 30));
+		c.display().setStackInSlot(0, new ItemStack(Items.COBBLESTONE, 30));
+		PlinthNetwork.get(helper.getLevel()).cycleMode(name);
+		Support.expectEquals(helper, dev.cinderworks.plinthworks.logic.network.TransferMode.ROUND_ROBIN,
+				PlinthNetwork.get(helper.getLevel()).channel(name).mode(), "mode after one cycle");
+		helper.startSequence().thenIdle(30).thenExecute(() -> {
+			int moved = Support.count(Support.container(helper, WEST), Items.COBBLESTONE);
+			Support.expect(helper, moved >= 4, "nothing was exported: " + moved);
+			Support.expect(helper, b.getDisplayedItem().getCount() < 30 && c.getDisplayedItem().getCount() < 30,
+					"round robin drained only one member: " + b.getDisplayedItem().getCount() + " and " + c.getDisplayedItem().getCount());
+		}).thenSucceed();
+	}
 }
