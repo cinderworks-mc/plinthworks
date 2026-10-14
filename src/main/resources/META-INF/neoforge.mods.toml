@@ -10,7 +10,7 @@ version="${mod_version}"
 displayName="${mod_name}"
 updateJSONURL="https://raw.githubusercontent.com/cinderworks-mc/plinthworks/main/update.json"
 displayURL="https://github.com/cinderworks-mc/plinthworks"
-authors="Cinder Works"
+authors="cinderworks"
 description='''pedestal automation. plinths you teach to move items, energy, fluids and xp, filter them, break, place and harvest blocks, and link across distance.'''
 
 [[dependencies.${mod_id}]]
