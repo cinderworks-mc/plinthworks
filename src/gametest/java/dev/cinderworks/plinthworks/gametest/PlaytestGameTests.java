@@ -406,4 +406,47 @@ public class PlaytestGameTests
 			Support.expect(helper, PlinthNetwork.get(helper.getLevel()).channel("gt_broken").members().isEmpty(), "broken plinth still in its channel");
 		}).thenSucceed();
 	}
+
+	@GameTest(template = Support.TEMPLATE, templateNamespace = Support.NAMESPACE)
+	public static void everyItemHasARecipeThatLoads(GameTestHelper helper) {
+		var recipes = helper.getLevel().getRecipeManager().getRecipes().stream()
+				.filter(holder -> holder.id().getNamespace().equals("plinthworks")).toList();
+		java.util.Set<net.minecraft.world.item.Item> results = new java.util.HashSet<>();
+		java.util.List<String> broken = new java.util.ArrayList<>();
+		for (var holder : recipes) {
+			ItemStack result = holder.value().getResultItem(helper.getLevel().registryAccess());
+			if (result.isEmpty()) {
+				broken.add(holder.id() + " has no result");
+			}
+			results.add(result.getItem());
+			if (!holder.value().isSpecial() && holder.value().getIngredients().isEmpty() || holder.value().getIngredients().stream().anyMatch(i -> !i.isEmpty() && i.getItems().length == 0)) {
+				broken.add(holder.id() + " has an empty ingredient");
+			}
+		}
+		for (var item : net.minecraft.core.registries.BuiltInRegistries.ITEM) {
+			var id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item);
+			if (id.getNamespace().equals("plinthworks") && !results.contains(item)) {
+				broken.add(id + " has no recipe");
+			}
+		}
+		var plinthRecipe = recipes.stream().filter(h -> h.id().getPath().equals("plinth")).findFirst().orElseThrow().value();
+		@SuppressWarnings("unchecked")
+		var typed = (net.minecraft.world.item.crafting.Recipe<net.minecraft.world.item.crafting.CraftingInput>) plinthRecipe;
+		var core = new ItemStack(dev.cinderworks.plinthworks.registry.ModItems.PLINTH_CORE.get());
+		var grid = net.minecraft.world.item.crafting.CraftingInput.of(3, 3, java.util.List.of(
+				new ItemStack(Items.DEEPSLATE), ItemStack.EMPTY, new ItemStack(Items.DEEPSLATE),
+				ItemStack.EMPTY, core, ItemStack.EMPTY,
+				new ItemStack(Items.DEEPSLATE), ItemStack.EMPTY, new ItemStack(Items.DEEPSLATE)));
+		Support.expect(helper, typed.matches(grid, helper.getLevel()), "core with four deepslate does not craft a plinth");
+		var made = typed.assemble(grid, helper.getLevel().registryAccess());
+		var contents = made.get(dev.cinderworks.plinthworks.registry.ModDataComponents.PLINTH_CONTENTS.get());
+		Support.expect(helper, contents != null && contents.baseBlock().getPath().equals("deepslate"), "crafted plinth has " + contents);
+		var mixed = net.minecraft.world.item.crafting.CraftingInput.of(3, 3, java.util.List.of(
+				new ItemStack(Items.DEEPSLATE), ItemStack.EMPTY, new ItemStack(Items.STONE),
+				ItemStack.EMPTY, core, ItemStack.EMPTY,
+				new ItemStack(Items.DEEPSLATE), ItemStack.EMPTY, new ItemStack(Items.DEEPSLATE)));
+		Support.expect(helper, !typed.matches(mixed, helper.getLevel()), "mixed stones crafted a plinth");
+		Support.expect(helper, broken.isEmpty(), "recipe problems: " + broken);
+		helper.succeed();
+	}
 }
