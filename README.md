@@ -132,6 +132,10 @@ plinthworks is inspired by mowmaster's [pedestals](https://github.com/Mowmaster/
 
 more sigils for quarrying and smelting, plus infusions: permanent upgrades etched onto a sigil.
 
+## help with the art
+
+we'd love help on the art: blocks, items, the gui, textures and models. if you want to pitch in, come say hi in the [discord](https://discord.gg/ZmmtPNJUcK) or open an issue. you don't need to have shipped a mod before.
+
 ## licence
 
 code is mit, see [LICENSE](LICENSE). there is no separate licence file for the art, so the source files in `art-source` and the textures made from them are under the same mit licence. see [THIRD_PARTY.md](THIRD_PARTY.md) for the notes on minecraft and neoforge.
