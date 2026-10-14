@@ -1,6 +1,8 @@
 <img src="assets/branding/plinthworks-banner.png" alt="plinthworks, pedestal automation" width="100%">
 
 [![discord](https://img.shields.io/discord/1560020457363738624?label=discord&logo=discord&color=e8742a)](https://discord.gg/ZmmtPNJUcK)
+![neoforge](https://img.shields.io/badge/neoforge-1.21.1-e8742a)
+![licence](https://img.shields.io/badge/licence-mit-e8742a)
 
 # plinthworks
 
