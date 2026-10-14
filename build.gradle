@@ -112,3 +112,7 @@ processResources {
 		expand props
 	}
 }
+
+tasks.named('jar') {
+	from('LICENSE')
+}
