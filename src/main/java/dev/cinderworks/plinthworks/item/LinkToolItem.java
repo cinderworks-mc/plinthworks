@@ -53,8 +53,9 @@ public class LinkToolItem extends Item
 		BlockPos pos = context.getClickedPos();
 		LinkBinding binding = tool.getOrDefault(ModDataComponents.LINK_BINDING.get(), LinkBinding.EMPTY);
 		if (binding.anchor().isEmpty()) {
-			String channel = tool.has(DataComponents.CUSTOM_NAME)
-					? channelName(tool.getHoverName().getString()) : defaultName(pos);
+			// a name on the tool wins, otherwise a plinth already on a channel hands that channel over
+			String channel = tool.has(DataComponents.CUSTOM_NAME) ? channelName(tool.getHoverName().getString())
+					: !plinth.channel().isEmpty() ? plinth.channel() : defaultName(pos);
 			tool.set(ModDataComponents.LINK_BINDING.get(),
 					new LinkBinding(channel, Optional.of(GlobalPos.of(level.dimension(), pos))));
 			PlinthNetwork.get(level).add(channel, pos);

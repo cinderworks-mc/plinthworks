@@ -493,4 +493,27 @@ public class PlaytestGameTests
 		Support.expectEquals(helper, sorted, chosen, "tag chosen by index");
 		helper.succeed();
 	}
+
+	@GameTest(template = Support.TEMPLATE, templateNamespace = Support.NAMESPACE)
+	public static void unnamedLinkToolAdoptsTheChannelOfTheFirstPlinth(GameTestHelper helper) {
+		PlinthBlockEntity a = Support.plinth(helper, POS);
+		BlockPos nearPos = new BlockPos(8, 1, 2);
+		PlinthBlockEntity near = Support.plinth(helper, nearPos);
+		String channel = "gt_adopt_" + System.nanoTime() % 1000000;
+		a.setChannel(channel);
+		var player = Support.player(helper);
+		ItemStack tool = new ItemStack(dev.cinderworks.plinthworks.registry.ModItems.LINK_TOOL.get());
+		java.util.function.Consumer<BlockPos> use = rel -> {
+			player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, tool);
+			BlockPos abs = helper.absolutePos(rel);
+			var hit = new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(abs), net.minecraft.core.Direction.UP, abs, false);
+			tool.useOn(new net.minecraft.world.item.context.UseOnContext(player, net.minecraft.world.InteractionHand.MAIN_HAND, hit));
+		};
+		use.accept(POS);
+		Support.expectEquals(helper, channel, a.channel(), "channel of the plinth after the first click");
+		use.accept(nearPos);
+		Support.expectEquals(helper, channel, near.channel(), "channel of the second plinth");
+		Support.expectEquals(helper, 2, a.channelMembers(), "members");
+		helper.succeed();
+	}
 }
