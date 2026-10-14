@@ -1,5 +1,7 @@
 <img src="assets/branding/plinthworks-banner.png" alt="plinthworks, pedestal automation" width="100%">
 
+[![discord](https://img.shields.io/discord/1560020457363738624?label=discord&logo=discord&color=e8742a)](https://discord.gg/ZmmtPNJUcK)
+
 # plinthworks
 
 pedestals you can teach to do things. slot in a sigil to import or export items, add filters and upgrades, and link plinths together.
