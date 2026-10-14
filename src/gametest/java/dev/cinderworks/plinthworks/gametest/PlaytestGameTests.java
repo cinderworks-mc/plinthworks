@@ -449,4 +449,17 @@ public class PlaytestGameTests
 		Support.expect(helper, broken.isEmpty(), "recipe problems: " + broken);
 		helper.succeed();
 	}
+
+	@GameTest(template = Support.TEMPLATE, templateNamespace = Support.NAMESPACE)
+	public static void shiftClickNeverFillsTheHiddenBufferSlot(GameTestHelper helper) {
+		PlinthBlockEntity be = Support.plinth(helper, POS);
+		be.cycleResourceMode();
+		var player = Support.player(helper);
+		player.getInventory().setItem(0, new ItemStack(Items.COBBLESTONE, 12));
+		var menu = new dev.cinderworks.plinthworks.menu.PlinthMenu(1, player.getInventory(), be);
+		menu.quickMoveStack(player, Support.menuSlot(menu, player.getInventory(), 0));
+		Support.expect(helper, be.getDisplayedItem().isEmpty(), "shift click put " + be.getDisplayedItem() + " in the buffer slot while it was hidden");
+		Support.expectEquals(helper, 12, player.getInventory().getItem(0).getCount(), "items left in the inventory");
+		helper.succeed();
+	}
 }

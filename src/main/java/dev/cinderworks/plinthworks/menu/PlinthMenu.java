@@ -67,6 +67,12 @@ public class PlinthMenu extends AbstractContainerMenu
 				return PlinthMenu.this.resourceMode() == ResourceMode.ITEM;
 			}
 
+			// shift click must not park items in a slot that is drawn as hidden
+			@Override
+			public boolean mayPlace(ItemStack stack) {
+				return isActive() && super.mayPlace(stack);
+			}
+
 			@Override
 			public void setChanged() {
 				PlinthMenu.this.be.slotsChanged();
