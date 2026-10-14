@@ -1,3 +1,5 @@
+<img src="assets/branding/plinthworks-banner.png" alt="plinthworks, pedestal automation" width="100%">
+
 # plinthworks
 
 pedestals you can teach to do things. slot in a sigil to import or export items, add filters and upgrades, and link plinths together.
