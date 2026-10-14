@@ -223,4 +223,19 @@ public class PlaytestGameTests
 			Support.expectEquals(helper, 20000, sink.getEnergyStored() + out.energy().getEnergyStored(), "energy conserved on export");
 		}).thenSucceed();
 	}
+
+	@GameTest(template = Support.TEMPLATE, templateNamespace = Support.NAMESPACE)
+	public static void plinthLoadedWithAChannelJoinsTheNetwork(GameTestHelper helper) {
+		PlinthBlockEntity be = Support.plinth(helper, POS);
+		CompoundTag tag = be.saveWithFullMetadata(Support.registries(helper));
+		tag.putString("Channel", "gt_pasted");
+		helper.setBlock(POS, Blocks.AIR);
+		helper.setBlock(POS, dev.cinderworks.plinthworks.registry.ModBlocks.PLINTH.get());
+		BlockEntity fresh = helper.getBlockEntity(POS);
+		fresh.loadWithComponents(tag, Support.registries(helper));
+		helper.startSequence().thenIdle(3).thenExecute(() -> {
+			var members = PlinthNetwork.get(helper.getLevel()).channel("gt_pasted").members();
+			Support.expect(helper, members.contains(helper.absolutePos(POS)), "a plinth restored with a channel is not a member: " + members);
+		}).thenSucceed();
+	}
 }

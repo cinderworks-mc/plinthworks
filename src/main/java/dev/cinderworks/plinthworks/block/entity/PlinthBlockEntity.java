@@ -112,6 +112,8 @@ public class PlinthBlockEntity extends BlockEntity
 	private int cooldown;
 	private long nextSkipNotice;
 	private String channel = "";
+	// a channel read from nbt (structure, clone, paste) was never added to the network data
+	private boolean channelChecked;
 	private RedstoneMode redstoneMode = RedstoneMode.ALWAYS;
 	private ResourceMode resourceMode = ResourceMode.ITEM;
 
@@ -122,6 +124,12 @@ public class PlinthBlockEntity extends BlockEntity
 	}
 
 	public static void serverTick(Level level, BlockPos pos, BlockState state, PlinthBlockEntity be) {
+		if (!be.channelChecked) {
+			be.channelChecked = true;
+			if (!be.channel.isEmpty() && level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+				dev.cinderworks.plinthworks.logic.network.PlinthNetwork.get(serverLevel).add(be.channel, pos);
+			}
+		}
 		boolean powered = be.redstoneAllows();
 		UpgradeSet upgrades = be.upgrades();
 		be.syncVisual(PlinthVisual.active(powered, upgrades.verb() != null));
@@ -371,6 +379,7 @@ public class PlinthBlockEntity extends BlockEntity
 		baseState = NbtUtils.readBlockState(registries.lookupOrThrow(Registries.BLOCK), compound.getCompound("BaseState"));
 		cooldown = compound.getInt("Cooldown");
 		channel = compound.getString("Channel");
+		channelChecked = false;
 		redstoneMode = RedstoneMode.fromOrdinal(compound.getInt("RedstoneMode"));
 		resourceMode = ResourceMode.fromOrdinal(compound.getInt("ResourceMode"));
 		cachedUpgrades = null;
