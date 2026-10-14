@@ -343,4 +343,67 @@ public class PlaytestGameTests
 		Support.expect(helper, missing.isEmpty(), "no translation for " + missing);
 		helper.succeed();
 	}
+
+	@GameTest(template = Support.TEMPLATE, templateNamespace = Support.NAMESPACE)
+	public static void linkToolBindsJoinsAndRefusesFarPlinths(GameTestHelper helper) {
+		PlinthBlockEntity a = Support.plinth(helper, POS);
+		BlockPos nearPos = new BlockPos(10, 1, 2);
+		BlockPos farPos = new BlockPos(2 + ModConfig.LINK_RANGE.get() + 10, 1, 2);
+		PlinthBlockEntity near = Support.plinth(helper, nearPos);
+		PlinthBlockEntity far = Support.plinth(helper, farPos);
+		var player = Support.player(helper);
+		// the saved channel data outlives a run, so each run names its own channel
+		long suffix = System.nanoTime() % 1000000;
+		ItemStack tool = new ItemStack(dev.cinderworks.plinthworks.registry.ModItems.LINK_TOOL.get());
+		tool.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, net.minecraft.network.chat.Component.literal("My Line " + suffix + "!"));
+		java.util.function.BiFunction<BlockPos, Boolean, net.minecraft.world.InteractionResult> use = (rel, sneak) -> {
+			player.setShiftKeyDown(sneak);
+			player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, tool);
+			BlockPos abs = helper.absolutePos(rel);
+			var hit = new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(abs), net.minecraft.core.Direction.UP, abs, false);
+			return tool.useOn(new net.minecraft.world.item.context.UseOnContext(player, net.minecraft.world.InteractionHand.MAIN_HAND, hit));
+		};
+		Support.expect(helper, use.apply(POS, false).consumesAction(), "first click did not bind");
+		Support.expectEquals(helper, "my_line_" + suffix + "_", a.channel(), "bound channel from the custom name");
+		Support.expect(helper, use.apply(nearPos, false).consumesAction(), "near plinth did not join");
+		Support.expectEquals(helper, "my_line_" + suffix + "_", near.channel(), "near channel");
+		Support.expect(helper, !use.apply(farPos, false).consumesAction(), "a plinth beyond the link range joined");
+		Support.expectEquals(helper, "", far.channel(), "far channel");
+		Support.expectEquals(helper, 2, a.channelMembers(), "members of the channel");
+		use.apply(POS, true);
+		Support.expect(helper, tool.get(dev.cinderworks.plinthworks.registry.ModDataComponents.LINK_BINDING.get()).anchor().isEmpty(), "sneak did not clear the binding");
+		helper.succeed();
+	}
+
+	@GameTest(template = Support.TEMPLATE, templateNamespace = Support.NAMESPACE)
+	public static void brokenPlinthDropsEverythingOnceAndKeepsItsStone(GameTestHelper helper) {
+		PlinthBlockEntity be = Support.plinth(helper, POS);
+		Support.fit(be, SigilType.IMPORT);
+		be.setBaseState(Blocks.DEEPSLATE.defaultBlockState());
+		be.seals().setStackInSlot(0, Support.seal(SealType.ITEM, true, new MatchKey.ItemKey(ResourceLocation.withDefaultNamespace("dirt"))));
+		be.display().setStackInSlot(0, new ItemStack(Items.DIRT, 7));
+		be.setChannel("gt_broken");
+		helper.getLevel().destroyBlock(helper.absolutePos(POS), true);
+		helper.startSequence().thenIdle(2).thenExecute(() -> {
+			var drops = helper.getLevel().getEntitiesOfClass(ItemEntity.class, new net.minecraft.world.phys.AABB(helper.absolutePos(POS)).inflate(3));
+			java.util.Map<net.minecraft.world.item.Item, Integer> totals = new java.util.HashMap<>();
+			ItemStack plinthDrop = ItemStack.EMPTY;
+			for (ItemEntity entity : drops) {
+				totals.merge(entity.getItem().getItem(), entity.getItem().getCount(), Integer::sum);
+				if (entity.getItem().is(dev.cinderworks.plinthworks.registry.ModItems.PLINTH.get())) {
+					plinthDrop = entity.getItem();
+				}
+			}
+			Support.expectEquals(helper, 1, totals.getOrDefault(dev.cinderworks.plinthworks.registry.ModItems.PLINTH.get(), 0), "plinth items dropped");
+			Support.expectEquals(helper, 1, totals.getOrDefault(dev.cinderworks.plinthworks.registry.ModItems.SIGILS.get(SigilType.IMPORT).get(), 0), "sigils dropped");
+			Support.expectEquals(helper, 4, totals.getOrDefault(dev.cinderworks.plinthworks.registry.ModItems.ETCHINGS.get(EtchingType.SPEED).get(EtchingTier.T4).get(), 0)
+					+ totals.getOrDefault(dev.cinderworks.plinthworks.registry.ModItems.ETCHINGS.get(EtchingType.CAPACITY).get(EtchingTier.T4).get(), 0), "etchings dropped");
+			Support.expectEquals(helper, 1, totals.getOrDefault(dev.cinderworks.plinthworks.registry.ModItems.SEALS.get(SealType.ITEM).get(), 0), "seals dropped");
+			Support.expectEquals(helper, 7, totals.getOrDefault(Items.DIRT, 0), "buffer items dropped");
+			var contents = plinthDrop.get(dev.cinderworks.plinthworks.registry.ModDataComponents.PLINTH_CONTENTS.get());
+			Support.expect(helper, contents != null && contents.baseBlock().getPath().equals("deepslate"), "dropped plinth lost its stone: " + contents);
+			Support.expect(helper, !plinthDrop.has(dev.cinderworks.plinthworks.registry.ModDataComponents.PLINTH_LOADOUT.get()), "dropped plinth also carries the loadout, a dupe");
+			Support.expect(helper, PlinthNetwork.get(helper.getLevel()).channel("gt_broken").members().isEmpty(), "broken plinth still in its channel");
+		}).thenSucceed();
+	}
 }
