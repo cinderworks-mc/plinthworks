@@ -1,14 +1,18 @@
 <img src="assets/branding/plinthworks-banner.png" alt="plinthworks, pedestal automation" width="100%">
 
 [![discord](https://img.shields.io/discord/1560020457363738624?label=discord&logo=discord&color=e8742a)](https://discord.gg/ZmmtPNJUcK)
+[![release](https://img.shields.io/github/v/release/cinderworks-mc/plinthworks?color=e8742a)](https://github.com/cinderworks-mc/plinthworks/releases)
+[![build](https://img.shields.io/github/actions/workflow/status/cinderworks-mc/plinthworks/build.yml?label=build)](https://github.com/cinderworks-mc/plinthworks/actions/workflows/build.yml)
 ![neoforge](https://img.shields.io/badge/neoforge-1.21.1-e8742a)
 ![licence](https://img.shields.io/badge/licence-mit-e8742a)
 
 # plinthworks
 
-pedestals you can teach to do things. slot in a sigil to import or export items, add filters and upgrades, and link plinths together.
+pedestals you can teach to do things. slot in a sigil to import or export items, energy, fluids and xp, add filters and upgrades, and link plinths together.
 
 each plinth has one screen for its sigil, etchings, seals and network. you can see what it is moving and change its setup without carrying a set of single purpose tools.
+
+neoforge 1.21.1. the source, the issue tracker and the releases live here.
 
 ![a pair of plinths on grass](assets/screenshots/plinths.png)
 
@@ -110,7 +114,7 @@ the config file is `config/plinthworks-common.toml`. some of the settings you ma
 - neoforge 21.1.x
 - java 21
 
-put the jar in your `mods` folder. jei, emi and create are optional. plinthworks does not add recipe pages or kinetic support for them yet.
+put the jar in your `mods` folder on the server and on every client. jei, emi and create are optional. plinthworks does not add recipe pages or kinetic support for them yet.
 
 ## building
 
@@ -131,6 +135,10 @@ plinthworks is inspired by mowmaster's [pedestals](https://github.com/Mowmaster/
 ## planned
 
 more sigils for quarrying and smelting, plus infusions: permanent upgrades etched onto a sigil.
+
+## reporting issues
+
+use the issue forms: bug, feature request, or compat report. include your plinthworks and neoforge versions and a crash log if there is one. security problems go through the private report link in [SECURITY.md](.github/SECURITY.md).
 
 ## help with the art
 
