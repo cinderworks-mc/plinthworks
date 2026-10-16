@@ -40,6 +40,7 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 	private final PwGauge gauge = new PwGauge();
 	private final PwStatPlate plate = new PwStatPlate();
 	private final RandomSource random = RandomSource.create();
+	private PwIconButton transferButton;
 	private int age;
 	private int flickerUntil;
 	private int nextFlicker = 24;
@@ -64,7 +65,7 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 		int tx = leftPos + TOOLBAR_X;
 		int ty = topPos + TOOLBAR_Y;
 		addRenderableWidget(new PwIconButton(tx, ty, this::resourceIcon, this::resourceTip, () -> send(80)));
-		addRenderableWidget(new PwIconButton(tx + 17, ty, this::transferIcon, this::transferTip, () -> send(20)));
+		transferButton = addRenderableWidget(new PwIconButton(tx + 17, ty, this::transferIcon, this::transferTip, () -> send(20)));
 		addRenderableWidget(new PwIconButton(tx + 34, ty, () -> PwGuiTextures.REDSTONE, this::redstoneTip,
 				() -> menu.blockEntity().redstoneMode() != dev.cinderworks.plinthworks.logic.RedstoneMode.ALWAYS,
 				() -> send(60)));
@@ -87,6 +88,8 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		updatePlate();
+		// a plinth on no channel has nobody to share with, so there is no mode to pick
+		transferButton.active = hasChannel();
 		super.render(graphics, mouseX, mouseY, partialTick);
 		if (hoveredSlot != null && hoveredSlot.isActive()) {
 			graphics.renderOutline(leftPos + hoveredSlot.x - 1, topPos + hoveredSlot.y - 1, 18, 18, 0xFFD2A55A);
@@ -325,7 +328,15 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 				resourceName(menu.resourceMode().next()));
 	}
 
+	private boolean hasChannel() {
+		return !menu.blockEntity().channel().isEmpty();
+	}
+
 	private Component transferTip() {
+		if (!hasChannel()) {
+			return Component.empty().append(brass(Component.translatable("gui.plinthworks.mode.tip.no_channel"))).append("\n")
+					.append(Component.translatable("gui.plinthworks.mode.tip.name_one").withStyle(style -> style.withColor(PwGui.MUTED)));
+		}
 		TransferMode mode = TransferMode.values()[menu.transferMode()];
 		return withNext(Component.translatable("gui.plinthworks.mode.tip.state", transferName(mode)),
 				transferName(mode.next()));

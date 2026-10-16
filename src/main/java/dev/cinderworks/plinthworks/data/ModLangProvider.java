@@ -114,6 +114,8 @@ public class ModLangProvider extends LanguageProvider
 		add("gui.plinthworks.mode.tip", "How the channel shares work");
 		add("gui.plinthworks.resource.tip", "What this plinth moves");
 		add("gui.plinthworks.mode.tip.state", "Transfer: %s");
+		add("gui.plinthworks.mode.tip.no_channel", "Transfer needs a channel");
+		add("gui.plinthworks.mode.tip.name_one", "Name one on the channel screen");
 		add("gui.plinthworks.resource.tip.state", "Moves: %s");
 		add("gui.plinthworks.verb.idle", "Idle");
 		for (SigilType type : SigilType.values()) {
@@ -134,6 +136,7 @@ public class ModLangProvider extends LanguageProvider
 		add("gui.plinthworks.val_fe", "%s FE");
 		add("gui.plinthworks.val_mb", "%s mB");
 		add("gui.plinthworks.network_mode", "Mode");
+		add("gui.plinthworks.network_mode_unnamed", "Name the channel to pick a mode");
 		add("gui.plinthworks.network_overview", "Channel");
 		add("gui.plinthworks.network_members", "On this channel");
 		add("gui.plinthworks.network_empty", "Nothing linked yet.");

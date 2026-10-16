@@ -2,6 +2,8 @@ package dev.cinderworks.plinthworks.gametest;
 
 import dev.cinderworks.plinthworks.block.entity.PlinthBlockEntity;
 import dev.cinderworks.plinthworks.logic.network.PlinthNetwork;
+import dev.cinderworks.plinthworks.logic.network.TransferMode;
+import dev.cinderworks.plinthworks.menu.PlinthMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -30,5 +32,20 @@ public class NetworkGameTests
 			Support.expect(helper, !members.contains(stale), "the stale member was never pruned");
 			Support.expect(helper, members.contains(helper.absolutePos(POS)), "the live plinth was pruned");
 		}).thenSucceed();
+	}
+
+	// the screen greys the transfer button out on a plinth with no channel, this is the server side of that
+	@GameTest(template = Support.TEMPLATE, templateNamespace = Support.NAMESPACE)
+	public static void transferButtonOnlyCyclesOnAChannel(GameTestHelper helper) {
+		PlinthBlockEntity be = Support.plinth(helper, POS);
+		var player = Support.player(helper);
+		var menu = new PlinthMenu(1, player.getInventory(), be);
+		Support.expect(helper, !menu.clickMenuButton(player, 20), "the transfer button did something with no channel");
+		String name = "gt_cycle_" + System.nanoTime() % 1000000;
+		be.setChannel(name);
+		Support.expect(helper, menu.clickMenuButton(player, 20), "the transfer button was ignored on a channel");
+		Support.expectEquals(helper, TransferMode.ROUND_ROBIN, PlinthNetwork.get(helper.getLevel()).channel(name).mode(),
+				"mode after one click");
+		helper.succeed();
 	}
 }

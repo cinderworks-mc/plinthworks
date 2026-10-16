@@ -110,12 +110,19 @@ public class NetworkOverviewScreen extends Screen
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+		// a disabled segment reads as the picked one, so with no channel the row is swapped for a hint instead
+		boolean named = !menu.blockEntity().channel().isEmpty();
 		int selected = menu.transferMode();
 		for (int i = 0; i < modeButtons.length; i++) {
-			modeButtons[i].active = i != selected;
+			modeButtons[i].visible = named;
+			modeButtons[i].active = named && i != selected;
 		}
 		super.render(graphics, mouseX, mouseY, partialTick);
 		graphics.drawString(font, title, left + 13, top + 5, PwGui.TITLE, false);
+		if (!named) {
+			Component hint = Component.translatable("gui.plinthworks.network_mode_unnamed");
+			graphics.drawString(font, hint, left + 12 + (LIST_W + 2 - font.width(hint)) / 2, top + 28, PwGui.MUTED, false);
+		}
 		List<BlockPos> members = menu.networkMembers();
 		String count = Component.translatable(members.size() == 1 ? "gui.plinthworks.network_count_one" : "gui.plinthworks.network_count", members.size()).getString();
 		graphics.drawString(font, count, left + 172 - font.width(count), top + 5, PwGui.MUTED, false);
