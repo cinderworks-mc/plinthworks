@@ -119,6 +119,46 @@ public class PlaytestGameTests
 		helper.startSequence().thenIdle(WAIT).thenExecute(() -> {
 			Support.expect(helper, helper.getBlockState(EAST).getValue(CropBlock.AGE) == 3, "unripe wheat was cut");
 			Support.expect(helper, helper.getBlockState(cactus).is(Blocks.CACTUS), "the cactus was harvested");
+			Support.expect(helper, helper.getBlockState(bamboo).is(Blocks.BAMBOO), "the bamboo was harvested");
+			// a cut cactus gets replanted from its own drop, so the empty chest is the real check
+			Support.expect(helper, Support.container(helper, WEST).isEmpty(), "something was cut");
+		}).thenSucceed();
+	}
+
+	@GameTest(template = Support.TEMPLATE, templateNamespace = Support.NAMESPACE)
+	public static void harvesterLeavesMaxAgePlantsThatArentCrops(GameTestHelper helper) {
+		PlinthBlockEntity be = Support.plinth(helper, POS);
+		Support.fit(be, SigilType.HARVESTER);
+		helper.setBlock(WEST, Blocks.CHEST);
+		BlockPos cane = POS.north().west();
+		BlockPos berries = POS.south();
+		BlockPos stem = POS.south().east();
+		helper.setBlock(cane.below(), Blocks.SAND);
+		helper.setBlock(cane.below().north(), Blocks.WATER);
+		helper.setBlock(cane, Blocks.SUGAR_CANE.defaultBlockState().setValue(net.minecraft.world.level.block.SugarCaneBlock.AGE, 15));
+		helper.setBlock(berries.below(), Blocks.DIRT);
+		helper.setBlock(berries, Blocks.SWEET_BERRY_BUSH.defaultBlockState().setValue(net.minecraft.world.level.block.SweetBerryBushBlock.AGE, 3));
+		helper.setBlock(stem.below(), Blocks.FARMLAND);
+		helper.setBlock(stem, Blocks.MELON_STEM.defaultBlockState().setValue(net.minecraft.world.level.block.StemBlock.AGE, 7));
+		helper.startSequence().thenIdle(WAIT).thenExecute(() -> {
+			Support.expect(helper, helper.getBlockState(cane).is(Blocks.SUGAR_CANE), "the sugar cane was harvested");
+			Support.expect(helper, helper.getBlockState(berries).is(Blocks.SWEET_BERRY_BUSH), "the berry bush was harvested");
+			Support.expect(helper, helper.getBlockState(stem).is(Blocks.MELON_STEM), "the melon stem was harvested");
+			Support.expect(helper, Support.container(helper, WEST).isEmpty(), "something was cut");
+		}).thenSucceed();
+	}
+
+	@GameTest(template = Support.TEMPLATE, templateNamespace = Support.NAMESPACE)
+	public static void harvesterCutsRipeNetherWart(GameTestHelper helper) {
+		PlinthBlockEntity be = Support.plinth(helper, POS);
+		Support.fit(be, SigilType.HARVESTER);
+		helper.setBlock(WEST, Blocks.CHEST);
+		helper.setBlock(EAST.below(), Blocks.SOUL_SAND);
+		helper.setBlock(EAST, Blocks.NETHER_WART.defaultBlockState().setValue(net.minecraft.world.level.block.NetherWartBlock.AGE, 3));
+		helper.startSequence().thenIdle(WAIT).thenExecute(() -> {
+			var state = helper.getBlockState(EAST);
+			Support.expect(helper, state.is(Blocks.NETHER_WART) && state.getValue(net.minecraft.world.level.block.NetherWartBlock.AGE) == 0, "not replanted: " + state);
+			Support.expect(helper, Support.count(Support.container(helper, WEST), Items.NETHER_WART) > 0, "no wart in the chest");
 		}).thenSucceed();
 	}
 

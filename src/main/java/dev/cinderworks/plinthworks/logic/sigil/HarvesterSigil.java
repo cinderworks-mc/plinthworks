@@ -4,6 +4,7 @@ import dev.cinderworks.plinthworks.block.entity.PlinthBlockEntity;
 import dev.cinderworks.plinthworks.logic.*;
 import net.minecraft.core.*;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
@@ -54,6 +55,12 @@ public class HarvesterSigil implements SigilBehavior
 		}
 		if (state.getBlock() instanceof NetherWartBlock) {
 			return state.getValue(NetherWartBlock.AGE) == NetherWartBlock.MAX_AGE;
+		}
+		// the age fallback is only for tagged crops that don't extend CropBlock, otherwise it
+		// cuts cactus, cane, bamboo and anything else that tops out. stems are tagged too but
+		// cutting one only loses the stem
+		if (!state.is(BlockTags.CROPS) || state.getBlock() instanceof StemBlock) {
+			return false;
 		}
 		for (Property<?> property : state.getProperties()) {
 			if (property instanceof IntegerProperty age && age.getName().equals("age")
