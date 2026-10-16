@@ -41,4 +41,11 @@ class PwContrastTest
 		atLeast(4.5, PwGui.BRASS, PwGui.PLATE);
 		atLeast(4.5, PwGui.BRASS, PwGui.SLAB_MID);
 	}
+
+	// the lit verb heading is the one ember line of text, plain ember only made 5.8 there and looked dim
+	@Test
+	void emberHeadingReadsOnThePlate() {
+		atLeast(7.0, PwStatPlate.headingColor(true), PwGui.PLATE);
+		atLeast(4.5, PwStatPlate.headingColor(false), PwGui.PLATE);
+	}
 }

@@ -64,13 +64,18 @@ final class PwStatPlate
 
 	// coordinates are relative to the slab, called from the label pass
 	void renderText(GuiGraphics g, Font font) {
-		g.drawString(font, heading, X + PAD, 42, active ? PwGui.EMBER : PwGui.MUTED, false);
+		g.drawString(font, heading, X + PAD, 42, headingColor(active), false);
 		int y = FIRST_ROW;
 		for (Row row : rows) {
 			row.icon().render(g, X + PAD, y);
 			g.drawString(font, row.value(), X + PAD + ICON_GAP, y, PwGui.VALUE, false);
 			y += ROW;
 		}
+	}
+
+	// plain ember sank into the plate next to the values, the hot tint keeps the glow and still reads
+	static int headingColor(boolean active) {
+		return active ? PwGui.EMBER_HOT : PwGui.MUTED;
 	}
 
 	Component tipAt(int mx, int my) {

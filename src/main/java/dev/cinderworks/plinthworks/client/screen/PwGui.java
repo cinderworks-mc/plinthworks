@@ -9,6 +9,8 @@ final class PwGui
 	static final int MUTED = 0xB0AA9E;
 	static final int BRASS = 0xD2A55A;
 	static final int EMBER = 0xF08A3C;
+	// the hot tip of the gauge and the thread pulse, for ember coloured text that has to read
+	static final int EMBER_HOT = 0xFFC070;
 
 	static final int SLAB_MID = 0x3A3836;
 	static final int SLAB = 0x4A4744;
