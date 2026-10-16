@@ -11,15 +11,27 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SealConfigScreen extends Screen
 {
+	// four key rows fit between the top buttons and the bottom of the frame
+	static final int VISIBLE = 4;
+	private static final int ROW = 20;
+	private static final int LIST_Y = 46;
+	private static final int KEY_W = 172;
+
 	private final PlinthScreen parent;
 	private final PlinthMenu menu;
 	private final int sealIndex;
+	private final List<PwTextButton> keyButtons = new ArrayList<>();
 	private PwTextButton clearButton;
+	private int scroll;
 	private int armed;
 	private int left;
 	private int top;
@@ -45,19 +57,21 @@ public class SealConfigScreen extends Screen
 				Component.translatable("gui.plinthworks.clear_keys"), this::clearKeys).danger();
 		addRenderableWidget(clearButton);
 
+		keyButtons.clear();
 		ItemStack shown = menu.blockEntity().getDisplayedItem();
 		if (shown.isEmpty()) {
 			return;
 		}
+		// the server takes a key by its index in this same order, and nothing past its limit
 		if (seal.type() == SealType.TAG) {
-			SealMatch.sortedTags(shown).stream().limit(4).forEach(tag ->
-					addKeyButton(tag.toString(), SealEdit.ADD_TAG, nextKeyButton()));
+			addKeyButtons(SealMatch.sortedTags(shown).stream().limit(PlinthMenu.KEY_INDEX_LIMIT)
+					.map(Object::toString).toList(), SealEdit.ADD_TAG);
 		} else if (seal.type() == SealType.COMPONENT) {
-			shown.getComponents().stream().limit(4).forEach(component ->
-					addKeyButton(componentName(component), SealEdit.ADD_COMPONENT, nextKeyButton()));
+			addKeyButtons(shown.getComponents().stream().limit(PlinthMenu.KEY_INDEX_LIMIT)
+					.map(SealConfigScreen::componentName).toList(), SealEdit.ADD_COMPONENT);
 		} else {
-			addKeyButton(Component.translatable("gui.plinthworks.add_displayed").getString(),
-					SealEdit.ADD_DISPLAYED, 0);
+			addKeyButtons(List.of(Component.translatable("gui.plinthworks.add_displayed").getString()),
+					SealEdit.ADD_DISPLAYED);
 		}
 	}
 
@@ -81,14 +95,56 @@ public class SealConfigScreen extends Screen
 		}
 	}
 
-	private int nextKeyButton() {
-		return Math.max(0, children().size() - 2);
+	// the button index is the key index the server gets. a long list loses a few pixels to the scrollbar
+	private void addKeyButtons(List<String> labels, SealEdit action) {
+		int width = labels.size() > VISIBLE ? KEY_W - 7 : KEY_W;
+		for (int i = 0; i < labels.size(); i++) {
+			int key = i;
+			keyButtons.add(addRenderableWidget(new PwTextButton(left + 12, top + LIST_Y, width, 18,
+					Component.literal(labels.get(i)), () -> send(action, key))));
+		}
+		layoutKeys();
 	}
 
-	private void addKeyButton(String label, SealEdit action, int key) {
-		int row = nextKeyButton();
-		addRenderableWidget(new PwTextButton(left + 12, top + 46 + row * 20, 172, 18,
-				Component.literal(label), () -> send(action, key)));
+	// only the rows inside the window are shown, the rest wait hidden until a scroll brings them in
+	private void layoutKeys() {
+		scroll = clampScroll(scroll, keyButtons.size());
+		for (int i = 0; i < keyButtons.size(); i++) {
+			int row = i - scroll;
+			keyButtons.get(i).visible = row >= 0 && row < VISIBLE;
+			keyButtons.get(i).setY(top + LIST_Y + row * ROW);
+		}
+	}
+
+	static int clampScroll(int scroll, int count) {
+		return Mth.clamp(scroll, 0, Math.max(0, count - VISIBLE));
+	}
+
+	@Override
+	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+		if (keyButtons.size() <= VISIBLE) {
+			return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+		}
+		scroll -= (int) Math.signum(scrollY);
+		layoutKeys();
+		return true;
+	}
+
+	// same track and thumb as the member list on the network screen
+	private void renderScrollbar(GuiGraphics graphics) {
+		int count = keyButtons.size();
+		if (count <= VISIBLE) {
+			return;
+		}
+		int tx = left + 12 + KEY_W - 5;
+		int ty = top + LIST_Y;
+		int th = ROW * VISIBLE - 2;
+		graphics.fill(tx, ty, tx + 4, ty + th, 0xFF17161A);
+		graphics.fill(tx + 4, ty, tx + 5, ty + th, 0xFF4A4744);
+		int thumb = Math.max(8, th * VISIBLE / count);
+		int at = ty + Math.round((th - thumb) * (scroll / (float) (count - VISIBLE)));
+		graphics.fill(tx, at, tx + 4, at + thumb, 0xFFB38A4A);
+		graphics.fill(tx, at, tx + 4, at + 1, 0xFFD2A55A);
 	}
 
 	private static String componentName(TypedDataComponent<?> component) {
@@ -114,6 +170,7 @@ public class SealConfigScreen extends Screen
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		super.render(graphics, mouseX, mouseY, partialTick);
+		renderScrollbar(graphics);
 		graphics.drawString(font, title, left + 13, top + 5, PwGui.TITLE, false);
 		ItemStack seal = menu.seal(sealIndex);
 		if (!(seal.getItem() instanceof SealItem)) {

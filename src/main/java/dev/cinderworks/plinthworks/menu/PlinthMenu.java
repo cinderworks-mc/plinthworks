@@ -23,7 +23,7 @@ import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class PlinthMenu extends AbstractContainerMenu
 {
-	private static final int KEY_INDEX_LIMIT = 64;
+	public static final int KEY_INDEX_LIMIT = 64;
 
 	private final PlinthBlockEntity be;
 	private final ContainerData stats;
