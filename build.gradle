@@ -13,9 +13,23 @@ java {
 	}
 }
 
+// thaumaturge has no 1.21.1 maven and its licence keeps the jar out of the repo and out of everything we publish.
+// the essentia compat lives in its own source set and only builds against a local copy (libs/README.md).
+// without one the build is the core alone, which runs the same with or without thaumaturge installed
+def thaumaturgeJar = file(providers.gradleProperty('thaumaturge_jar').getOrElse('libs/thaumaturge-1.21.1-NeoForge-1.0.3.jar'))
+def withThaumaturge = thaumaturgeJar.isFile()
+// release builds set this, so a missing jar fails the build instead of shipping without the compat
+if (providers.gradleProperty('expect_compat').getOrElse('false').toBoolean() && !withThaumaturge) {
+	throw new GradleException("expect_compat is set but there is no thaumaturge jar at ${thaumaturgeJar}")
+}
+
 // test only code, on the classpath of the dev runs and never in the jar
 sourceSets {
 	gametest {
+		compileClasspath += sourceSets.main.output
+		runtimeClasspath += sourceSets.main.output
+	}
+	thaumaturge {
 		compileClasspath += sourceSets.main.output
 		runtimeClasspath += sourceSets.main.output
 	}
@@ -25,6 +39,8 @@ configurations {
 	gametestImplementation.extendsFrom implementation
 	gametestCompileOnly.extendsFrom compileOnly
 	gametestRuntimeOnly.extendsFrom runtimeOnly
+	thaumaturgeImplementation.extendsFrom implementation
+	thaumaturgeCompileOnly.extendsFrom compileOnly
 }
 
 repositories {
@@ -72,10 +88,14 @@ neoForge {
 		plinthworks {
 			sourceSet sourceSets.main
 			sourceSet sourceSets.gametest
+			if (withThaumaturge) {
+				sourceSet sourceSets.thaumaturge
+			}
 		}
 	}
 
 	addModdingDependenciesTo(sourceSets.gametest)
+	addModdingDependenciesTo(sourceSets.thaumaturge)
 
 	unitTest {
 		enable()
@@ -115,4 +135,19 @@ processResources {
 
 tasks.named('jar') {
 	from('LICENSE')
+}
+
+if (withThaumaturge) {
+	dependencies {
+		thaumaturgeCompileOnly files(thaumaturgeJar)
+	}
+	sourceSets.gametest.runtimeClasspath += sourceSets.thaumaturge.output
+	tasks.named('jar') {
+		from sourceSets.thaumaturge.output
+	}
+} else {
+	tasks.named('compileThaumaturgeJava') {
+		enabled = false
+	}
+	logger.lifecycle("no thaumaturge jar at ${rootProject.relativePath(thaumaturgeJar)}, building without the essentia compat (see libs/README.md)")
 }
