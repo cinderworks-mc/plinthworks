@@ -36,7 +36,8 @@ public class ModLootProvider extends LootTableProvider
 					.setRolls(ConstantValue.exactly(1))
 					.add(LootItem.lootTableItem(ModItems.PLINTH.get())
 							.apply(CopyComponentsFunction.copyComponents(CopyComponentsFunction.Source.BLOCK_ENTITY)
-									.include(ModDataComponents.PLINTH_CONTENTS.get()))))));
+									.include(ModDataComponents.PLINTH_CONTENTS.get())
+									.include(ModDataComponents.PLINTH_ESSENTIA.get()))))));
 		}
 
 		@Override

@@ -5,6 +5,8 @@ import dev.cinderworks.plinthworks.component.*;
 import dev.cinderworks.plinthworks.config.ModConfig;
 import dev.cinderworks.plinthworks.item.*;
 import dev.cinderworks.plinthworks.logic.*;
+import dev.cinderworks.plinthworks.logic.resource.Essentia;
+import dev.cinderworks.plinthworks.logic.resource.EssentiaSupport;
 import dev.cinderworks.plinthworks.logic.seal.SealMatch;
 import dev.cinderworks.plinthworks.logic.seal.SealMatch.SealEntry;
 import dev.cinderworks.plinthworks.registry.*;
@@ -294,6 +296,22 @@ public class PlinthBlockEntity extends BlockEntity
 		return (int) Math.min(ModConfig.ESSENTIA_STORAGE_MAX.get(), capacity);
 	}
 
+	private static boolean fluxOnBreak() {
+		return EssentiaSupport.available() && ModConfig.ESSENTIA_FLUX_ON_BREAK.get();
+	}
+
+	// a broken plinth never just deletes essentia: with a provider it goes back to the world (flux, for
+	// thaumaturge), otherwise it stays on the dropped plinth item, see collectImplicitComponents
+	public void releaseEssentia() {
+		if (level == null || level.isClientSide || !fluxOnBreak()) {
+			return;
+		}
+		Essentia held = essentia.drain();
+		if (held != null) {
+			EssentiaSupport.provider().release(level, worldPosition, held.aspect(), held.amount());
+		}
+	}
+
 	public BlockState getBaseState() {
 		return baseState;
 	}
@@ -463,6 +481,9 @@ public class PlinthBlockEntity extends BlockEntity
 				new PlinthContents(BuiltInRegistries.BLOCK.getKey(baseState.getBlock())));
 		components.set(ModDataComponents.PLINTH_LOADOUT.get(), new PlinthLoadout(
 				sigil.getStackInSlot(0), stacks(etchings), stacks(seals)));
+		if (essentia.amount() > 0 && !fluxOnBreak()) {
+			components.set(ModDataComponents.PLINTH_ESSENTIA.get(), new Essentia(essentia.aspect(), essentia.amount()));
+		}
 	}
 
 	@Override
@@ -477,6 +498,10 @@ public class PlinthBlockEntity extends BlockEntity
 			sigil.setStackInSlot(0, loadout.sigil());
 			putStacks(etchings, loadout.etchings());
 			putStacks(seals, loadout.seals());
+		}
+		Essentia held = input.get(ModDataComponents.PLINTH_ESSENTIA.get());
+		if (held != null) {
+			essentia.restore(held);
 		}
 	}
 

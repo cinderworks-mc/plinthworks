@@ -52,6 +52,7 @@ public class ModConfig
 	public static final ModConfigSpec.IntValue ESSENTIA_BASE_TRANSFER;
 	public static final ModConfigSpec.IntValue ESSENTIA_TRANSFER_STEP;
 	public static final ModConfigSpec.IntValue ESSENTIA_TRANSFER_MAX;
+	public static final ModConfigSpec.BooleanValue ESSENTIA_FLUX_ON_BREAK;
 	public static final ModConfigSpec SPEC;
 
 	static {
@@ -143,6 +144,9 @@ public class ModConfig
 		ESSENTIA_BASE_TRANSFER = BUILDER.defineInRange("baseTransfer", 4, 1, Integer.MAX_VALUE);
 		ESSENTIA_TRANSFER_STEP = BUILDER.defineInRange("transferStep", 4, 1, Integer.MAX_VALUE);
 		ESSENTIA_TRANSFER_MAX = BUILDER.defineInRange("transferMax", 16, 1, Integer.MAX_VALUE);
+		// true: a broken plinth releases its essentia (thaumaturge turns it into flux). false: the points stay on the
+		// dropped plinth item. with no provider installed they always stay on the item
+		ESSENTIA_FLUX_ON_BREAK = BUILDER.define("fluxOnBreak", true);
 		BUILDER.pop();
 
 		SPEC = BUILDER.build();

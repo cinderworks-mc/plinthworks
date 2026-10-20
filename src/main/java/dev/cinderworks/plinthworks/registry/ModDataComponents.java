@@ -5,6 +5,7 @@ import dev.cinderworks.plinthworks.component.PlinthContents;
 import dev.cinderworks.plinthworks.component.SealConfig;
 import dev.cinderworks.plinthworks.component.LinkBinding;
 import dev.cinderworks.plinthworks.component.PlinthLoadout;
+import dev.cinderworks.plinthworks.logic.resource.Essentia;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -27,4 +28,7 @@ public class ModDataComponents
 	public static final DeferredHolder<DataComponentType<?>, DataComponentType<PlinthLoadout>> PLINTH_LOADOUT =
 			COMPONENTS.registerComponentType("plinth_loadout",
 					builder -> builder.persistent(PlinthLoadout.CODEC));
+	public static final DeferredHolder<DataComponentType<?>, DataComponentType<Essentia>> PLINTH_ESSENTIA =
+			COMPONENTS.registerComponentType("plinth_essentia",
+					builder -> builder.persistent(Essentia.CODEC));
 }
