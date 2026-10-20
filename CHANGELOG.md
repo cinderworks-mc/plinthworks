@@ -2,6 +2,22 @@
 
 notable changes to plinthworks. loosely follows keep a changelog.
 
+## 0.2.5
+
+### fixed
+- the transfer button is greyed out with a hint when the plinth has no channel, and the
+  channel screen asks you to name the channel instead of showing mode buttons that do
+  nothing.
+- the seal key list scrolls with the mouse wheel and has a scrollbar, so every tag and
+  component is reachable.
+- the plate heading uses a brighter ember so it reads against the plate.
+- the channel and seal screens no longer pause singleplayer, so renames, mode picks and
+  keys show up right away.
+- component seal keys keep a fixed order, so the one you click is the one you get on a
+  server.
+- the channel screen shows the right plinth count and list as soon as you name or change a
+  channel.
+
 ## 0.2.4
 
 ### added

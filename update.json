@@ -1,10 +1,11 @@
 {
   "homepage": "https://github.com/cinderworks-mc/plinthworks",
   "promos": {
-    "1.21.1-recommended": "0.2.4",
-    "1.21.1-latest": "0.2.4"
+    "1.21.1-recommended": "0.2.5",
+    "1.21.1-latest": "0.2.5"
   },
   "1.21.1": {
+    "0.2.5": "the transfer button and channel screen explain themselves when a plinth has no channel, the seal key list scrolls, the plate heading is easier to read, the channel and seal screens no longer pause singleplayer, component seal keys keep a fixed order on servers, and the channel screen shows the right plinth count. update from 0.2.4.",
     "0.2.4": "new plinth model and textures, redrawn sigils, etchings and seals, a redone plinth screen, advancements, tooltips on every item, and fixes for plinths that load with a channel, shift clicking into a hidden slot, the tag seal editor on servers and the link tool replacing channels. update from 0.2.3.",
     "0.2.3": "void no longer erases nearby containers, crafting is off by default, big buffers can no longer corrupt a chunk, the energy gauge reads correctly, and shift-clicking the plinth slots no longer dupes or loses items. update from 0.2.2."
   }
