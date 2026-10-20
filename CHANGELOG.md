@@ -2,6 +2,22 @@
 
 notable changes to plinthworks. loosely follows keep a changelog.
 
+## unreleased
+
+### added
+- an essentia mode for thaumaturge. a plinth moves essentia between warded jars like it moves
+  fluids between tanks: import drains a jar, export fills one, a linked pair moves it jar to jar.
+  plinths reach a jar through its top, also from beside it or across a range etching.
+- the void sigil and a broken plinth turn their essentia into flux. without thaumaturge a broken
+  plinth keeps its essentia on the dropped item instead.
+- an `essentia` config section for buffer size, throughput (16 points per move at most) and
+  flux on break.
+
+### changed
+- thaumaturge is an optional dependency (1.0.3 or newer). without it nothing changes: the
+  essentia mode never shows up, and a plinth left in it by a world that had thaumaturge keeps
+  its points and waits.
+
 ## 0.2.5
 
 ### fixed

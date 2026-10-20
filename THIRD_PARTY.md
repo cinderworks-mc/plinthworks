@@ -10,7 +10,9 @@ plinthworks' own source code, build scripts and data files are under the mit lic
 
 ## optional mods (soft dependencies, not bundled)
 
-`neoforge.mods.toml` lists create, jei and emi as optional. plinthworks does not compile against any of them and nothing of them is in the jar or the repository. they keep their own licences.
+`neoforge.mods.toml` lists create, jei, emi and thaumaturge as optional. plinthworks does not compile against create, jei or emi, and nothing of any of them is in the jar or the repository. they keep their own licences.
+
+- thaumaturge is all rights reserved. the essentia compat in `src/thaumaturge` calls its api and is compiled against a copy of the thaumaturge jar that each builder supplies (`libs/README.md`). that jar is never committed, hosted, cached or released by this project, and the build checks that no part of it ends up in the plinthworks jar (`.github/scripts/jar_guard.py`). plinthworks draws no aspect icons or other thaumaturge art; aspect names and colours are read from thaumaturge at runtime.
 
 - when one of them is installed, plinthworks only writes a line to the log. recipe pages for jei and emi and kinetic support for create are not wired yet.
 - experience mode needs a fluid from another mod. the config names create enchantment industry's experience fluid by default, but no code or asset from that mod is used.

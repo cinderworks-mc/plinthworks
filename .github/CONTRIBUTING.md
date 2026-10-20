@@ -34,7 +34,7 @@ you need java 21. gradle fetches the rest.
 ./gradlew runGameTestServer  # the gametests on a real server
 ```
 
-the gametests live in `src/gametest` and are not part of the jar.
+the gametests live in `src/gametest` and are not part of the jar. the thaumaturge compat in `src/thaumaturge` only builds when you supply the jar yourself, see [libs/README.md](../libs/README.md). you don't need it for anything else.
 
 ## generated resources
 

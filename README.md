@@ -32,6 +32,7 @@ a plinth moves one kind of resource at a time. cycle the mode in the screen.
 - energy. moves fe between neighbouring blocks that expose it.
 - fluid. moves fluids between tanks.
 - experience. moves xp as a fluid. neoforge has no xp fluid of its own, so this only works when another mod supplies one. the default list in the config names create enchantment industry's experience fluid and the `c:experience` and `forge:experience` tags. with no such mod installed, this mode has nothing to move.
+- essentia. only there when thaumaturge is installed. a plinth holds one aspect at a time and reaches a warded jar through its top, so it works on a jar, beside one or across a range etching. import drains jars, export fills them, a linked pair moves essentia jar to jar. essentia that leaves a plinth any other way (the void sigil, breaking the plinth) turns into flux, the way thaumaturge handles spilled essentia.
 
 ## sigils
 
@@ -107,6 +108,7 @@ the config file is `config/plinthworks-common.toml`. some of the settings you ma
 - `energy` and `fluid` set buffer sizes and throughput.
 - `xp.fluids` and `xp.mbPerPoint` set which fluid counts as experience and how much of it makes one point.
 - `crafting.enabled` turns the crafting sigil on.
+- `essentia` sets the essentia buffer and throughput in points, and `essentia.fluxOnBreak` decides whether a broken plinth releases its essentia as flux or keeps it on the dropped plinth.
 
 ## requirements and install
 
@@ -114,7 +116,7 @@ the config file is `config/plinthworks-common.toml`. some of the settings you ma
 - neoforge 21.1.x
 - java 21
 
-put the jar in your `mods` folder on the server and on every client. jei, emi and create are optional. plinthworks does not add recipe pages or kinetic support for them yet.
+put the jar in your `mods` folder on the server and on every client. jei, emi and create are optional. plinthworks does not add recipe pages or kinetic support for them yet. thaumaturge (1.0.3 or newer) is optional too and adds the essentia mode.
 
 ## building
 
@@ -127,6 +129,10 @@ you need java 21. gradle fetches the rest.
 ```
 
 the gametests live in `src/gametest` and are not part of the jar. see [CONTRIBUTING.md](.github/CONTRIBUTING.md) for more.
+
+### building with the thaumaturge compat
+
+the essentia mode needs a small compat in `src/thaumaturge` that compiles against thaumaturge itself. thaumaturge has no 1.21.1 maven and we can't host its jar, so bring your own: put `thaumaturge-1.21.1-NeoForge-1.0.3.jar` in `libs/` or pass `-Pthaumaturge_jar=/path/to/it`. without it the build says so and leaves the compat out, and everything else builds and runs the same. the jar is only compiled against, it never goes into ours. details in [libs/README.md](libs/README.md).
 
 ## where it came from
 
