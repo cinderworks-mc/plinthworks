@@ -67,7 +67,7 @@ public class SealConfigScreen extends Screen
 			addKeyButtons(SealMatch.sortedTags(shown).stream().limit(PlinthMenu.KEY_INDEX_LIMIT)
 					.map(Object::toString).toList(), SealEdit.ADD_TAG);
 		} else if (seal.type() == SealType.COMPONENT) {
-			addKeyButtons(shown.getComponents().stream().limit(PlinthMenu.KEY_INDEX_LIMIT)
+			addKeyButtons(SealMatch.sortedComponents(shown).stream().limit(PlinthMenu.KEY_INDEX_LIMIT)
 					.map(SealConfigScreen::componentName).toList(), SealEdit.ADD_COMPONENT);
 		} else {
 			addKeyButtons(List.of(Component.translatable("gui.plinthworks.add_displayed").getString()),

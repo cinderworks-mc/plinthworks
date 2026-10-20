@@ -290,7 +290,7 @@ public class PlinthMenu extends AbstractContainerMenu
 			case ADD_TAG -> type != SealType.TAG ? null : SealMatch.sortedTags(shown).stream().skip(key).findFirst()
 					.map(tag -> (MatchKey) new MatchKey.TagKey(tag)).orElse(null);
 			case ADD_COMPONENT -> type != SealType.COMPONENT ? null
-					: shown.getComponents().stream().skip(key).findFirst()
+					: SealMatch.sortedComponents(shown).stream().skip(key).findFirst()
 							.map(component -> componentKey(component)).orElse(null);
 			default -> null;
 		};

@@ -3,6 +3,7 @@ package dev.cinderworks.plinthworks.logic.seal;
 import dev.cinderworks.plinthworks.component.*;
 import dev.cinderworks.plinthworks.item.SealType;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.core.registries.*;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.*;
@@ -68,6 +69,14 @@ public class SealMatch
 	public static List<net.minecraft.resources.ResourceLocation> sortedTags(ItemStack stack) {
 		return stack.getTags().map(TagKey::location)
 				.sorted(java.util.Comparator.comparing(net.minecraft.resources.ResourceLocation::toString)).toList();
+	}
+
+	// a component map has no fixed order, so both sides sort by id to agree on what a key index means
+	public static List<TypedDataComponent<?>> sortedComponents(ItemStack stack) {
+		return stack.getComponents().stream()
+				.sorted(java.util.Comparator.comparing((TypedDataComponent<?> c) ->
+						String.valueOf(BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(c.type()))))
+				.toList();
 	}
 
 	public static String componentFingerprint(ItemStack stack) {
