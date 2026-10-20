@@ -9,9 +9,10 @@ local icon = {A = 0xe6e0d2, B = 0xcfc8b8, C = 0x1f1e20}
 -- gauge caps use the body and shadow only
 local cap = {A = 0xcfc8b8, B = 0x1f1e20}
 
+-- a stoppered flask, so the outline doesn't read as the item mode's box at block scale
 local GLYPH = {
-  ".ABBC.",
-  "B....D",
+  "..AB..",
+  ".B..D.",
   "B....D",
   "BAABED",
   ".EDDF.",
