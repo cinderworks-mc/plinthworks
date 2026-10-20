@@ -21,7 +21,7 @@ final class PlinthModels
 	private static final float[] CROWN_FRONT = {0, 8, 4, 10};
 	private static final float[] CROWN_SIDE = {0, 10, 6, 12};
 
-	private static final String[] GLYPH_CELL = {"0,0", "8,0", "0,5", "8,5"};
+	private static final String[] GLYPH_CELL = {"0,0", "8,0", "0,5", "8,5", "0,10"};
 
 	private PlinthModels() {}
 

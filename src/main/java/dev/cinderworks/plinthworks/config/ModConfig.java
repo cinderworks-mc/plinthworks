@@ -46,6 +46,12 @@ public class ModConfig
 	public static final ModConfigSpec.IntValue FLUID_TRANSFER_MAX;
 	public static final ModConfigSpec.ConfigValue<List<? extends String>> XP_FLUIDS;
 	public static final ModConfigSpec.IntValue XP_MB_PER_POINT;
+	public static final ModConfigSpec.IntValue ESSENTIA_BASE_STORAGE;
+	public static final ModConfigSpec.IntValue ESSENTIA_STORAGE_STEP;
+	public static final ModConfigSpec.IntValue ESSENTIA_STORAGE_MAX;
+	public static final ModConfigSpec.IntValue ESSENTIA_BASE_TRANSFER;
+	public static final ModConfigSpec.IntValue ESSENTIA_TRANSFER_STEP;
+	public static final ModConfigSpec.IntValue ESSENTIA_TRANSFER_MAX;
 	public static final ModConfigSpec SPEC;
 
 	static {
@@ -126,6 +132,17 @@ public class ModConfig
 				"#c:experience", "#forge:experience"), () -> "modid:fluid",
 				value -> value instanceof String entry && !entry.isBlank());
 		XP_MB_PER_POINT = BUILDER.defineInRange("mbPerPoint", 20, 1, Integer.MAX_VALUE);
+		BUILDER.pop();
+
+		// only used when a magic mod provides essentia (thaumaturge). in points, base transfer every 20 ticks is
+		// about tube speed
+		BUILDER.push("essentia");
+		ESSENTIA_BASE_STORAGE = BUILDER.defineInRange("baseStorage", 64, 1, Integer.MAX_VALUE);
+		ESSENTIA_STORAGE_STEP = BUILDER.defineInRange("storageStep", 64, 1, Integer.MAX_VALUE);
+		ESSENTIA_STORAGE_MAX = BUILDER.defineInRange("storageMax", 250, 1, Integer.MAX_VALUE);
+		ESSENTIA_BASE_TRANSFER = BUILDER.defineInRange("baseTransfer", 4, 1, Integer.MAX_VALUE);
+		ESSENTIA_TRANSFER_STEP = BUILDER.defineInRange("transferStep", 4, 1, Integer.MAX_VALUE);
+		ESSENTIA_TRANSFER_MAX = BUILDER.defineInRange("transferMax", 16, 1, Integer.MAX_VALUE);
 		BUILDER.pop();
 
 		SPEC = BUILDER.build();

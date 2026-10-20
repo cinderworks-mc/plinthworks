@@ -52,6 +52,14 @@
     },
     {
       "apply": {
+        "model": "plinthworks:block/plinth_glyph_essentia"
+      },
+      "when": {
+        "mode": "4"
+      }
+    },
+    {
+      "apply": {
         "model": "plinthworks:block/plinth_gauge_1"
       },
       "when": {

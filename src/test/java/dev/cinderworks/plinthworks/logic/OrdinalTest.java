@@ -1,5 +1,6 @@
 package dev.cinderworks.plinthworks.logic;
 
+import dev.cinderworks.plinthworks.logic.resource.EssentiaSupport;
 import dev.cinderworks.plinthworks.net.SealEdit;
 import org.junit.jupiter.api.Test;
 
@@ -15,6 +16,23 @@ class OrdinalTest
 		assertNotNull(RedstoneMode.fromOrdinal(-1));
 		assertNotNull(RedstoneMode.fromOrdinal(Integer.MIN_VALUE));
 		assertNotNull(RedstoneMode.fromOrdinal(Integer.MAX_VALUE));
+	}
+
+	@Test
+	void essentiaIsOnlyOfferedWithAProvider() {
+		assertFalse(EssentiaSupport.available());
+		assertEquals(ResourceMode.ITEM, ResourceMode.XP.next());
+		// a plinth loaded in essentia mode with nothing to provide it can still be clicked back to items
+		assertEquals(ResourceMode.ITEM, ResourceMode.ESSENTIA.next());
+		assertEquals(ResourceMode.ESSENTIA, ResourceMode.fromOrdinal(4));
+		try {
+			EssentiaSupport.register(new FakeEssentia());
+			assertEquals(ResourceMode.ESSENTIA, ResourceMode.XP.next());
+			assertEquals(ResourceMode.ITEM, ResourceMode.ESSENTIA.next());
+		} finally {
+			EssentiaSupport.register(null);
+		}
+		assertEquals(ResourceMode.ITEM, ResourceMode.XP.next());
 	}
 
 	@Test

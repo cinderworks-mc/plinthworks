@@ -7,6 +7,7 @@ import dev.cinderworks.plinthworks.item.SigilType;
 import dev.cinderworks.plinthworks.menu.PlinthMenu;
 import dev.cinderworks.plinthworks.logic.ResourceMode;
 import dev.cinderworks.plinthworks.logic.network.TransferMode;
+import dev.cinderworks.plinthworks.logic.resource.EssentiaSupport;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -120,7 +121,7 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 		renderHints(graphics);
 		if (menu.resourceMode() != ResourceMode.ITEM) {
 			gauge.render(graphics, leftPos + GAUGE_X, topPos + GAUGE_Y, menu.resourceMode(),
-					menu.blockEntity().fluid().getFluid(), partialTick);
+					menu.blockEntity().fluid().getFluid(), essentiaTint(), partialTick);
 			capGlyph().render(graphics, leftPos + 17, topPos + 55);
 		}
 		plate.renderBg(graphics, leftPos, topPos);
@@ -151,6 +152,7 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 		return switch (menu.resourceMode()) {
 			case ENERGY -> PwGuiTextures.CAP_ENERGY;
 			case XP -> PwGuiTextures.CAP_XP;
+			case ESSENTIA -> PwGuiTextures.CAP_ESSENTIA;
 			default -> PwGuiTextures.CAP_FLUID;
 		};
 	}
@@ -160,6 +162,7 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 		return switch (menu.resourceMode()) {
 			case ENERGY -> frac(menu.energyStored(), menu.energyCapacity());
 			case FLUID, XP -> frac(menu.fluidStored(), menu.fluidCapacity());
+			case ESSENTIA -> frac(menu.essentiaStored(), menu.essentiaCapacity());
 			default -> 0f;
 		};
 	}
@@ -168,6 +171,7 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 		return switch (menu.resourceMode()) {
 			case ENERGY -> menu.energyStored();
 			case XP -> menu.fluidStored() / Math.max(1, menu.xpMbPerPoint());
+			case ESSENTIA -> menu.essentiaStored();
 			default -> menu.fluidStored();
 		};
 	}
@@ -176,6 +180,7 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 		return switch (menu.resourceMode()) {
 			case ENERGY -> "FE";
 			case XP -> "XP";
+			case ESSENTIA -> "pt";
 			default -> "mB";
 		};
 	}
@@ -207,6 +212,11 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 					number(menu.energyStored()), number(menu.energyCapacity()))));
 			case XP -> lines.add(brass(Component.translatable("gui.plinthworks.stat_xp",
 					number(menu.fluidStored() / Math.max(1, menu.xpMbPerPoint())), number(menu.fluidStored()))));
+			case ESSENTIA -> {
+				lines.add(brass(essentiaName()));
+				lines.add(Component.translatable("gui.plinthworks.stat_essentia",
+						number(menu.essentiaStored()), number(menu.essentiaCapacity())));
+			}
 			default -> {
 				lines.add(brass(fluidName()));
 				lines.add(Component.translatable("gui.plinthworks.stat_fluid",
@@ -226,6 +236,19 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 		return fluid.isEmpty()
 				? Component.translatable("gui.plinthworks.fluid_empty")
 				: fluid.getHoverName();
+	}
+
+	// the client copy of the block entity knows the aspect, the menu only syncs numbers
+	private Component essentiaName() {
+		ResourceLocation aspect = menu.blockEntity().essentia().aspect();
+		return aspect == null
+				? Component.translatable("gui.plinthworks.fluid_empty")
+				: EssentiaSupport.name(aspect);
+	}
+
+	private int essentiaTint() {
+		ResourceLocation aspect = menu.blockEntity().essentia().aspect();
+		return aspect == null ? 0 : EssentiaSupport.color(aspect);
 	}
 
 	private void renderPlateTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
@@ -295,6 +318,7 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 			case ITEM -> Component.literal(String.valueOf(menu.throughput()));
 			case ENERGY -> Component.translatable("gui.plinthworks.val_fe", menu.energyThroughput());
 			case FLUID, XP -> Component.translatable("gui.plinthworks.val_mb", menu.fluidThroughput());
+			case ESSENTIA -> Component.translatable("gui.plinthworks.val_pt", menu.essentiaThroughput());
 		};
 	}
 
@@ -303,6 +327,7 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 			case ITEM -> Component.translatable("gui.plinthworks.stat_throughput", menu.throughput());
 			case ENERGY -> Component.translatable("gui.plinthworks.stat_energy_move", menu.energyThroughput());
 			case FLUID, XP -> Component.translatable("gui.plinthworks.stat_fluid_move", menu.fluidThroughput());
+			case ESSENTIA -> Component.translatable("gui.plinthworks.stat_essentia_move", menu.essentiaThroughput());
 		};
 	}
 
@@ -312,6 +337,7 @@ public class PlinthScreen extends AbstractContainerScreen<PlinthMenu>
 			case ENERGY -> PwGuiTextures.RES_ENERGY;
 			case FLUID -> PwGuiTextures.RES_FLUID;
 			case XP -> PwGuiTextures.RES_XP;
+			case ESSENTIA -> PwGuiTextures.RES_ESSENTIA;
 		};
 	}
 

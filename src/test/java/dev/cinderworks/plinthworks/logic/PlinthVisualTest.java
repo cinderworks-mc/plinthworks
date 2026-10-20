@@ -24,7 +24,8 @@ class PlinthVisualTest
 
 	@Test
 	void everyResourceModeHasAGlyphSlot() {
-		// the blockstate mode property is the ordinal, 0 to 3
-		assertEquals(4, ResourceMode.values().length);
+		// the blockstate mode property is the ordinal, 0 to 4. old saves only ever hold 0 to 3
+		assertEquals(5, ResourceMode.values().length);
+		assertEquals(4, ResourceMode.ESSENTIA.ordinal());
 	}
 }

@@ -67,6 +67,7 @@ public class PlinthNetwork extends SavedData
 				case ITEM -> be.getDisplayedItem().getCount();
 				case ENERGY -> be.energy().getEnergyStored();
 				case FLUID, XP -> be.fluid().getFluidAmount();
+				case ESSENTIA -> be.essentia().amount();
 			};
 		}
 		return Integer.MAX_VALUE;

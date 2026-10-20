@@ -21,6 +21,7 @@ public enum PwGuiTextures
 	CAP_ENERGY(52, 24, 7, 5),
 	CAP_FLUID(60, 24, 7, 5),
 	CAP_XP(68, 24, 7, 5),
+	CAP_ESSENTIA(76, 24, 7, 5),
 
 	RES_ITEM(0, 80, 16, 16),
 	RES_ENERGY(16, 80, 16, 16),
@@ -31,6 +32,7 @@ public enum PwGuiTextures
 	TR_BALANCED(96, 80, 16, 16),
 	REDSTONE(112, 80, 16, 16),
 	NETWORK(128, 80, 16, 16),
+	RES_ESSENTIA(144, 80, 16, 16),
 
 	STAT_RATE(0, 100, 8, 8),
 	STAT_MOVE(8, 100, 8, 8),

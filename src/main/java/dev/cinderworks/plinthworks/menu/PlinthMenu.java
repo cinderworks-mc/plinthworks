@@ -43,7 +43,7 @@ public class PlinthMenu extends AbstractContainerMenu
 
 	private PlinthMenu(int id, Inventory playerInv, BlockPos pos, java.util.List<BlockPos> members) {
 		this(id, playerInv, (PlinthBlockEntity) playerInv.player.level().getBlockEntity(pos),
-				new SimpleContainerData(22), members);
+				new SimpleContainerData(25), members);
 	}
 
 	public PlinthMenu(int id, Inventory playerInv, PlinthBlockEntity be) {
@@ -264,6 +264,18 @@ public class PlinthMenu extends AbstractContainerMenu
 		return wide(20);
 	}
 
+	public int essentiaStored() {
+		return stats.get(22);
+	}
+
+	public int essentiaCapacity() {
+		return stats.get(23);
+	}
+
+	public int essentiaThroughput() {
+		return stats.get(24);
+	}
+
 	private int wide(int index) {
 		return (stats.get(index) & 0xffff) | (stats.get(index + 1) & 0xffff) << 16;
 	}
@@ -375,6 +387,9 @@ public class PlinthMenu extends AbstractContainerMenu
 					case 19 -> ResourceTypes.FLUID.throughput(u) >>> 16;
 					case 20 -> dev.cinderworks.plinthworks.config.ModConfig.XP_MB_PER_POINT.get() & 0xffff;
 					case 21 -> dev.cinderworks.plinthworks.config.ModConfig.XP_MB_PER_POINT.get() >>> 16;
+					case 22 -> be.essentia().amount();
+					case 23 -> be.essentia().capacity();
+					case 24 -> ResourceTypes.get(ResourceMode.ESSENTIA).throughput(u);
 					default -> 0;
 				};
 			}
@@ -384,7 +399,7 @@ public class PlinthMenu extends AbstractContainerMenu
 
 			@Override
 			public int getCount() {
-				return 22;
+				return 25;
 			}
 		};
 	}

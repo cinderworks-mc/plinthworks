@@ -92,6 +92,8 @@ public class ModLangProvider extends LanguageProvider
 		add("gui.plinthworks.stat_energy", "%s / %s FE");
 		add("gui.plinthworks.stat_fluid_move", "Move: %s mB");
 		add("gui.plinthworks.stat_fluid", "%s / %s mB");
+		add("gui.plinthworks.stat_essentia_move", "Move: %s points");
+		add("gui.plinthworks.stat_essentia", "%s / %s points");
 		add("gui.plinthworks.stat_xp", "%s XP (%s mB)");
 		add("gui.plinthworks.fluid_empty", "Empty");
 		add("gui.plinthworks.stat_range", "Reach: %s");
@@ -125,6 +127,7 @@ public class ModLangProvider extends LanguageProvider
 		add("gui.plinthworks.resource.energy", "Energy");
 		add("gui.plinthworks.resource.fluid", "Fluid");
 		add("gui.plinthworks.resource.xp", "XP");
+		add("gui.plinthworks.resource.essentia", "Essentia");
 		add("gui.plinthworks.transfer.priority", "Priority");
 		add("gui.plinthworks.transfer.round_robin", "Round robin");
 		add("gui.plinthworks.transfer.load_balanced", "Balanced");
@@ -135,6 +138,7 @@ public class ModLangProvider extends LanguageProvider
 		add("gui.plinthworks.val_ticks", "%st");
 		add("gui.plinthworks.val_fe", "%s FE");
 		add("gui.plinthworks.val_mb", "%s mB");
+		add("gui.plinthworks.val_pt", "%s pt");
 		add("gui.plinthworks.network_mode", "Mode");
 		add("gui.plinthworks.network_mode_unnamed", "Name the channel to pick a mode");
 		add("gui.plinthworks.network_overview", "Channel");

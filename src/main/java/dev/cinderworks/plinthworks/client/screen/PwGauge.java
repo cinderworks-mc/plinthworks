@@ -10,7 +10,8 @@ import net.minecraft.world.inventory.InventoryMenu;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.fluids.FluidStack;
 
-// brass tube with an eased fill. energy is ember, xp is brass, fluid is its own still sprite
+// brass tube with an eased fill. energy is ember, xp is brass, fluid is its own still sprite, essentia a flat
+// colour from whatever mod provides it
 final class PwGauge
 {
 	static final int WIDTH = 23;
@@ -52,7 +53,7 @@ final class PwGauge
 		return shown <= 0F;
 	}
 
-	void render(GuiGraphics g, int x, int y, ResourceMode current, FluidStack fluid, float partial) {
+	void render(GuiGraphics g, int x, int y, ResourceMode current, FluidStack fluid, int essentia, float partial) {
 		PwGuiTextures.GAUGE_FRAME.render(g, x, y);
 		int gx = x + INNER_X;
 		int bottom = y + INNER_Y + INNER_H;
@@ -66,6 +67,7 @@ final class PwGauge
 			switch (current) {
 				case ENERGY -> fillEnergy(g, gx, top, bottom);
 				case FLUID -> fillFluid(g, gx, top, bottom, fluid);
+				case ESSENTIA -> fillEssentia(g, gx, top, bottom, essentia);
 				default -> fillXp(g, gx, top, bottom, y + INNER_Y);
 			}
 		} else {
@@ -92,6 +94,11 @@ final class PwGauge
 				g.fill(gx + spark[0], sy, gx + spark[0] + 1, sy + 1, BRASS_SHINE);
 			}
 		}
+	}
+
+	private static void fillEssentia(GuiGraphics g, int gx, int top, int bottom, int color) {
+		g.fill(gx, top, gx + INNER_W, bottom, color == 0 ? FLUID_FALLBACK : 0xFF000000 | color);
+		g.fill(gx, top, gx + INNER_W, top + 1, 0x59FFFFFF);
 	}
 
 	// tile the fluid's own still sprite up the fill, clipped to the filled height

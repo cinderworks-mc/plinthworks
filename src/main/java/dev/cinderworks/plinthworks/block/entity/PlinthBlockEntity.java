@@ -107,6 +107,7 @@ public class PlinthBlockEntity extends BlockEntity
 	};
 	private final PlinthEnergyStorage energy = new PlinthEnergyStorage();
 	private final PlinthFluidTank fluid = new PlinthFluidTank();
+	private final EssentiaBuffer essentia = new EssentiaBuffer(0, this::changedAndSync);
 	private BlockState baseState = Blocks.STONE.defaultBlockState();
 	private UpgradeSet cachedUpgrades;
 	private int cooldown;
@@ -121,6 +122,7 @@ public class PlinthBlockEntity extends BlockEntity
 		super(ModBlockEntities.PLINTH.get(), pos, state);
 		energy.setCapacity(energyCapacity());
 		fluid.setTargetCapacity(fluidCapacity());
+		essentia.setCapacity(essentiaCapacity());
 	}
 
 	public static void serverTick(Level level, BlockPos pos, BlockState state, PlinthBlockEntity be) {
@@ -281,6 +283,17 @@ public class PlinthBlockEntity extends BlockEntity
 		return (int) Math.min(ModConfig.FLUID_STORAGE_MAX.get(), capacity);
 	}
 
+	public EssentiaBuffer essentia() {
+		essentia.setCapacity(essentiaCapacity());
+		return essentia;
+	}
+
+	public int essentiaCapacity() {
+		long capacity = ModConfig.ESSENTIA_BASE_STORAGE.get()
+				+ (long) upgrades().storageLevel() * ModConfig.ESSENTIA_STORAGE_STEP.get();
+		return (int) Math.min(ModConfig.ESSENTIA_STORAGE_MAX.get(), capacity);
+	}
+
 	public BlockState getBaseState() {
 		return baseState;
 	}
@@ -359,6 +372,7 @@ public class PlinthBlockEntity extends BlockEntity
 		cachedUpgrades = null;
 		energy.setCapacity(energyCapacity());
 		fluid.setTargetCapacity(fluidCapacity());
+		essentia.setCapacity(essentiaCapacity());
 		changedAndSync();
 	}
 
@@ -397,6 +411,9 @@ public class PlinthBlockEntity extends BlockEntity
 			fluid.readFromNBT(registries, compound.getCompound("Fluid"));
 			fluid.setTargetCapacity(fluidCapacity());
 		}
+		// older saves have no essentia tag and read back as an empty buffer
+		essentia.load(compound.getCompound("Essentia"));
+		essentia.setCapacity(essentiaCapacity());
 	}
 
 	@Override
@@ -414,6 +431,7 @@ public class PlinthBlockEntity extends BlockEntity
 		compound.putInt("ResourceMode", resourceMode.ordinal());
 		compound.put("Energy", energy.serializeNBT(registries));
 		compound.put("Fluid", fluid.writeToNBT(registries, new CompoundTag()));
+		compound.put("Essentia", essentia.save());
 	}
 
 	@Override
