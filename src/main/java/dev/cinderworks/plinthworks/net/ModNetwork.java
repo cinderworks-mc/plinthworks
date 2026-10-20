@@ -12,7 +12,8 @@ public class ModNetwork
 	public static void register(RegisterPayloadHandlersEvent event) {
 		event.registrar(VERSION)
 				.playToServer(SetChannelPayload.TYPE, SetChannelPayload.STREAM_CODEC, ModNetwork::setChannel)
-				.playToServer(SealEditPayload.TYPE, SealEditPayload.STREAM_CODEC, ModNetwork::sealEdit);
+				.playToServer(SealEditPayload.TYPE, SealEditPayload.STREAM_CODEC, ModNetwork::sealEdit)
+				.playToClient(MembersPayload.TYPE, MembersPayload.STREAM_CODEC, ModNetwork::members);
 	}
 
 	private static void setChannel(SetChannelPayload payload, IPayloadContext context) {
@@ -25,6 +26,12 @@ public class ModNetwork
 			return;
 		}
 		menu.applyChannel(name);
+	}
+
+	private static void members(MembersPayload payload, IPayloadContext context) {
+		if (context.player().containerMenu instanceof PlinthMenu menu && menu.containerId == payload.containerId()) {
+			menu.setNetworkMembers(payload.members());
+		}
 	}
 
 	private static void sealEdit(SealEditPayload payload, IPayloadContext context) {

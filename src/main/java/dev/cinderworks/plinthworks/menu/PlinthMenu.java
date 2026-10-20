@@ -8,6 +8,7 @@ import dev.cinderworks.plinthworks.logic.ResourceMode;
 import dev.cinderworks.plinthworks.logic.UpgradeSet;
 import dev.cinderworks.plinthworks.logic.resource.ResourceTypes;
 import dev.cinderworks.plinthworks.logic.seal.SealMatch;
+import dev.cinderworks.plinthworks.net.MembersPayload;
 import dev.cinderworks.plinthworks.net.SealEdit;
 import dev.cinderworks.plinthworks.registry.*;
 import net.minecraft.core.BlockPos;
@@ -28,7 +29,9 @@ public class PlinthMenu extends AbstractContainerMenu
 	private final PlinthBlockEntity be;
 	private final ContainerData stats;
 	private final int plinthSlots;
-	private final java.util.List<BlockPos> networkMembers;
+	private final Player player;
+	// on the server, the list the client has; on the client, the list it was sent
+	private java.util.List<BlockPos> networkMembers;
 
 	public PlinthMenu(int id, Inventory playerInv, RegistryFriendlyByteBuf data) {
 		this(id, playerInv, data.readBlockPos(), readMembers(data));
@@ -52,6 +55,7 @@ public class PlinthMenu extends AbstractContainerMenu
 		super(ModMenus.PLINTH.get(), id);
 		this.be = be;
 		this.stats = stats;
+		this.player = playerInv.player;
 		this.networkMembers = java.util.List.copyOf(networkMembers);
 		this.plinthSlots = 2 + be.etchings().getSlots() + be.seals().getSlots();
 		addSlot(new SigilSlot(be, be.sigil(), 0, 10, 29));
@@ -266,6 +270,33 @@ public class PlinthMenu extends AbstractContainerMenu
 
 	public java.util.List<BlockPos> networkMembers() {
 		return networkMembers;
+	}
+
+	public void setNetworkMembers(java.util.List<BlockPos> members) {
+		networkMembers = java.util.List.copyOf(members);
+	}
+
+	// the open menu only got the members at the start, so a rename or a plinth joining is sent on
+	@Override
+	public void broadcastChanges() {
+		super.broadcastChanges();
+		MembersPayload update = memberUpdate();
+		if (update != null && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+			net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(serverPlayer, update);
+		}
+	}
+
+	// server side: the fresh member list when the client's copy is stale, else null
+	public MembersPayload memberUpdate() {
+		if (!(be.getLevel() instanceof net.minecraft.server.level.ServerLevel)) {
+			return null;
+		}
+		java.util.List<BlockPos> now = be.networkMembers();
+		if (now.equals(networkMembers)) {
+			return null;
+		}
+		networkMembers = java.util.List.copyOf(now);
+		return new MembersPayload(containerId, networkMembers);
 	}
 
 	public ItemStack seal(int index) {

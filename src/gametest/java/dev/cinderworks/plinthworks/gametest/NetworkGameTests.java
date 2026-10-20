@@ -15,6 +15,7 @@ public class NetworkGameTests
 {
 	private static final BlockPos POS = new BlockPos(2, 1, 2);
 	private static final BlockPos GONE = new BlockPos(5, 1, 5);
+	private static final BlockPos SECOND = new BlockPos(2, 1, 8);
 
 	@GameTest(template = Support.TEMPLATE, templateNamespace = Support.NAMESPACE, timeoutTicks = 300)
 	public static void staleChannelMembersArePrunedEveryTwoHundredTicks(GameTestHelper helper) {
@@ -47,5 +48,37 @@ public class NetworkGameTests
 		Support.expectEquals(helper, TransferMode.ROUND_ROBIN, PlinthNetwork.get(helper.getLevel()).channel(name).mode(),
 				"mode after one click");
 		helper.succeed();
+	}
+
+	// the channel screen lists what the menu was sent, so a rename or a new member has to reach an open menu
+	@GameTest(template = Support.TEMPLATE, templateNamespace = Support.NAMESPACE)
+	public static void openMenuGetsTheMembersWhenTheChannelChanges(GameTestHelper helper) {
+		PlinthBlockEntity be = Support.plinth(helper, POS);
+		PlinthBlockEntity other = Support.plinth(helper, SECOND);
+		var player = Support.player(helper);
+		var menu = new PlinthMenu(1, player.getInventory(), be);
+		var client = new PlinthMenu(1, player.getInventory(), helper.absolutePos(POS));
+		Support.expect(helper, menu.memberUpdate() == null, "a member update with no channel");
+		String name = "gt_members_" + System.nanoTime() % 1000000;
+		be.setChannel(name);
+		receive(helper, client, menu.memberUpdate());
+		Support.expectEquals(helper, java.util.List.of(helper.absolutePos(POS)), client.networkMembers(), "members after naming");
+		Support.expect(helper, menu.memberUpdate() == null, "the same members were sent twice");
+		other.setChannel(name);
+		receive(helper, client, menu.memberUpdate());
+		Support.expectEquals(helper, 2, client.networkMembers().size(), "members after a second plinth joined");
+		String renamed = name + "_b";
+		menu.applyChannel(renamed);
+		Support.expectEquals(helper, java.util.List.of(helper.absolutePos(POS)), menu.networkMembers(),
+				"members sent after a rename");
+		helper.succeed();
+	}
+
+	// what the client menu ends up with, through the real payload codec
+	private static void receive(GameTestHelper helper, PlinthMenu client, dev.cinderworks.plinthworks.net.MembersPayload update) {
+		Support.expect(helper, update != null, "no member update was made");
+		var buf = new net.minecraft.network.RegistryFriendlyByteBuf(io.netty.buffer.Unpooled.buffer(), helper.getLevel().registryAccess());
+		dev.cinderworks.plinthworks.net.MembersPayload.STREAM_CODEC.encode(buf, update);
+		client.setNetworkMembers(dev.cinderworks.plinthworks.net.MembersPayload.STREAM_CODEC.decode(buf).members());
 	}
 }
