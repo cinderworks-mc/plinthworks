@@ -35,6 +35,13 @@ ordering="NONE"
 side="BOTH"
 
 [[dependencies.${mod_id}]]
+modId="thaumaturge"
+type="optional"
+versionRange="[1.0.3,)"
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
 modId="jei"
 type="optional"
 versionRange="[0,)"
