@@ -3,6 +3,7 @@ package dev.cinderworks.plinthworks.gametest;
 import dev.cinderworks.plinthworks.block.PlinthBlock;
 import dev.cinderworks.plinthworks.block.entity.PlinthBlockEntity;
 import dev.cinderworks.plinthworks.item.*;
+import dev.cinderworks.plinthworks.logic.resource.EssentiaSupport;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -42,6 +43,14 @@ public class VisualGameTests
 				.thenExecute(be::cycleResourceMode)
 				.thenExecuteAfter(2, () -> expectState(helper, false, 2, 0))
 				.thenExecute(be::cycleResourceMode)
+				.thenExecuteAfter(2, () -> expectState(helper, false, 3, 0))
+				// essentia is only in the cycle when a compat can move it
+				.thenExecute(() -> {
+					if (EssentiaSupport.available()) {
+						be.cycleResourceMode();
+					}
+				})
+				.thenExecuteAfter(2, () -> expectState(helper, false, EssentiaSupport.available() ? 4 : 3, 0))
 				.thenExecute(be::cycleResourceMode)
 				.thenExecuteAfter(2, () -> expectState(helper, false, 0, 0))
 				.thenSucceed();
