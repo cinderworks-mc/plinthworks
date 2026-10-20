@@ -13,6 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      # an upstream release has to carry the essentia compat, so a missing secret fails it. a fork builds and
+      # releases plinthworks without the compat unless it sets up its own secret
+      EXPECT_COMPAT: ${{ github.repository == 'cinderworks-mc/plinthworks' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -20,7 +24,24 @@ jobs:
           distribution: temurin
           java-version: 21
       - uses: gradle/actions/setup-gradle@v4
-      - run: ./gradlew build
+      - name: fetch the thaumaturge jar
+        id: thaumaturge
+        env:
+          THAUMATURGE_URL: ${{ secrets.THAUMATURGE_1211_URL }}
+        run: bash .github/scripts/fetch-thaumaturge.sh
+      - run: ./gradlew build -Pexpect_compat=$EXPECT_COMPAT
+      - name: check the jar
+        env:
+          HAVE_JAR: ${{ steps.thaumaturge.outputs.available }}
+        run: |
+          args=()
+          if [ "$HAVE_JAR" = "true" ]; then
+            args+=(--thaumaturge libs/thaumaturge-1.21.1-NeoForge-1.0.3.jar)
+          fi
+          if [ "$HAVE_JAR" = "true" ] || [ "$EXPECT_COMPAT" = "true" ]; then
+            args+=(--expect-compat)
+          fi
+          python3 .github/scripts/jar_guard.py "${args[@]}" build/libs/*.jar
       - name: checksum
         run: |
           jar=$(ls build/libs/*.jar | grep -v -- '-sources.jar' | head -n 1)
@@ -33,3 +54,6 @@ jobs:
           flags=""
           case "$GITHUB_REF_NAME" in *-*) flags="--prerelease" ;; esac
           gh release create "$GITHUB_REF_NAME" "$JAR" "$JAR.sha256" --title "$GITHUB_REF_NAME" --generate-notes $flags
+      - name: drop the thaumaturge jar
+        if: always()
+        run: rm -f libs/*.jar

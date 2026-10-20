@@ -31,8 +31,27 @@ jobs:
       - name: set up gradle
         uses: gradle/actions/setup-gradle@v4
 
+      # the essentia compat compiles against thaumaturge, which may not be committed or hosted in public. the secret
+      # points at a private copy. forks and pull requests from forks never see it and build without the compat
+      - name: fetch the thaumaturge jar
+        id: thaumaturge
+        env:
+          THAUMATURGE_URL: ${{ secrets.THAUMATURGE_1211_URL }}
+        run: bash .github/scripts/fetch-thaumaturge.sh
+
       - name: build and test
         run: ./gradlew build --stacktrace
+
+      # nothing of thaumaturge may reach the artifact below, and with the jar here the compat has to be in
+      - name: check the jars
+        env:
+          HAVE_JAR: ${{ steps.thaumaturge.outputs.available }}
+        run: |
+          args=()
+          if [ "$HAVE_JAR" = "true" ]; then
+            args+=(--thaumaturge libs/thaumaturge-1.21.1-NeoForge-1.0.3.jar --expect-compat)
+          fi
+          python3 .github/scripts/jar_guard.py "${args[@]}" build/libs/*.jar
 
       - name: upload test reports
         if: always()
@@ -50,3 +69,7 @@ jobs:
           name: plinthworks-jar
           path: build/libs/*.jar
           if-no-files-found: error
+
+      - name: drop the thaumaturge jar
+        if: always()
+        run: rm -f libs/*.jar
