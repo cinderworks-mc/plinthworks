@@ -200,6 +200,12 @@ public class NetworkOverviewScreen extends Screen
 		PacketDistributor.sendToServer(new SetChannelPayload(channelName.getValue()));
 	}
 
+	// in singleplayer a pausing screen holds back the sync, so a rename or mode pick would not show until it closed
+	@Override
+	public boolean isPauseScreen() {
+		return false;
+	}
+
 	@Override
 	public void onClose() {
 		minecraft.setScreen(parent);

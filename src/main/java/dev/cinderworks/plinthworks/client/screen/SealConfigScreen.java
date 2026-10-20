@@ -155,6 +155,12 @@ public class SealConfigScreen extends Screen
 		PacketDistributor.sendToServer(new SealEditPayload(action, sealIndex, key));
 	}
 
+	// in singleplayer a pausing screen holds back the sync, so a picked key would not show until it closed
+	@Override
+	public boolean isPauseScreen() {
+		return false;
+	}
+
 	@Override
 	public void onClose() {
 		minecraft.setScreen(parent);
