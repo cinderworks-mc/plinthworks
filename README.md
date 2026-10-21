@@ -116,7 +116,7 @@ the config file is `config/plinthworks-common.toml`. some of the settings you ma
 - neoforge 21.1.x
 - java 21
 
-put the jar in your `mods` folder on the server and on every client. jei, emi and create are optional. plinthworks does not add recipe pages or kinetic support for them yet. thaumaturge (1.0.3 or newer) is optional too and adds the essentia mode.
+put the jar in your `mods` folder on the server and on every client. jei, emi and create are optional. plinthworks does not add recipe pages or kinetic support for them yet. thaumaturge (1.0.2 or newer) is optional too and adds the essentia mode.
 
 ## building
 
