@@ -1,6 +1,7 @@
 package dev.cinderworks.plinthworks.gametest;
 
 import dev.cinderworks.plinthworks.Plinthworks;
+import dev.cinderworks.plinthworks.logic.sigil.PlacementGameTests;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
@@ -25,6 +26,7 @@ public class PlinthworksGameTestEntry
 		event.register(TransferGameTests.class);
 		event.register(BreakerGameTests.class);
 		event.register(PlaytestGameTests.class);
+		event.register(PlacementGameTests.class);
 		event.register(EssentiaGameTests.class);
 	}
 }

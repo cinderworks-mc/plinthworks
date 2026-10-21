@@ -18,6 +18,9 @@ notable changes to plinthworks. loosely follows keep a changelog.
   essentia mode never shows up, and a plinth left in it by a world that had thaumaturge keeps
   its points and waits.
 
+### fixed
+- the placer, planter and harvester take the item out of the source before they place it, and put it back if the placement fails. a source that shows an item but refuses to hand it over no longer gives a free block.
+
 ## 0.2.5
 
 ### fixed

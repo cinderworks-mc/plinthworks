@@ -7,6 +7,7 @@ import net.minecraft.core.*;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.*;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
@@ -93,14 +94,22 @@ class WorldSigilSupport
 	}
 
 	static boolean place(ServerLevel level, FakePlayer player, Source source, BlockPos clicked, Direction face) {
-		ItemStack one = source.stack.copyWithCount(1);
-		BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(clicked), face, clicked, false);
-		BlockPlaceContext context = new BlockPlaceContext(level, player, InteractionHand.MAIN_HAND, one, hit);
-		InteractionResult result = CommonHooks.onPlaceItemIntoWorld(context);
-		if (!result.consumesAction()) {
+		ItemStack one = source.handler.extractItem(source.slot, 1, false);
+		if (one.isEmpty()) {
 			return false;
 		}
-		return !source.handler.extractItem(source.slot, 1, false).isEmpty();
+		BlockHitResult hit = new BlockHitResult(Vec3.atCenterOf(clicked), face, clicked, false);
+		BlockPlaceContext context = new BlockPlaceContext(level, player, InteractionHand.MAIN_HAND, one.copy(), hit);
+		InteractionResult result = CommonHooks.onPlaceItemIntoWorld(context);
+		if (!result.consumesAction()) {
+			ItemStack remainder = source.handler.insertItem(source.slot, one, false);
+			if (!remainder.isEmpty()) {
+				level.addFreshEntity(new ItemEntity(level, clicked.getX() + 0.5, clicked.getY() + 0.5,
+						clicked.getZ() + 0.5, remainder));
+			}
+			return false;
+		}
+		return true;
 	}
 
 	static int insert(List<IItemHandler> handlers, ItemStack stack, int amount) {
