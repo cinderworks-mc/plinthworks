@@ -14,7 +14,7 @@ notable changes to plinthworks. loosely follows keep a changelog.
   flux on break.
 
 ### changed
-- thaumaturge is an optional dependency (1.0.3 or newer). without it nothing changes: the
+- thaumaturge is an optional dependency (1.0.2 or newer). without it nothing changes: the
   essentia mode never shows up, and a plinth left in it by a world that had thaumaturge keeps
   its points and waits.
 
